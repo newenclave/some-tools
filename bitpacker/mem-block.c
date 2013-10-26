@@ -67,11 +67,12 @@ mem_block_data_type *mem_block_new( )
     return new_block;
 }
 
-void mem_block_delete(mem_block_data_type *mb)
+int mem_block_delete(mem_block_data_type *mb)
 {
     if( NULL == mb ) return;
     free(mb->data_);
     free(mb);
+    return 1;
 }
 
 size_t mem_block_size(mem_block_data_type *mb)
@@ -89,12 +90,13 @@ void*  mem_block_data(struct mem_block_data *mb)
     return mb->data_;
 }
 
-void mem_block_clear(struct mem_block_data *mb)
+int mem_block_clear(struct mem_block_data *mb)
 {
     mb->used_ = 0;
+    return 1;
 }
 
-void mem_block_swap(struct mem_block_data *lmb, struct mem_block_data *rmb)
+int mem_block_swap(struct mem_block_data *lmb, struct mem_block_data *rmb)
 {
     char   *tmp_data = lmb->data_;
     size_t  tmp_used = lmb->used_;
@@ -108,6 +110,8 @@ void mem_block_swap(struct mem_block_data *lmb, struct mem_block_data *rmb)
 
     lmb->capacity_ = rmb->capacity_;
     rmb->capacity_ = tmp_capa;
+
+    return 1;
 }
 
 int mem_block_concat(struct mem_block_data *lmb, const void *data, size_t len)
