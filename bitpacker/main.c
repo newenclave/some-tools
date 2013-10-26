@@ -11,12 +11,12 @@ int main( )
     int i=0;
     for( ;i<100; ++i) {
         mem_block_push_back( mb, '1' );
-        printf( "capa: %u, s %u\n", mem_block_capacity(mb), mem_block_size(mb) );
+        printf( "capa: %u, s %u \n", mem_block_capacity(mb), mem_block_size(mb) );
     }
     mem_block_push_back( mb, 0 );
     mem_block_resize( mb, 4 );
 
-    printf( "capa: %u, s %u\n", mem_block_capacity(mb), mem_block_size(mb) );
+    printf( "capa: %u, s %u\n", mem_block_capacity(mb), mem_block_size(mb), mem_block_data(mb) );
     printf( " data %s\n", (char *)mem_block_data( mb ) );
 
     mem_block_free( mb );
