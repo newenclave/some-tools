@@ -97,7 +97,7 @@ mem_block_data_type *mem_block_new( size_t init_size )
     return new_block;
 }
 
-int mem_block_delete(mem_block_data_type *mb)
+int mem_block_free(mem_block_data_type *mb)
 {
     if( NULL == mb ) return 1;
     free(mb->data_);

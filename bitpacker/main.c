@@ -19,7 +19,7 @@ int main( )
     printf( "capa: %u, s %u\n", mem_block_capacity(mb), mem_block_size(mb) );
     printf( " data %s\n", (char *)mem_block_data( mb ) );
 
-    mem_block_delete( mb );
+    mem_block_free( mb );
 
     return 1;
     struct bit_pack_data *bpd = bp_new_bitpack_data( );
