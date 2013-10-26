@@ -6,15 +6,18 @@
 
 int main( )
 {
+    struct mem_block_data *mb = mem_block_new( );
 
-    struct mem_block_data *nd = mem_block_new( );
+    int i=0;
+    for( ;i<100; ++i) {
+        mem_block_push_back( mb, '1' );
+        printf( "capa: %u, s %u\n", mem_block_capacity(mb), mem_block_size(mb) );
+    }
+    mem_block_push_back( mb, 0 );
 
-    mem_block_resize( nd, 16 );
-    mem_block_resize( nd, 32 );
-    mem_block_resize( nd, 63 );
-    mem_block_resize( nd, 3 );
+    printf( " data %s\n", (char *)mem_block_data( mb ) );
 
-    mem_block_delete( nd );
+    mem_block_delete( mb );
 
     return 1;
     struct bit_pack_data *bpd = bp_new_bitpack_data( );
