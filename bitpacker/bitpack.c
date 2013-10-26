@@ -14,6 +14,16 @@ unsigned char make_mask( unsigned count )
     return (unsigned char)(((1 << count) - 1) & 0xFF);
 }
 
+char * byte_to_bits( container_type b, char *storage )
+{
+    int i;
+    for( i=0; i<8; ++i ) {
+        storage[i] = (b & (1 << i)) ? '1' : '0';
+    }
+    storage[8] = '\0';
+    return storage;
+}
+
 unsigned unpack_bits( value_type *val, unsigned count,
                       unsigned char dst, unsigned *size )
 {
@@ -91,10 +101,11 @@ void bp_dump( struct bit_pack_data *bpd )
     printf( "Current pos: %d\n", bpd->current_pos_ );
     printf( "Current fil: %d\n", bpd->ti_.filling_ );
     printf( "Current dump: \n");
+    char b2b[9] = {0};
     do {
         value_type i;
         for( i=0; i <= bpd->current_pos_;  ++i ) {
-            printf( " %x", bpd->data_[i]);
+            printf( " %s", byte_to_bits(bpd->data_[i], b2b));
         }
     } while(0);
     printf( "\n");
@@ -169,11 +180,13 @@ int bp_add_bits(struct bit_pack_data *bpd, unsigned value, unsigned bit_count)
     do {
         tail = pack_bits( value, tail,
                           &bpd->ti_.current_, &bpd->ti_.filling_ );
-        //printf( "add: %d tail: %d\n", bit_count, tail );
         if( tail != 0 ) {
         	if(!bp_push( bpd )) return 0;
         }
     } while ( tail );
+
+    if( bpd->ti_.filling_ == CHAR_BIT )
+        return bp_push( bpd );
 
     return 1;
 }
