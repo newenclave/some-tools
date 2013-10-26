@@ -12,14 +12,32 @@ struct mem_block_data {
 
 typedef struct mem_block_data mem_block_data_type;
 
-int mem_block_reserve(struct mem_block_data *mb, size_t new_size)
+static const size_t void_ptr_size = sizeof(void *);
+
+#define mem_block_fix_size( new_size )                             \
+    ( 0 == new_size )                                              \
+      ? void_ptr_size                                              \
+      : ((new_size-1)/sizeof(void_ptr_size)*sizeof(void_ptr_size)) \
+                                           +sizeof(void_ptr_size)
+
+#if 0
+size_t mem_block_fix_size( size_t new_size )
 {
     static const size_t void_ptr_size = sizeof(void *);
 
-    if( new_size <= mb->capacity_ ) return 1;
-
+    if( 0 == new_size ) return void_ptr_size;
     new_size = ((new_size-1)/sizeof(void_ptr_size)*sizeof(void_ptr_size))
                                                   +sizeof(void_ptr_size);
+    return new_size;
+}
+#endif
+
+int mem_block_reserve(struct mem_block_data *mb, size_t new_size)
+{
+
+    if( new_size <= mb->capacity_ ) return 1;
+
+    new_size = mem_block_fix_size(new_size);
 
     char *new_data = (char *)realloc(mb->data_, new_size);
     if( NULL == new_data ) {
@@ -32,7 +50,7 @@ int mem_block_reserve(struct mem_block_data *mb, size_t new_size)
     return 1;
 }
 
-int mem_block_resize(struct mem_block_data *mb, size_t new_size)
+int mem_block_resize2(struct mem_block_data *mb, size_t new_size, int c)
 {
     size_t old_used = mb->used_;
 
@@ -44,32 +62,44 @@ int mem_block_resize(struct mem_block_data *mb, size_t new_size)
 
     mb->used_ = new_size;
     if( old_used < new_size ) {
-        memset( &mb->data_[old_used], 0, new_size - old_used );
+        memset( &mb->data_[old_used], c, new_size - old_used );
         printf( " shift block: %d", new_size - old_used );
     }
     printf("\n");
     return 1;
 }
 
-mem_block_data_type *mem_block_new( )
+int mem_block_resize(struct mem_block_data *mb, size_t new_size)
+{
+    return mem_block_resize2( mb, new_size, 0 );
+}
+
+
+mem_block_data_type *mem_block_new( size_t init_size )
 {
     mem_block_data_type *new_block =
             (mem_block_data_type *)malloc(sizeof(mem_block_data_type));
 
-    new_block->data_     = (char *)malloc(sizeof(size_t));
+    size_t new_size = mem_block_fix_size(init_size);
+
+    new_block->data_     = (char *)malloc(new_size);
     if( NULL == new_block->data_ ) {
         free(new_block);
         return NULL;
     }
-    new_block->capacity_ = sizeof(size_t);
-    new_block->used_     = 0;
+
+    new_block->capacity_ = new_size;
+    new_block->used_     = init_size;
+
+    if( 0 != init_size )
+        memset( new_block->data_, 0, init_size );
 
     return new_block;
 }
 
 int mem_block_delete(mem_block_data_type *mb)
 {
-    if( NULL == mb ) return;
+    if( NULL == mb ) return 1;
     free(mb->data_);
     free(mb);
     return 1;
@@ -116,7 +146,7 @@ int mem_block_swap(struct mem_block_data *lmb, struct mem_block_data *rmb)
 
 int mem_block_concat(struct mem_block_data *lmb, const void *data, size_t len)
 {
-    if( 0 == mem_block_resize(lmb, lmb->used_ + len) ) return 0;
+    if( 0 == mem_block_resize2(lmb, lmb->used_ + len, 0) ) return 0;
     memcpy( &lmb->data_[lmb->used_], data, len );
     return 1;
 }

@@ -6,7 +6,7 @@
 
 int main( )
 {
-    struct mem_block_data *mb = mem_block_new( );
+    struct mem_block_data *mb = mem_block_new( 0 );
 
     int i=0;
     for( ;i<100; ++i) {
@@ -14,7 +14,9 @@ int main( )
         printf( "capa: %u, s %u\n", mem_block_capacity(mb), mem_block_size(mb) );
     }
     mem_block_push_back( mb, 0 );
+    mem_block_resize( mb, 4 );
 
+    printf( "capa: %u, s %u\n", mem_block_capacity(mb), mem_block_size(mb) );
     printf( " data %s\n", (char *)mem_block_data( mb ) );
 
     mem_block_delete( mb );
