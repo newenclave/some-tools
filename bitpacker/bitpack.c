@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 #include "bitpack.h"
+#include "mem-block.h"
 
 typedef size_t          value_type;
 typedef unsigned char   container_type;
