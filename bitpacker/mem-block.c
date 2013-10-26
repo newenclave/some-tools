@@ -13,12 +13,12 @@ struct mem_block_data {
 typedef struct mem_block_data mem_block_data_type;
 
 static const size_t void_ptr_size = sizeof(void *);
+static const size_t void_ptr_size_mask = sizeof(void *) - 1;
 
 #define mem_block_fix_size( new_size )                             \
-    ( 0 == new_size )                                              \
+    ( new_size <= void_ptr_size)                                   \
       ? void_ptr_size                                              \
-      : ((new_size-1)/sizeof(void_ptr_size)*sizeof(void_ptr_size)) \
-                                           +sizeof(void_ptr_size)
+      : (new_size + ((new_size-void_ptr_size) & void_ptr_size_mask))
 
 #if 0
 size_t mem_block_fix_size( size_t new_size )
