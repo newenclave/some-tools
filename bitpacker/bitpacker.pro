@@ -5,8 +5,10 @@ CONFIG -= qt
 
 SOURCES += \
     main.c \
-    bitpack.c
+    bitpack.c \
+    mem-block.c
 
 HEADERS += \
-    bitpack.h
+    bitpack.h \
+    mem-block.h
 

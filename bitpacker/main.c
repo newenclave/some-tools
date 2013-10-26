@@ -2,9 +2,21 @@
 #include <stdio.h>
 
 #include "bitpack.h"
+#include "mem-block.h"
 
 int main( )
 {
+
+    struct mem_block_data *nd = mem_block_new( );
+
+    mem_block_resize( nd, 16 );
+    mem_block_resize( nd, 32 );
+    mem_block_resize( nd, 63 );
+    mem_block_resize( nd, 3 );
+
+    mem_block_delete( nd );
+
+    return 1;
     struct bit_pack_data *bpd = bp_new_bitpack_data( );
 
     printf( "is en: %d\n", bp_is_space_enough( bpd, 8 * 7 ) );

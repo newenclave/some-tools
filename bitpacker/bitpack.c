@@ -6,8 +6,8 @@
 
 #include "bitpack.h"
 
-typedef unsigned long long value_type;
-typedef unsigned char      container_type;
+typedef size_t          value_type;
+typedef unsigned char   container_type;
 
 unsigned char make_mask( unsigned count )
 {
@@ -196,7 +196,7 @@ unsigned bp_get_padd( struct bit_pack_data *bpd )
     return bpd->ti_.filling_ ? (CHAR_BIT - bpd->ti_.filling_) : 0;
 }
 
-unsigned long long bp_get_size( struct bit_pack_data *bpd )
+size_t bp_get_size( struct bit_pack_data *bpd )
 {
     return bpd->current_pos_ + ((bpd->ti_.filling_ != 0) ? 1 : 0);
 }
