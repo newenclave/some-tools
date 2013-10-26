@@ -169,7 +169,7 @@ int bp_add_bits(struct bit_pack_data *bpd, unsigned value, unsigned bit_count)
     do {
         tail = pack_bits( value, tail,
                           &bpd->ti_.current_, &bpd->ti_.filling_ );
-        printf( "add: %d tail: %d\n", bit_count, tail );
+        //printf( "add: %d tail: %d\n", bit_count, tail );
         if( tail != 0 ) {
         	if(!bp_push( bpd )) return 0;
         }
