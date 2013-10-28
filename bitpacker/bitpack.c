@@ -65,8 +65,8 @@ masks
 
 unsigned char make_char_mask( unsigned count )
 {
-    static const unsigned char masks[] = { // 8 + zero
-       0, 0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F, 0x7F, 0xFF,
+    static const unsigned char masks[] = { // zero and 8 bits
+       0, 0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F, 0x7F, 0xFF
 #if CHAR_BIT > 8
     #error "wow!";
 #endif
