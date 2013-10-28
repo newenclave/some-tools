@@ -54,19 +54,22 @@ int main( )
     }
 
     printf( "padd\t%d\n", bp_get_padd( bpd ) );
+    printf("total: %d\n", bp_get_size( bpd ));
 
     //bp_dump( bpd );
+
+    //struct bit_unpack_data *bup = bit_unpack_new();
+    //bu_assign( bup, "1234567890-", 11 );
 
     struct bit_unpack_data *bup = bit_unpack_new2( "1234567890-", 11 );
 
     while( !bu_eod( bup ) ) {
         size_t val = 0;
-        unsigned got = bu_get_bits( bup, &val, 9 );
-        printf( "got: %u, next: %X  ", got, val );
+        unsigned got = bu_get_bits( bup, &val, 8 );
+        printf( "got: %u, next: %c  ", got, val );
         size_dump_( val );
     }
 
-    printf("total: %d\n", bp_get_size( bpd ));
     bit_pack_free( bpd );
     bit_unpack_free( bup );
 

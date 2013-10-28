@@ -247,31 +247,45 @@ size_t bp_copy_data( struct bit_pack_data *bpd, void *to, size_t maximum )
 
 /* ==========  unpack =========== */
 
-struct bit_unpack_data *bit_unpack_new2( const void *data, size_t len )
+struct bit_unpack_data *bit_unpack_new( )
 {
     struct bit_unpack_data *new_data =
-            (struct bit_unpack_data *)malloc(sizeof(struct bit_unpack_data));
-
-    if(  NULL == new_data ) {
-        return NULL;
-    }
-
-    new_data->current_   = 0;
-    new_data->end_  = NULL;
-
-    new_data->data_ = new_data->hi_.current_ = (const unsigned char *)(data);
-
-    if( (len > 0) && (NULL != data)) {
-        new_data->end_ = (const unsigned char *)(data) + len;
-    }
-
+            (struct bit_unpack_data *)calloc(1, sizeof(struct bit_unpack_data));
     return new_data;
 }
 
-struct bit_unpack_data *bit_unpack_new( )
+struct bit_unpack_data *bit_unpack_new2( const void *data, size_t len )
 {
-    return bit_unpack_new2( NULL, 0 );
+    struct bit_unpack_data *new_data = bit_unpack_new( );
+    if(  NULL != new_data ) {
+        bu_assign( new_data, data, len );
+    }
+    return new_data;
 }
+
+
+int bu_reset( struct bit_unpack_data *bud )
+{
+    bud->hi_.current_ = bud->data_;
+    bud->hi_.filling_ = 0;
+    return 1;
+}
+
+int bu_assign( struct bit_unpack_data *bud, const void *data, size_t len )
+{
+    bud->data_ = (unsigned char *)(data);
+    if( (len > 0) && (NULL != data)) {
+        bud->end_ = (const unsigned char *)(data) + len;
+    } else {
+        bud->end_ = NULL;
+    }
+
+    bud->hi_.current_ = bud->data_;
+    bud->hi_.filling_ = 0;
+
+    return 1;
+}
+
 
 void bit_unpack_free( struct bit_unpack_data *bud )
 {
