@@ -18,11 +18,6 @@ char * byte_to_( unsigned char b, char *storage )
 int main( )
 {
 
-    unsigned long long i = 1;
-    for( ;i!=65; ++i ) {
-        printf ( "0x%X, ", (1 << i) -1 );
-    }
-
     struct bit_pack_data *bpd = bp_new_bitpack_data( );
 
     bp_add_bits( bpd, 11, 11 );
