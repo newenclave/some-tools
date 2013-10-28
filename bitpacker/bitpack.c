@@ -18,8 +18,8 @@ unsigned char make_mask( unsigned count )
 char * byte_to_bits( container_type b, char *storage )
 {
     int i;
-    for( i=0; i<8; ++i ) {
-        storage[i] = (b & (1 << i)) ? '1' : '0';
+    for( i=8; i>0; --i ) {
+        storage[8-i] = (b & (1 << (i-1))) ? '1' : '0';
     }
     storage[8] = '\0';
     return storage;
@@ -104,9 +104,10 @@ void bp_dump( struct bit_pack_data *bpd )
     do {
         value_type i;
         const char *data = (const char *)mem_block_data(bpd->data_);
-        for( i=0; i <= mem_block_size(bpd->data_);  ++i ) {
-            printf( " %s", byte_to_bits(data[i], b2b));
+        for( i=0; i < mem_block_size(bpd->data_);  ++i ) {
+            printf( " S%s", byte_to_bits(data[i], b2b));
         }
+        printf( " T%s", byte_to_bits(bpd->ti_.current_, b2b));
     } while(0);
     printf( "\n");
 }

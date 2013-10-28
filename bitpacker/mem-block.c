@@ -145,8 +145,9 @@ int mem_block_swap(struct mem_block_data *lmb, struct mem_block_data *rmb)
 
 int mem_block_concat(struct mem_block_data *lmb, const void *data, size_t len)
 {
-    if( 0 == mem_block_resize2(lmb, lmb->used_ + len, 0) ) return 0;
-    memcpy( &lmb->data_[lmb->used_], data, len );
+    size_t old_used = lmb->used_;
+    if( 0 == mem_block_resize2(lmb, old_used + len, 0) ) return 0;
+    memcpy( &lmb->data_[old_used], data, len );
     return 1;
 }
 
