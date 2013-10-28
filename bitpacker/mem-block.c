@@ -15,6 +15,8 @@ typedef struct mem_block_data mem_block_data_type;
 static const size_t void_ptr_size      = sizeof(void *);
 static const size_t void_ptr_size_mask = sizeof(void *) - 1;
 
+#define mem_block_def_inc(size) (size + (size >> 1)) // size *= 1.5
+
 #define mem_block_fix_size( new_size )                             \
     ( new_size <= void_ptr_size)                                   \
       ? void_ptr_size                                              \
@@ -78,7 +80,7 @@ int mem_block_reserve(struct mem_block_data *mb, size_t new_size)
     if( new_size <= mb->capacity_ ) return 1;
 
     old_capa = mb->capacity_;
-    new_capa = mem_block_fix_size(old_capa + (old_capa >> 1)); // * 1.5
+    new_capa = mem_block_fix_size(mem_block_def_inc(old_capa));
     new_size = mem_block_fix_size(new_size);
 
     if( new_capa > new_size ) new_size = new_capa;
@@ -177,7 +179,7 @@ int mem_block_push_back(struct mem_block_data *mb, char c)
 {
     size_t old_capa = mb->capacity_;
     if( ( mb->used_ ) >= old_capa ) {
-        size_t new_capa = old_capa + (old_capa >> 1); // * 1.5
+        size_t new_capa = mem_block_def_inc( old_capa );
         if( 0 == mem_block_reserve( mb, new_capa ) )
             return 0;
     }
