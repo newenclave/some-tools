@@ -38,7 +38,7 @@ int main( )
     bp_add_bits( bpd, 1, 1 );
     bp_add_bits( bpd, 0, 1 );
     bp_add_bits( bpd, 1, 1 );
-    bp_add_bits( bpd, 1, 1 );
+    bp_add_bits( bpd, 1, 32 );
     //bp_add_bits( bpd, 0xBAADFEED, 32 );
 
     {
