@@ -72,11 +72,13 @@ int mem_block_reserve(struct mem_block_data *mb, size_t new_size)
 {
     static int i=0;
 
-    size_t old_capa = mb->capacity_;
-    size_t new_capa = mem_block_fix_size(old_capa + (old_capa >> 1)); // * 1.5
+    size_t old_capa;
+    size_t new_capa;
 
     if( new_size <= mb->capacity_ ) return 1;
 
+    old_capa = mb->capacity_;
+    new_capa = mem_block_fix_size(old_capa + (old_capa >> 1)); // * 1.5
     new_size = mem_block_fix_size(new_size);
 
     if( new_capa > new_size ) new_size = new_capa;
