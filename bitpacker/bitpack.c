@@ -15,16 +15,6 @@ unsigned char make_mask( unsigned count )
     return (unsigned char)(((1 << count) - 1) & 0xFF);
 }
 
-char * byte_to_bits( container_type b, char *storage )
-{
-    int i;
-    for( i=8; i>0; --i ) {
-        storage[8-i] = (b & (1 << (i-1))) ? '1' : '0';
-    }
-    storage[8] = '\0';
-    return storage;
-}
-
 unsigned unpack_bits( value_type *val, unsigned count,
                       unsigned char dst, unsigned *size )
 {
@@ -93,25 +83,6 @@ struct bit_pack_data {
 };
 
 typedef struct bit_pack_data  bit_pack_data_type;
-
-void bp_dump( struct bit_pack_data *bpd )
-{
-    printf( "Current size: %d\n", mem_block_capacity(bpd->data_) );
-    printf( "Current pos: %d\n",  mem_block_size(bpd->data_) );
-    printf( "Current fil: %d\n",  bpd->ti_.filling_ );
-    printf( "Current dump: \n");
-    char b2b[9] = {0};
-    do {
-        value_type i;
-        const char *data = (const char *)mem_block_data(bpd->data_);
-        for( i=0; i < mem_block_size(bpd->data_);  ++i ) {
-            printf( " S%s", byte_to_bits(data[i], b2b));
-        }
-        printf( " T%s", byte_to_bits(bpd->ti_.current_, b2b));
-    } while(0);
-    printf( "\n");
-}
-
 
 bit_pack_data_type *bp_new_bitpack_data( )
 {

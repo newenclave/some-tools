@@ -17,9 +17,9 @@ static const size_t void_ptr_size_mask = sizeof(void *) - 1;
 
 #define mem_block_def_inc(size) (size + (size >> 1)) // size *= 1.5
 
-#define mem_block_fix_size( new_size )                             \
-    ( new_size <= void_ptr_size)                                   \
-      ? void_ptr_size                                              \
+#define mem_block_fix_size( new_size )                              \
+    ( new_size <= void_ptr_size)                                    \
+      ? void_ptr_size                                               \
       : (new_size + ((new_size-void_ptr_size) & void_ptr_size_mask))
 
 #if 0
