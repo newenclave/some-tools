@@ -13,8 +13,8 @@ int main( )
 
 
     int i = 0;
-    for( i=0; i<1000; ++i )
-        bp_add_bits( bpd, 11, 7 );
+    for( i=0; i<10000; ++i )
+        bp_add_bits( bpd, 11, 8 );
 
     //bp_dump( bpd );
 
