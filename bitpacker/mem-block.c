@@ -39,6 +39,10 @@ int mem_block_reserve(struct mem_block_data *mb, size_t new_size)
 
     new_size = mem_block_fix_size(new_size);
 
+    static int i=0;
+
+    printf("reallock %d\n", i++);
+
     char *new_data = (char *)realloc(mb->data_, new_size);
     if( NULL == new_data ) {
         printf( "reserve fail\n");
@@ -54,18 +58,13 @@ int mem_block_resize2(struct mem_block_data *mb, size_t new_size, int c)
 {
     size_t old_used = mb->used_;
 
-    printf( " old block: %d", old_used );
-    printf( " new block: %d", new_size );
-
     if( 0 == mem_block_reserve( mb, new_size ) )
         return 0;
 
     mb->used_ = new_size;
     if( old_used < new_size ) {
         memset( &mb->data_[old_used], c, new_size - old_used );
-        printf( " shift block: %d", new_size - old_used );
     }
-    printf("\n");
     return 1;
 }
 
