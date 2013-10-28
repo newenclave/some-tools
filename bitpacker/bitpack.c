@@ -13,7 +13,7 @@ typedef unsigned char   container_type;
 unsigned char make_char_mask( unsigned count )
 {
     static const unsigned char masks[CHAR_BIT + 1] = { // 8 + zero
-        0, 1, 3, 7, 15, 31, 63, 127, 255,
+        0, 1, 3, 7, 15, 31, 63, 127, 255
 #if CHAR_BIT > 8
     #error "wow!";
 #endif
