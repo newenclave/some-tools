@@ -145,37 +145,28 @@ int bp_is_space_enough( struct bit_pack_data *bpd, unsigned bit_count )
     return 1;
 }
 
-
-int bp_is_space( struct bit_pack_data *bpd, unsigned bit_count )
-{
-    size_t avail_bit = mem_block_available( bpd->data_ );
-    // printf( "avail: %d, %d\n", (avail_bit - 1), bit_count);
-    return ( avail_bit > ( bit_count / CHAR_BIT ));
-}
-
 int bp_add_bits(struct bit_pack_data *bpd, unsigned value, unsigned bit_count)
 {
-    unsigned tail = bit_count;
     struct tail_info tmp_ti;
-    struct mem_block_data *tmp_data = NULL;
+    struct mem_block_data *tmp_data = bpd->data_;
+    unsigned tail = bit_count;
 
     tmp_ti.current_ = bpd->ti_.current_;
     tmp_ti.filling_ = bpd->ti_.filling_;
 
-    if( 0 == bp_is_space( bpd, bit_count ) ) {
+    if( mem_block_available( bpd->data_ ) <= (bit_count / CHAR_BIT)) {
         tmp_data = mem_block_new(0);
         if( NULL == tmp_data ) {
             return 0;
         }
         mem_block_reserve( tmp_data, 8 );
-    } else {
-        tmp_data = bpd->data_;
     }
 
     do {
         tail = pack_bits( value, tail,
                          &tmp_ti.current_, &tmp_ti.filling_ );
-        if( tail ) {
+
+        if( tmp_ti.filling_ == CHAR_BIT ) {
             if( 0 == mem_block_push_back(tmp_data, tmp_ti.current_)) {
                 mem_block_free( tmp_data );
                 return 0;
@@ -183,18 +174,9 @@ int bp_add_bits(struct bit_pack_data *bpd, unsigned value, unsigned bit_count)
             tmp_ti.current_ = 0;
             tmp_ti.filling_ = 0;
         }
-    } while ( tail );
+    } while ( tail != 0 );
 
-    if( tmp_ti.filling_ == CHAR_BIT && NULL != tmp_data ) {
-        if( 0 == mem_block_push_back(tmp_data, tmp_ti.current_)) {
-            mem_block_free( tmp_data );
-            return 0;
-        }
-        tmp_ti.filling_ = 0;
-        tmp_ti.current_ = 0;
-    }
-
-    if( NULL != tmp_data && bpd->data_ != tmp_data ) {
+    if( bpd->data_ != tmp_data ) { // new block
         int result = 0;
         if( 0 != mem_block_concat2( bpd->data_, tmp_data )) {
             bpd->ti_.current_ = tmp_ti.current_;
