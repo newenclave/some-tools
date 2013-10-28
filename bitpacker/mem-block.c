@@ -15,7 +15,7 @@ typedef struct mem_block_data mem_block_data_type;
 static const size_t void_ptr_size      = sizeof(void *);
 static const size_t void_ptr_size_mask = sizeof(void *) - 1;
 
-#define mem_block_def_inc(size) (size + (size >> 1)) // size *= 1.5
+#define mem_block_def_inc(size) (size + (size >> 1))
 
 #define mem_block_fix_size( new_size )                              \
     ( new_size <= void_ptr_size)                                    \
@@ -59,13 +59,27 @@ mem_block_data_type *mem_block_new( size_t init_size )
     return new_block;
 }
 
+struct mem_block_data *mem_block_new_copy( const struct mem_block_data *oth )
+{
+    size_t new_size = oth->used_;
+    struct mem_block_data *new_block = mem_block_new(new_size);
+    if( NULL == new_block ) {
+        return NULL;
+    }
+    if( new_size > 0 )
+        memcpy( new_block->data_, oth->data_, new_size );
+    return new_block;
+}
+
+
 /// mem_block_free
 /// free memory
 int mem_block_free(mem_block_data_type *mb)
 {
-    if( NULL == mb ) return 1;
-    free(mb->data_);
-    free(mb);
+    if( NULL != mb ) {
+        free(mb->data_);
+        free(mb);
+    }
     return 1;
 }
 

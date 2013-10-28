@@ -10,6 +10,31 @@
 typedef size_t          value_type;
 typedef unsigned char   container_type;
 
+struct tail_info {
+    container_type current_;
+    unsigned       filling_;
+};
+
+struct bit_pack_data {
+    struct mem_block_data  *data_;
+    struct tail_info        ti_;
+};
+
+typedef struct bit_pack_data  bit_pack_data_type;
+
+
+struct head_info {
+    const unsigned char *current_;
+    unsigned             filling_;
+};
+
+struct bit_unpack_data {
+    const unsigned char *   data_;
+    const unsigned char *   end_;
+    size_t                  current_;
+    struct head_info        hi_;
+};
+
 /*
 masks
 
@@ -106,19 +131,7 @@ unsigned pack_bits( value_type val, unsigned count,
     return tail;
 }
 
-struct tail_info {
-    container_type current_;
-    unsigned       filling_;
-};
-
-struct bit_pack_data {
-    struct mem_block_data  *data_;
-    struct tail_info        ti_;
-};
-
-typedef struct bit_pack_data  bit_pack_data_type;
-
-bit_pack_data_type *bp_new_bitpack_data( )
+bit_pack_data_type *bit_pack_new( )
 {
     bit_pack_data_type *new_data = (struct bit_pack_data *)
                                     malloc(sizeof(bit_pack_data_type));
@@ -138,14 +151,15 @@ bit_pack_data_type *bp_new_bitpack_data( )
     return new_data;
 }
 
-void bp_delete_bitpack_data( bit_pack_data_type *bpd )
+void bit_pack_free( bit_pack_data_type *bpd )
 {
-    if( NULL == bpd ) return;
-    mem_block_free(bpd->data_);
-    free( bpd );
+    if( NULL != bpd ) {
+        mem_block_free(bpd->data_);
+        free( bpd );
+    }
 }
 
-int bp_add_bits(struct bit_pack_data *bpd, unsigned value, unsigned bit_count)
+int bp_add_bits(struct bit_pack_data *bpd, size_t value, unsigned bit_count)
 {
     struct tail_info tmp_ti;
     struct mem_block_data *tmp_data = bpd->data_;
@@ -230,3 +244,81 @@ size_t bp_copy_data( struct bit_pack_data *bpd, void *to, size_t maximum )
         return data_size;
     }
 }
+
+/* ==========  unpack =========== */
+
+struct bit_unpack_data *bit_unpack_new2( const void *data, size_t len )
+{
+    struct bit_unpack_data *new_data =
+            (struct bit_unpack_data *)malloc(sizeof(struct bit_unpack_data));
+
+    if(  NULL == new_data ) {
+        return NULL;
+    }
+
+    new_data->current_   = 0;
+    new_data->end_  = NULL;
+
+    new_data->data_ = new_data->hi_.current_ = (const unsigned char *)(data);
+
+    if( (len > 0) && (NULL != data)) {
+        new_data->end_ = (const unsigned char *)(data) + len;
+    }
+
+    return new_data;
+}
+
+struct bit_unpack_data *bit_unpack_new( )
+{
+    return bit_unpack_new2( NULL, 0 );
+}
+
+void bit_unpack_free( struct bit_unpack_data *bud )
+{
+    if( NULL != bud ) {
+        free( bud );
+    }
+}
+
+int bu_change_size( struct bit_unpack_data *bud, size_t new_len )
+{
+    if( NULL == bud->data_ ) {
+        return 0;
+    }
+    bud->end_ = bud->data_ + new_len;
+    if( bud->hi_.current_ >= bud->end_ ) {
+        bud->hi_.current_ = bud->end_;
+        bud->hi_.filling_ = 0;
+    }
+    return 1;
+}
+
+unsigned bu_eod( struct bit_unpack_data *bud )
+{
+    return (bud->hi_.current_ == bud->end_);
+}
+
+
+unsigned bu_get_bits( struct bit_unpack_data *bud, size_t *val, unsigned len )
+{
+    unsigned tail = 0;
+    size_t value = 0;
+
+    if( bud->hi_.current_ == bud->end_ ) {
+        return 0;
+    }
+
+    tail = len;
+    do {
+        tail = unpack_bits(&value, tail,
+                           *bud->hi_.current_, &bud->hi_.filling_);
+        if( bud->hi_.filling_ == CHAR_BIT ) {
+            ++bud->hi_.current_;
+            bud->hi_.filling_ = 0;
+        }
+    } while ( tail && (bud->hi_.current_ != bud->end_) );
+
+    *val = value;
+    return len - tail;
+}
+

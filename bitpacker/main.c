@@ -18,7 +18,7 @@ char * byte_to_( unsigned char b, char *storage )
 int main( )
 {
 
-    struct bit_pack_data *bpd = bp_new_bitpack_data( );
+    struct bit_pack_data *bpd = bit_pack_new( );
 
     bp_add_bits( bpd, 11, 11 );
     bp_add_bits( bpd, 11, 11 );
@@ -48,8 +48,9 @@ int main( )
     //bp_dump( bpd );
 
 
+
     printf("total: %d\n", bp_get_size( bpd ));
-    bp_delete_bitpack_data( bpd );
+    bit_pack_free( bpd );
 
     return 0;
 }

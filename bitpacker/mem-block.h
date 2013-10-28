@@ -6,6 +6,7 @@
 struct mem_block_data;
 
 struct mem_block_data *mem_block_new( size_t init_size );
+struct mem_block_data *mem_block_new_copy( const struct mem_block_data *oth );
 
 int mem_block_free(struct mem_block_data *mb);
 
