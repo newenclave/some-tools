@@ -11,7 +11,9 @@ void bp_dump( struct bit_pack_data *bpd );
 
 int bp_add_bits(struct bit_pack_data *bpd, unsigned value, unsigned bit_count);
 unsigned bp_get_padd( struct bit_pack_data *bpd );
-size_t bp_get_size( struct bit_pack_data *bpd );
+
+size_t bp_get_size(  struct bit_pack_data *bpd );
+size_t bp_copy_data( struct bit_pack_data *bpd, void *to, size_t maximum );
 
 int bp_is_space_enough( struct bit_pack_data *bpd, unsigned bit_count );
 

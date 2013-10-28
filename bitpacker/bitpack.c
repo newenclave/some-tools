@@ -176,7 +176,7 @@ int bp_add_bits(struct bit_pack_data *bpd, unsigned value, unsigned bit_count)
         }
     } while ( tail != 0 );
 
-    if( bpd->data_ != tmp_data ) { // new block
+    if( bpd->data_ != tmp_data ) { // this is new block
         int result = 0;
         if( 0 != mem_block_concat2( bpd->data_, tmp_data )) {
             bpd->ti_.current_ = tmp_ti.current_;
@@ -203,3 +203,25 @@ size_t bp_get_size( struct bit_pack_data *bpd )
     return mem_block_size(bpd->data_) + ((bpd->ti_.filling_ != 0) ? 1 : 0);
 }
 
+size_t bp_copy_data( struct bit_pack_data *bpd, void *to, size_t maximum )
+{
+    size_t data_size = bp_get_size( bpd );
+    void *data = mem_block_data( bpd->data_ );
+
+    if( (maximum == 0) || (data_size == 0) ) {
+
+        return 0;
+
+    } else if( maximum < data_size ) {
+
+        memcpy( to, data, maximum );
+        return maximum;
+
+    } else {
+
+        memcpy( to, data, data_size );
+        ((char *)to)[data_size] = bpd->ti_.current_;
+        return data_size;
+
+    }
+}

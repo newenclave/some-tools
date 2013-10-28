@@ -6,10 +6,7 @@
 
 int main( )
 {
-
     struct bit_pack_data *bpd = bp_new_bitpack_data( );
-
-    printf( "is en: %d\n", bp_is_space_enough( bpd, 8 * 7 ) );
 
     int i = 0;
     for( i=0; i<10000; ++i )

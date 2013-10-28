@@ -32,6 +32,42 @@ size_t mem_block_fix_size( size_t new_size )
 }
 #endif
 
+
+/// mem_block_new
+/// creating new memory block
+mem_block_data_type *mem_block_new( size_t init_size )
+{
+    mem_block_data_type *new_block =
+            (mem_block_data_type *)malloc(sizeof(mem_block_data_type));
+
+    size_t new_size = mem_block_fix_size(init_size);
+
+    new_block->data_     = (char *)malloc(new_size);
+    if( NULL == new_block->data_ ) {
+        free(new_block);
+        return NULL;
+    }
+
+    new_block->capacity_ = new_size;
+    new_block->used_     = init_size;
+
+    if( 0 != init_size )
+        memset( new_block->data_, 0, init_size );
+
+    return new_block;
+}
+
+/// mem_block_new
+/// free memory
+int mem_block_free(mem_block_data_type *mb)
+{
+    if( NULL == mb ) return 1;
+    free(mb->data_);
+    free(mb);
+    return 1;
+}
+
+
 int mem_block_reserve(struct mem_block_data *mb, size_t new_size)
 {
     static int i=0;
@@ -75,36 +111,6 @@ int mem_block_resize2(struct mem_block_data *mb, size_t new_size, int c)
 int mem_block_resize(struct mem_block_data *mb, size_t new_size)
 {
     return mem_block_resize2( mb, new_size, 0 );
-}
-
-mem_block_data_type *mem_block_new( size_t init_size )
-{
-    mem_block_data_type *new_block =
-            (mem_block_data_type *)malloc(sizeof(mem_block_data_type));
-
-    size_t new_size = mem_block_fix_size(init_size);
-
-    new_block->data_     = (char *)malloc(new_size);
-    if( NULL == new_block->data_ ) {
-        free(new_block);
-        return NULL;
-    }
-
-    new_block->capacity_ = new_size;
-    new_block->used_     = init_size;
-
-    if( 0 != init_size )
-        memset( new_block->data_, 0, init_size );
-
-    return new_block;
-}
-
-int mem_block_free(mem_block_data_type *mb)
-{
-    if( NULL == mb ) return 1;
-    free(mb->data_);
-    free(mb);
-    return 1;
 }
 
 size_t mem_block_size(mem_block_data_type *mb)
@@ -168,7 +174,7 @@ int mem_block_concat2(struct mem_block_data *lmb, const struct mem_block_data *r
 int mem_block_push_back(struct mem_block_data *mb, char c)
 {
     size_t old_capa = mb->capacity_;
-    if( ( mb->used_ ) == old_capa ) {
+    if( ( mb->used_ ) >= old_capa ) {
         size_t new_capa = old_capa + (old_capa >> 1); // * 1.5
         if( 0 == mem_block_reserve( mb, new_capa ) )
             return 0;
