@@ -205,23 +205,23 @@ size_t bp_get_size( struct bit_pack_data *bpd )
 
 size_t bp_copy_data( struct bit_pack_data *bpd, void *to, size_t maximum )
 {
-    size_t data_size = bp_get_size( bpd );
+    size_t data_size = mem_block_size( bpd->data_ );
     void *data = mem_block_data( bpd->data_ );
 
     if( (maximum == 0) || (data_size == 0) ) {
 
         return 0;
 
-    } else if( maximum < data_size ) {
+    } else if( maximum <= data_size ) {
 
         memcpy( to, data, maximum );
         return maximum;
 
     } else {
-
         memcpy( to, data, data_size );
-        ((char *)to)[data_size] = bpd->ti_.current_;
+        if( bpd->ti_.filling_ != 0) {
+            ((char *)to)[++data_size] = bpd->ti_.current_; // add tail byte
+        }
         return data_size;
-
     }
 }
