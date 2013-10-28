@@ -22,7 +22,7 @@ int main( )
     bp_add_bits( bpd, 11, 11 );
     bp_add_bits( bpd, 11, 11 );
     bp_add_bits( bpd, 11, 11 );
-    //bp_add_bits( bpd, 0xff, 7 );
+    bp_add_bits( bpd, 0xff, 7 );
 
     {
         char data[100];

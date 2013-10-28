@@ -203,6 +203,11 @@ size_t bp_get_size( struct bit_pack_data *bpd )
     return mem_block_size(bpd->data_) + ((bpd->ti_.filling_ != 0) ? 1 : 0);
 }
 
+unsigned bp_get_tail_size( struct bit_pack_data *bpd )
+{
+    return bpd->ti_.filling_;
+}
+
 size_t bp_copy_data( struct bit_pack_data *bpd, void *to, size_t maximum )
 {
     size_t data_size = mem_block_size( bpd->data_ );
