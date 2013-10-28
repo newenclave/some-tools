@@ -22,19 +22,27 @@ int main( )
     bp_add_bits( bpd, 11, 11 );
     bp_add_bits( bpd, 11, 11 );
     bp_add_bits( bpd, 11, 11 );
-    bp_add_bits( bpd, 0xff, 7 );
+    bp_add_bits( bpd, 0xff, 6 );
+    bp_add_bits( bpd, 0, 1 );
+    bp_add_bits( bpd, 1, 1 );
+    bp_add_bits( bpd, 0, 1 );
+    bp_add_bits( bpd, 1, 1 );
+    bp_add_bits( bpd, 1, 1 );
+    //bp_add_bits( bpd, 0xBAADFEED, 32 );
 
     {
         char data[100];
-        size_t copied = bp_copy_data( bpd, data, 10 );
+        data[0] = (char)(bp_get_padd(bpd) & 0xff );
+        size_t copied = bp_copy_data( bpd, &data[1], 10 );
         size_t i;
         printf( "copy_size: %u\n",  copied );
-        for( i=0; i!=copied; ++i ) {
+        for( i=0; i != (copied+1); ++i ) {
             char bb[9];
-            printf( "%d: %s\n", i, byte_to_(data[i], bb) );
+            printf( "%d:\t%s\n", i, byte_to_(data[i], bb) );
         }
     }
-    printf( "padd %d\n", bp_get_padd( bpd ) );
+
+    printf( "padd\t%d\n", bp_get_padd( bpd ) );
 
     //bp_dump( bpd );
 
