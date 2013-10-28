@@ -10,7 +10,18 @@
 typedef size_t          value_type;
 typedef unsigned char   container_type;
 
-unsigned char make_mask( unsigned count )
+unsigned char make_char_mask( unsigned count )
+{
+    static const unsigned char masks[CHAR_BIT + 1] = { // 8 + zero
+        0, 1, 3, 7, 15, 31, 63, 127, 255,
+#if CHAR_BIT > 8
+    #error "wow!";
+#endif
+    };
+    return masks[ count % (CHAR_BIT + 1) ];
+}
+
+size_t make_size_mask( unsigned count )
 {
     return (unsigned char)(((1 << count) - 1) & 0xFF);
 }
@@ -34,7 +45,7 @@ unsigned unpack_bits( value_type *val, unsigned count,
         shift = (size_ -= count);
     }
 
-    val_ = (val_ << count) | (( dst >> shift ) & make_mask( count ));
+    val_ = (val_ << count) | (( dst >> shift ) & make_char_mask( count ));
 
     *val  = val_;
     *size = CHAR_BIT - size_;
@@ -64,7 +75,7 @@ unsigned pack_bits( value_type val, unsigned count,
         size_ = new_fill;
     }
 
-    dst_ |= ((val & make_mask( count )) << shift);
+    dst_ |= ((val & make_char_mask( count )) << shift);
 
     *dst  = dst_;
     *size = size_;
