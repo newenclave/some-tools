@@ -145,16 +145,12 @@ int bp_is_space_enough( struct bit_pack_data *bpd, unsigned bit_count )
     return 1;
 }
 
-size_t bp_get_avail_space( struct bit_pack_data *bpd )
-{
-    return mem_block_capacity( bpd->data_ ) - mem_block_size( bpd->data_ );
-}
 
 int bp_is_space( struct bit_pack_data *bpd, unsigned bit_count )
 {
-    size_t avail_bit = bp_get_avail_space( bpd );
+    size_t avail_bit = mem_block_available( bpd->data_ );
     // printf( "avail: %d, %d\n", (avail_bit - 1), bit_count);
-    return ( (avail_bit - 1) > ( bit_count / CHAR_BIT ));
+    return ( avail_bit > ( bit_count / CHAR_BIT ));
 }
 
 int bp_add_bits(struct bit_pack_data *bpd, unsigned value, unsigned bit_count)

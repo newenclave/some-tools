@@ -11,6 +11,7 @@ int mem_block_free(struct mem_block_data *mb);
 
 size_t mem_block_size (struct mem_block_data *mb);
 size_t mem_block_capacity(struct mem_block_data *mb);
+size_t mem_block_available(struct mem_block_data *mb);
 void*  mem_block_data (struct mem_block_data *mb);
 
 int mem_block_resize  (struct mem_block_data *mb, size_t new_size);
