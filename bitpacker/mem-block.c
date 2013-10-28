@@ -34,14 +34,18 @@ size_t mem_block_fix_size( size_t new_size )
 
 int mem_block_reserve(struct mem_block_data *mb, size_t new_size)
 {
+    size_t old_capa = mb->capacity_;
+    size_t new_capa = old_capa + (old_capa >> 1); // * 1.5
 
     if( new_size <= mb->capacity_ ) return 1;
 
     new_size = mem_block_fix_size(new_size);
 
+    if( new_capa > new_size ) new_size = new_capa;
+
     static int i=0;
 
-    printf("reallock %d\n", i++);
+    printf("reallock %d %d\n", i++, new_size);
 
     char *new_data = (char *)realloc(mb->data_, new_size);
     if( NULL == new_data ) {
