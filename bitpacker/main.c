@@ -14,6 +14,16 @@ char * byte_to_( unsigned char b, char *storage )
     return storage;
 }
 
+void size_dump_( size_t b )
+{
+    char d[9];
+    char *data = (char *)(&b);
+    int i;
+    for( i=0; i<sizeof( size_t ); ++i ) {
+        printf( " %s", byte_to_( data[i], d ) );
+    }
+    printf( "\n" );
+}
 
 int main( )
 {
@@ -47,10 +57,18 @@ int main( )
 
     //bp_dump( bpd );
 
+    struct bit_unpack_data *bup = bit_unpack_new2( "1234567890-", 11 );
 
+    while( !bu_eod( bup ) ) {
+        size_t val = 0;
+        unsigned got = bu_get_bits( bup, &val, 9 );
+        printf( "got: %u, next: %X  ", got, val );
+        size_dump_( val );
+    }
 
     printf("total: %d\n", bp_get_size( bpd ));
     bit_pack_free( bpd );
+    bit_unpack_free( bup );
 
     return 0;
 }

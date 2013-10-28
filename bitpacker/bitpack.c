@@ -293,7 +293,7 @@ int bu_change_size( struct bit_unpack_data *bud, size_t new_len )
     return 1;
 }
 
-unsigned bu_eod( struct bit_unpack_data *bud )
+int bu_eod( struct bit_unpack_data *bud )
 {
     return (bud->hi_.current_ == bud->end_);
 }

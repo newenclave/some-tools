@@ -23,6 +23,6 @@ void bit_unpack_free( struct bit_unpack_data *bud );
 
 int      bu_change_size( struct bit_unpack_data *bud, size_t new_len );
 unsigned bu_get_bits( struct bit_unpack_data *bud, size_t *val, unsigned len );
-unsigned bu_eod( struct bit_unpack_data *bud );
+int      bu_eod( struct bit_unpack_data *bud );
 
 #endif
