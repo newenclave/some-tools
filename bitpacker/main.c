@@ -6,22 +6,23 @@
 
 int main( )
 {
-    struct mem_block_data *mb = mem_block_new( 0 );
 
-    int i=0;
-    for( ;i<100; ++i) {
-        mem_block_push_back( mb, '1' );
-        printf( "capa: %u, s %u \n", mem_block_capacity(mb), mem_block_size(mb) );
-    }
-    mem_block_push_back( mb, 0 );
-    mem_block_resize( mb, 4 );
+//    struct mem_block_data *mb = mem_block_new( 0 );
 
-    printf( "capa: %u, s %u\n", mem_block_capacity(mb), mem_block_size(mb), mem_block_data(mb) );
-    printf( " data %s\n", (char *)mem_block_data( mb ) );
+//    int i=0;
+//    for( ;i<100; ++i) {
+//        mem_block_push_back( mb, '1' );
+//        printf( "capa: %u, s %u \n", mem_block_capacity(mb), mem_block_size(mb) );
+//    }
+//    mem_block_push_back( mb, 0 );
+//    mem_block_resize( mb, 4 );
 
-    mem_block_free( mb );
+//    printf( "capa: %u, s %u\n", mem_block_capacity(mb), mem_block_size(mb), mem_block_data(mb) );
+//    printf( " data %s\n", (char *)mem_block_data( mb ) );
 
-    return 1;
+//    mem_block_free( mb );
+
+//    return 1;
     struct bit_pack_data *bpd = bp_new_bitpack_data( );
 
     printf( "is en: %d\n", bp_is_space_enough( bpd, 8 * 7 ) );

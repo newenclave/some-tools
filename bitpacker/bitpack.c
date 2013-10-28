@@ -88,45 +88,29 @@ struct tail_info {
 };
 
 struct bit_pack_data {
-    container_type   *data_;
-    value_type        current_len_;
-    value_type        current_pos_;
-    struct tail_info  ti_;
+    struct mem_block_data  *data_;
+    struct tail_info        ti_;
 };
 
 typedef struct bit_pack_data  bit_pack_data_type;
 
 void bp_dump( struct bit_pack_data *bpd )
 {
-    printf( "Current size: %d\n", bpd->current_len_ );
-    printf( "Current pos: %d\n", bpd->current_pos_ );
-    printf( "Current fil: %d\n", bpd->ti_.filling_ );
+    printf( "Current size: %d\n", mem_block_capacity(bpd->data_) );
+    printf( "Current pos: %d\n",  mem_block_size(bpd->data_) );
+    printf( "Current fil: %d\n",  bpd->ti_.filling_ );
     printf( "Current dump: \n");
     char b2b[9] = {0};
     do {
         value_type i;
-        for( i=0; i <= bpd->current_pos_;  ++i ) {
-            printf( " %s", byte_to_bits(bpd->data_[i], b2b));
+        const char *data = (const char *)mem_block_data(bpd->data_);
+        for( i=0; i <= mem_block_size(bpd->data_);  ++i ) {
+            printf( " %s", byte_to_bits(data[i], b2b));
         }
     } while(0);
     printf( "\n");
 }
 
-
-int bp_realloc_data( bit_pack_data_type *bpd )
-{
-    value_type new_len = bpd->current_len_ * 1.5;
-    container_type *new_data = (container_type *)
-            malloc( new_len * sizeof( container_type ) );
-
-    if( NULL == new_data ) return 0;
-
-    memcpy( new_data, bpd->data_, bpd->current_len_ );
-    free( bpd->data_ );
-    bpd->data_ = new_data;
-    bpd->current_len_ = new_len;
-    return 1;
-}
 
 bit_pack_data_type *bp_new_bitpack_data( )
 {
@@ -135,11 +119,7 @@ bit_pack_data_type *bp_new_bitpack_data( )
 
     if( NULL == new_data ) return NULL;
 
-    new_data->current_len_ = 8;
-    new_data->current_pos_ = 0;
-
-    new_data->data_ = (container_type *)
-            malloc(new_data->current_len_ * sizeof( container_type ));
+    new_data->data_ = mem_block_new(0);
 
     if( NULL == new_data->data_ ) {
         free( new_data );
@@ -155,39 +135,56 @@ bit_pack_data_type *bp_new_bitpack_data( )
 void bp_delete_bitpack_data( bit_pack_data_type *bpd )
 {
     if( NULL == bpd ) return;
-    free( bpd->data_ );
+    mem_block_free(bpd->data_);
     free( bpd );
 }
 
 int bp_is_space_enough( struct bit_pack_data *bpd, unsigned bit_count )
 {
-    return (bpd->current_pos_ + (bit_count / CHAR_BIT) + 1) <= bpd->current_len_;
-}
-
-int bp_push( struct bit_pack_data *bpd )
-{
-	if( bpd->current_pos_ + 1 >= bpd->current_len_ ) {
-		if( !bp_realloc_data( bpd ) ) return 0;
-	}
-	bpd->data_[bpd->current_pos_++] = bpd->ti_.current_;
-	bpd->ti_.current_ = 0;
-	bpd->ti_.filling_ = 0;
-	return 1;
+    return 1;
 }
 
 int bp_add_bits(struct bit_pack_data *bpd, unsigned value, unsigned bit_count)
 {
     unsigned tail = bit_count;
+
+    struct tail_info tmp_ti;
+    tmp_ti.current_ = bpd->ti_.current_;
+    tmp_ti.filling_ = bpd->ti_.filling_;
+    struct mem_block_data *tmp_data = NULL;
+    if( bit_count + tmp_ti.filling_ > CHAR_BIT ) {
+        tmp_data = mem_block_new(0);
+        if( NULL == tmp_data ) {
+            return 0;
+        }
+        mem_block_reserve( tmp_data, 8 );
+    }
     do {
         tail = pack_bits( value, tail,
-                          &bpd->ti_.current_, &bpd->ti_.filling_ );
-        if( tail != 0 ) {
-        	if(!bp_push( bpd )) return 0;
+                          &tmp_ti.current_, &tmp_ti.filling_ );
+        if( tail ) {
+            if( 0 == mem_block_push_back(tmp_data, tmp_ti.current_)) {
+                mem_block_free( tmp_data );
+                return 0;
+            }
+            tmp_ti.current_ = 0;
+            tmp_ti.filling_ = 0;
         }
     } while ( tail );
 
-    if( bpd->ti_.filling_ == CHAR_BIT )
-        return bp_push( bpd );
+    if( NULL != tmp_data ) {
+        int result = 0;
+        if( 0 != mem_block_concat2( bpd->data_, tmp_data )) {
+            bpd->ti_.current_ = tmp_ti.current_;
+            bpd->ti_.filling_ = tmp_ti.filling_;
+            result = 1;
+        }
+        mem_block_free( tmp_data );
+        return result;
+    } else {
+        bpd->ti_.current_ = tmp_ti.current_;
+        bpd->ti_.filling_ = tmp_ti.filling_;
+    }
 
     return 1;
 }
@@ -199,6 +196,6 @@ unsigned bp_get_padd( struct bit_pack_data *bpd )
 
 size_t bp_get_size( struct bit_pack_data *bpd )
 {
-    return bpd->current_pos_ + ((bpd->ti_.filling_ != 0) ? 1 : 0);
+    return mem_block_size(bpd->data_) + ((bpd->ti_.filling_ != 0) ? 1 : 0);
 }
 
