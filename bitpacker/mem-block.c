@@ -57,7 +57,7 @@ mem_block_data_type *mem_block_new( size_t init_size )
     return new_block;
 }
 
-/// mem_block_new
+/// mem_block_free
 /// free memory
 int mem_block_free(mem_block_data_type *mb)
 {
