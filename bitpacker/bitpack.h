@@ -15,6 +15,4 @@ unsigned bp_get_tail_size( struct bit_pack_data *bpd );
 size_t bp_get_size(  struct bit_pack_data *bpd );
 size_t bp_copy_data( struct bit_pack_data *bpd, void *to, size_t maximum );
 
-int bp_is_space_enough( struct bit_pack_data *bpd, unsigned bit_count );
-
 #endif

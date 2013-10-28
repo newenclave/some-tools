@@ -111,11 +111,6 @@ void bp_delete_bitpack_data( bit_pack_data_type *bpd )
     free( bpd );
 }
 
-int bp_is_space_enough( struct bit_pack_data *bpd, unsigned bit_count )
-{
-    return 1;
-}
-
 int bp_add_bits(struct bit_pack_data *bpd, unsigned value, unsigned bit_count)
 {
     struct tail_info tmp_ti;
