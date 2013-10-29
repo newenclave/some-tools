@@ -4,6 +4,9 @@
 #include "bitpacker/bitpack.h"
 #include "memory/mem-block.h"
 #include "memory/mem-array.h"
+#include "lists/list-work.h"
+#include "inc/struct-fields.h"
+
 
 char * byte_to_( unsigned char b, char *storage )
 {
@@ -26,8 +29,44 @@ void size_dump_( size_t b )
     printf( "\n" );
 }
 
+struct test_list {
+    struct linked_list_header list;
+    int data;
+};
+
+void list_printer( struct linked_list_header *lst )
+{
+    struct test_list *s = field_entry( lst, struct test_list, list );
+    printf( "data is: %u\n", s->data );
+}
+
 int main( )
 {
+
+    struct test_list tl1 = {{0}, 0};
+    struct test_list tl2 = {{0}, 0};
+    struct test_list tl3 = {{0}, 0};
+    struct test_list tl4 = {{0}, 0};
+
+    struct test_list *tp = &tl1;
+
+    tl1.data = 1;
+    tl2.data = 2;
+    tl3.data = 3;
+    tl4.data = 4;
+
+    linked_list_insert( &tl1, &tl2, list );
+    linked_list_insert( &tl3, &tl4, list );
+
+    linked_list_insert_list( &tl1, &tl3, list );
+
+    linked_list_foreach( tp, list_printer );
+
+    printf( "last data %u\n", field_entry( linked_list_last(&tl1.list), struct test_list, list )->data );
+
+    printf( "Len: %u\n", linked_list_length( &tl1.list )  );
+
+    return 0;
 
     struct mem_array_data *mar = mem_array_create2( 10, int );
 

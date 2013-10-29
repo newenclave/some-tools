@@ -7,7 +7,8 @@ SOURCES += \
     main.c \
     bitpacker/bitpack.c \
     memory/mem-block.c \
-    memory/mem-array.c
+    memory/mem-array.c \
+    lists/list-work.c
 
 HEADERS += \
     bitpacker/bitpack.h \
