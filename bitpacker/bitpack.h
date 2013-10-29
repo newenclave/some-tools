@@ -1,5 +1,5 @@
-#if !defined(_BITPACK_20131026_H_)
-#define _BITPACK_20131026_H_
+#if !defined(BITPACK_20131026_H)
+#define BITPACK_20131026_H
 
 #include <stdlib.h>
 

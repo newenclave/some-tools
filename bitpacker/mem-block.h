@@ -1,5 +1,5 @@
-#if !defined(_MEM_BLOCK_20131026_H_)
-#define _MEM_BLOCK_20131026_H_
+#if !defined(MEM_BLOCK_20131026_H)
+#define MEM_BLOCK_20131026_H
 
 #include <stdlib.h>
 
