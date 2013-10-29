@@ -13,6 +13,7 @@ HEADERS += \
     bitpacker/bitpack.h \
     memory/mem-block.h \
     inc/struct-fields.h \
-    memory/mem-array.h
+    memory/mem-array.h \
+    lists/list-work.h
 
 

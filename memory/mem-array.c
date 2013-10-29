@@ -10,7 +10,8 @@ struct mem_array_data {
 struct mem_array_data *mem_array_new2( size_t count, size_t element_size )
 {
     struct mem_array_data *new_data =
-            (struct mem_array_data *)malloc( sizeof( struct mem_array_data ) );
+        (struct mem_array_data *)calloc( 1, sizeof( struct mem_array_data ) );
+
     if( NULL == new_data )
         return NULL;
     new_data->mem_ = mem_block_new( count * element_size );
