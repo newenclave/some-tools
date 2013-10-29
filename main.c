@@ -1,8 +1,8 @@
 
 #include <stdio.h>
 
-#include "bitpack.h"
-#include "mem-block.h"
+#include "bitpacker/bitpack.h"
+#include "memory/mem-block.h"
 
 char * byte_to_( unsigned char b, char *storage )
 {

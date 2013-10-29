@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 #include "bitpack.h"
-#include "mem-block.h"
+#include "../memory/mem-block.h"
 
 typedef size_t          value_type;
 typedef unsigned char   container_type;
@@ -310,7 +310,7 @@ int bu_change_size( struct bit_unpack_data *bud, size_t new_len )
 
 int bu_eod( struct bit_unpack_data *bud )
 {
-    return (bud->hi_.current_ == bud->end_);
+    return (bud->hi_.current_ >= bud->end_);
 }
 
 
