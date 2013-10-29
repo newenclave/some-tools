@@ -34,10 +34,11 @@ struct test_list {
     int data;
 };
 
-void list_printer( struct linked_list_header *lst )
+int list_printer( struct linked_list_header *lst )
 {
     struct test_list *s = field_entry( lst, struct test_list, list );
     printf( "data is: %u\n", s->data );
+    return 1;
 }
 
 int main( )
