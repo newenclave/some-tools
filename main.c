@@ -39,12 +39,12 @@ int main( )
     bp_add_bits( bpd, 0, 1 );
     bp_add_bits( bpd, 1, 1 );
     bp_add_bits( bpd, 1, 32 );
-    //bp_add_bits( bpd, 0xBAADFEED, 32 );
+    bp_add_bits( bpd, 0xBAADFEED, 32 );
 
     {
         char data[100];
         data[0] = (char)(bp_get_padd(bpd) & 0xff );
-        size_t copied = bp_copy_data( bpd, &data[1], 10 );
+        size_t copied = bp_copy_data( bpd, &data[1], bp_get_size( bpd ) );
         size_t i;
         printf( "copy_size: %u\n",  copied );
         for( i=0; i != (copied+1); ++i ) {
