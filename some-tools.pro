@@ -6,11 +6,11 @@ CONFIG -= qt
 SOURCES += \
     main.c \
     bitpacker/bitpack.c \
-    bitpacker/mem-block.c
+    memory/mem-block.c
 
 HEADERS += \
     bitpacker/bitpack.h \
-    bitpacker/mem-block.h \
+    memory/mem-block.h \
     inc/struct-fields.h
 
 
