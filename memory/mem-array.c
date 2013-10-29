@@ -70,3 +70,7 @@ int mem_array_reserve( struct mem_array_data *mar, size_t count )
     return mem_block_reserve( mar->mem_, count * mar->element_size_ );
 }
 
+size_t mem_array_available (struct mem_array_data *mar)
+{
+    return (mem_block_available( mar->mem_ ) / mar->element_size_);
+}
