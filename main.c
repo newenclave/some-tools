@@ -3,6 +3,7 @@
 
 #include "bitpacker/bitpack.h"
 #include "memory/mem-block.h"
+#include "memory/mem-array.h"
 
 char * byte_to_( unsigned char b, char *storage )
 {
@@ -28,6 +29,21 @@ void size_dump_( size_t b )
 int main( )
 {
 
+    struct mem_array_data *mar = mem_array_create2( 10, int );
+
+    int i = 0;
+    for( ;i!=10; ++i ) {
+        *((int *)mem_array_at( mar, i )) = i;
+    }
+
+    for( i=0;i!=10; ++i ) {
+        int j = *((int *)mem_array_at( mar, i )) ;
+        printf( "%d : %d \n", i, j );
+    }
+
+    mem_array_free( mar );
+
+    return 0;
     struct bit_pack_data *bpd = bit_pack_new( );
 
     bp_add_bits( bpd, 11, 11 );

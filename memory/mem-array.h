@@ -17,5 +17,10 @@ int    mem_array_resize( struct mem_array_data *mar, size_t new_count );
 int    mem_array_reserve( struct mem_array_data *mar, size_t count );
 size_t mem_array_available (struct mem_array_data *mar);
 
+#define mem_array_create( type ) \
+       mem_array_new( sizeof( type ) )
+
+#define mem_array_create2( count, type ) \
+       mem_array_new2( count, sizeof( type ) )
 
 #endif // MEMARRAY_H

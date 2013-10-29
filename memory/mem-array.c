@@ -28,7 +28,6 @@ struct mem_array_data *mem_array_new( size_t element_size )
     return mem_array_new2( 0, element_size );
 }
 
-
 int mem_array_free( struct mem_array_data *mar )
 {
     if( NULL != mar ) {
@@ -37,7 +36,6 @@ int mem_array_free( struct mem_array_data *mar )
     }
     return 1;
 }
-
 
 void  *mem_array_at( struct mem_array_data *mar, size_t element_index )
 {
