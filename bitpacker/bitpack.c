@@ -182,7 +182,8 @@ int bp_add_bits(struct bit_pack_data *bpd, size_t value, unsigned bit_count)
 
         if( tmp_ti.filling_ == CHAR_BIT ) {
             if( 0 == mem_block_push_back(tmp_data, tmp_ti.current_)) {
-                mem_block_free( tmp_data );
+                if( tmp_data != bpd->data_ )
+                    mem_block_free( tmp_data );
                 return 0;
             }
             tmp_ti.current_ = 0;
