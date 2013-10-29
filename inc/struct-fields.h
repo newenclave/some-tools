@@ -1,4 +1,4 @@
-#ifndef STRUCTFIELDS_20131029_H
+#if !defined(STRUCTFIELDS_20131029_H)
 #define STRUCTFIELDS_20131029_H
 
 /// some nice well-known macros
