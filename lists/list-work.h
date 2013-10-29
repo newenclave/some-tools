@@ -8,8 +8,8 @@ struct linked_list_header {
     struct linked_list_header *flink;
 };
 
-typedef int (*linked_list_foreach_func)(struct linked_list_header *f );
-typedef int (*linked_list_foreach2_func)(struct linked_list_header *f, void *d);
+typedef int (*linked_list_map_func)(struct linked_list_header *f );
+typedef int (*linked_list_map2_func)(struct linked_list_header *f, void *d);
 
 struct linked_list_header *linked_list_last(struct linked_list_header *lst);
 size_t linked_list_length(const struct linked_list_header *lst);
@@ -23,10 +23,10 @@ size_t linked_list_length(const struct linked_list_header *lst);
     (src)->list_field.flink = &(oth)->list_field
 
 
-size_t linked_list_foreach( struct linked_list_header *lst,
-                            linked_list_foreach_func func );
+size_t linked_list_map( struct linked_list_header *lst,
+                        linked_list_map_func func );
 
-size_t linked_list_foreach2( struct linked_list_header *lst,
-                             linked_list_foreach2_func func, void *user_data );
+size_t linked_list_map2( struct linked_list_header *lst,
+                         linked_list_map2_func func, void *user_data );
 
 #endif // LISTWORK_H

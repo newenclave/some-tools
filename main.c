@@ -61,7 +61,7 @@ int main( )
 
     linked_list_insert_list( &tl1, &tl3, list );
 
-    linked_list_foreach( tp, list_printer );
+    linked_list_map( tp, list_printer );
 
     printf( "last data %u\n", field_entry( linked_list_last(&tl1.list), struct test_list, list )->data );
 

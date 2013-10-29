@@ -15,8 +15,8 @@ size_t linked_list_length(const struct linked_list_header *lst)
 }
 
 
-size_t linked_list_foreach( struct linked_list_header *lst,
-                          linked_list_foreach_func func )
+size_t linked_list_map( struct linked_list_header *lst,
+                        linked_list_map_func func )
 {
     size_t complete = 0;
     while( lst ) {
@@ -31,8 +31,8 @@ size_t linked_list_foreach( struct linked_list_header *lst,
     return complete;
 }
 
-size_t linked_list_foreach2( struct linked_list_header *lst,
-                             linked_list_foreach2_func func, void *user_data )
+size_t linked_list_map2( struct linked_list_header *lst,
+                         linked_list_map2_func func, void *user_data )
 {
     size_t complete = 0;
     while( lst ) {
