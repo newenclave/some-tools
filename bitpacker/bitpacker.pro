@@ -10,5 +10,6 @@ SOURCES += \
 
 HEADERS += \
     bitpack.h \
-    mem-block.h
+    mem-block.h \
+    struct-fields.h
 
