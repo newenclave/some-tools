@@ -15,7 +15,7 @@ struct linked_list_header *linked_list_last(struct linked_list_header *lst);
 size_t linked_list_length(const struct linked_list_header *lst);
 
 #define linked_list_insert( element, new_ptr, list_field )                \
-    (new_ptr)->list_field.flink = (element)->list_field.flink,            \
+    (new_ptr)->list_field.flink =  (element)->list_field.flink,           \
     (element)->list_field.flink = &(new_ptr)->list_field
 
 #define linked_list_insert_list( src, oth, list_field )                   \
