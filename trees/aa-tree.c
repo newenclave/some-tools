@@ -180,6 +180,12 @@ int aa_tree_insert( struct aa_tree *aat, void *data )
     return result;
 }
 
+int aa_tree_delete( struct aa_tree *aat, void *data )
+{
+    return -1;
+}
+
+
 size_t aa_tree_size( struct aa_tree *aat )
 {
     return aat->count_;
