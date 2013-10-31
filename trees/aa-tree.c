@@ -11,9 +11,9 @@ int aa_tree_data_less_default( const void *l, const void *r )
 struct aa_tree_node {
     struct aa_tree_node    *left_;
     struct aa_tree_node    *right_;
-    union node_data {
-        void               *ptr_;
-        int                 number_;
+    union  node_data {
+        void    *ptr_;
+        int      number_;
     }                       data_;
     size_t                  level_;
 };
@@ -182,11 +182,79 @@ int aa_tree_insert( struct aa_tree *aat, void *data )
     return (result != -1);
 }
 
-int aa_tree_delete( struct aa_tree *aat, void *data )
+
+int aa_tree_node_right_chk(struct aa_tree_node *t)
 {
-    return -1;
+    if( t && t->right_ ) {
+        return t->right_->level_ < (t->level_ - 1);
+    } else {
+        return 0;
+    }
 }
 
+int aa_tree_node_left_chk(struct aa_tree_node *t)
+{
+    if( t && t->left_ ) {
+        return t->left_->level_ < (t->level_ - 1);
+    } else {
+        return 0;
+    }
+}
+
+int aa_tree_node_delete( aa_tree_node_ptr *top,
+                         void *data,
+                         aa_tree_data_less less,
+                         aa_tree_data_free free_fun)
+{
+    int result = 0;
+    struct aa_tree_node *t = *top;
+    if( t ) {
+
+        int equal = 0;
+
+        if( less( data, t->data_.ptr_ ) ) {
+            result = aa_tree_node_delete( &t->left_, data, less, free_fun );
+        } else if( less( t->data_.ptr_, data ) ) {
+            result = aa_tree_node_delete( &t->right_, data, less, free_fun );
+        } else {
+            equal = 1;
+        }
+
+        if( equal ) {
+            struct aa_tree_node *tmp = t;
+            t = t->right_;
+            free_fun(tmp->data_.ptr_);
+            free( tmp );
+            result = 1;
+        } else if( aa_tree_node_left_chk(t) || aa_tree_node_right_chk(t) ) {
+
+            --t->level_;
+            if( t->right_->level_ > t->level_ )
+                t->right_->level_ = t->level_;
+
+            t = skew( t );
+            t->right_ = skew( t->right_ );
+            t->right_->right_ = skew( t->right_->right_ );
+
+            t = split( t );
+            t->right_ = split( t->right_ );
+
+        }
+        *top = t;
+    }
+    return result;
+}
+
+int aa_tree_delete2( struct aa_tree *aat,
+                     void *data, aa_tree_data_free free_fun )
+{
+    return aa_tree_node_delete( aat->root_, data, aat->less_, free_fun );
+}
+
+int aa_tree_delete( struct aa_tree *aat, void *data )
+{
+    return aa_tree_node_delete( aat->root_, data, aat->less_, free );
+}
 
 size_t aa_tree_size( struct aa_tree *aat )
 {
