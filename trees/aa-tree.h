@@ -15,8 +15,8 @@ void            aa_tree_free2( struct aa_tree *aat, aa_tree_data_free free_fun);
 
 int             aa_tree_insert( struct aa_tree *aat, void *data );
 int             aa_tree_delete( struct aa_tree *aat, void *data );
+void           *aa_tree_find( struct aa_tree *aat, void *data );
 
 size_t          aa_tree_size( struct aa_tree *aat );
-void           *aa_tree_find( struct aa_tree *aat, void *data );
 
 #endif
