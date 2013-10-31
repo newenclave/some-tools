@@ -201,6 +201,15 @@ int aa_tree_node_left_chk(struct aa_tree_node *t)
     }
 }
 
+#define aa_tree_node_check_levels(t)                            \
+    ( t &&                                                      \
+        (                                                       \
+         (t->right_ && (t->right_->level_ < (t->level_-1)))     \
+            ||                                                  \
+         (t->left_  && (t->left_->level_  < (t->level_-1)))     \
+        )                                                       \
+    )
+
 int aa_tree_node_delete( aa_tree_node_ptr *top,
                          void *data,
                          aa_tree_data_less less,
@@ -226,18 +235,18 @@ int aa_tree_node_delete( aa_tree_node_ptr *top,
             free_fun(tmp->data_.ptr_);
             free( tmp );
             result = 1;
-        } else if( aa_tree_node_left_chk(t) || aa_tree_node_right_chk(t) ) {
+        } else if( aa_tree_node_check_levels( t ) ) {
 
             --t->level_;
             if( t->right_->level_ > t->level_ )
                 t->right_->level_ = t->level_;
 
-            t = skew( t );
-            t->right_ = skew( t->right_ );
-            t->right_->right_ = skew( t->right_->right_ );
+            t                 = skew ( t );
+            t->right_         = skew ( t->right_ );
+            t->right_->right_ = skew ( t->right_->right_ );
 
-            t = split( t );
-            t->right_ = split( t->right_ );
+            t                 = split( t );
+            t->right_         = split( t->right_ );
 
         }
         *top = t;
@@ -248,12 +257,12 @@ int aa_tree_node_delete( aa_tree_node_ptr *top,
 int aa_tree_delete2( struct aa_tree *aat,
                      void *data, aa_tree_data_free free_fun )
 {
-    return aa_tree_node_delete( aat->root_, data, aat->less_, free_fun );
+    return aa_tree_node_delete( &aat->root_, data, aat->less_, free_fun );
 }
 
 int aa_tree_delete( struct aa_tree *aat, void *data )
 {
-    return aa_tree_node_delete( aat->root_, data, aat->less_, free );
+    return aa_tree_node_delete( &aat->root_, data, aat->less_, free );
 }
 
 size_t aa_tree_size( struct aa_tree *aat )
