@@ -74,13 +74,12 @@ struct mem_block_data *mem_block_new_copy( const struct mem_block_data *oth )
 
 /// mem_block_free
 /// free memory
-int mem_block_free(mem_block_data_type *mb)
+void mem_block_free(mem_block_data_type *mb)
 {
     if( NULL != mb ) {
         free(mb->data_);
         free(mb);
     }
-    return 1;
 }
 
 

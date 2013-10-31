@@ -8,13 +8,15 @@ SOURCES += \
     bitpacker/bitpack.c \
     memory/mem-block.c \
     memory/mem-array.c \
-    lists/list-work.c
+    lists/list-work.c \
+    trees/aa-tree.c
 
 HEADERS += \
     bitpacker/bitpack.h \
     memory/mem-block.h \
     inc/struct-fields.h \
     memory/mem-array.h \
-    lists/list-work.h
+    lists/list-work.h \
+    trees/aa-tree.h
 
 
