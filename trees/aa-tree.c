@@ -156,7 +156,7 @@ int aa_tree_node_insert( aa_tree_node_ptr *top,
             *top = top_node;
             result = 1;
         } else {
-            result = 0;
+            result = -1;
         }
     } else {
         if( less(data, top_node->data_.ptr_) ) {
@@ -165,10 +165,11 @@ int aa_tree_node_insert( aa_tree_node_ptr *top,
             result = aa_tree_node_insert( &top_node->right_, data, less );
         } else {
             top_node->data_.ptr_ = data;
-            result = 1;
         }
 
-        *top = split(skew(top_node));
+        if( result == 1 ) {
+            *top = split(skew(top_node));
+        }
     }
     return result;
 }
@@ -178,7 +179,7 @@ int aa_tree_insert( struct aa_tree *aat, void *data )
 {
     int result = aa_tree_node_insert( &aat->root_, data, aat->less_ );
     aat->count_ += (result == 1);
-    return result;
+    return (result != -1);
 }
 
 int aa_tree_delete( struct aa_tree *aat, void *data )
