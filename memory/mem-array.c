@@ -12,15 +12,14 @@ struct mem_array_data *mem_array_new2( size_t count, size_t element_size )
     struct mem_array_data *new_data =
         (struct mem_array_data *)calloc( 1, sizeof( struct mem_array_data ) );
 
-    if( NULL == new_data )
-        return NULL;
-    new_data->mem_ = mem_block_new( count * element_size );
-
-    if( NULL == new_data->mem_ ) {
-        free( new_data );
-        return NULL;
+    if( new_data ) {
+        new_data->mem_ = mem_block_new( count * element_size );
+        if( NULL == new_data->mem_ ) {
+            free( new_data );
+            return NULL;
+        }
+        new_data->element_size_ = element_size;
     }
-    new_data->element_size_ = element_size;
     return new_data;
 }
 
