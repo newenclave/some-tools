@@ -156,7 +156,7 @@ int aa_tree_node_insert( aa_tree_node_ptr *top,
             *top = top_node;
             result = 1;
         } else {
-            result = -1;
+            result = 0;
         }
     } else {
         if( less(data, top_node->data_.ptr_) ) {
@@ -164,7 +164,8 @@ int aa_tree_node_insert( aa_tree_node_ptr *top,
         } else if( less(top_node->data_.ptr_, data) ) {
             result = aa_tree_node_insert( &top_node->right_, data, less );
         } else {
-            result = 0;
+            top_node->data_.ptr_ = data;
+            result = 1;
         }
 
         *top = split(skew(top_node));
