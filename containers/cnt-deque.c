@@ -4,7 +4,7 @@
 
 
 struct cnt_deque {
-    struct linked_list_header list;
+    struct linked_list_head list_;
 };
 
 
