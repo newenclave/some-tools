@@ -36,4 +36,6 @@ size_t          aa_tree_walk   ( struct aa_tree *aat,
                                  aa_tree_walker wlker,
                                  enum aa_tree_directions direction );
 
+void            aa_tree_non_rec_walk( struct aa_tree *aat );
+
 #endif

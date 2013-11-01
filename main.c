@@ -2,8 +2,8 @@
 #include <stdio.h>
 
 #include "bitpacker/bitpack.h"
-#include "memory/mem-block.h"
-#include "memory/mem-array.h"
+#include "memory/mm-block.h"
+#include "memory/mm-array.h"
 #include "lists/list-work.h"
 #include "inc/struct-fields.h"
 #include "trees/aa-tree.h"
@@ -79,19 +79,19 @@ int main( )
     aa_tree_free( aat );
     return 0;
 
-    struct mem_array_data *mar = mem_array_create2( 10, int );
+    struct mm_array_data *mar = mm_array_create2( 10, int );
 
     int i = 0;
     for( ;i!=10; ++i ) {
-        *((int *)mem_array_at( mar, i )) = i;
+        *((int *)mm_array_at( mar, i )) = i;
     }
 
     for( i=0;i!=10; ++i ) {
-        int j = *((int *)mem_array_at( mar, i )) ;
+        int j = *((int *)mm_array_at( mar, i )) ;
         printf( "%d : %d \n", i, j );
     }
 
-    mem_array_free( mar );
+    mm_array_free( mar );
 
     return 0;
     struct bit_pack_data *bpd = bit_pack_new( );

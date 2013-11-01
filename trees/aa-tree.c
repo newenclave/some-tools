@@ -423,3 +423,8 @@ void aa_tree_set_free( struct aa_tree *aat,
     aat->free_ = free_call;
 }
 
+void aa_tree_non_rec_walk( struct aa_tree *aat )
+{
+
+}
+

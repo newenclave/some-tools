@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 #include "bitpack.h"
-#include "../memory/mem-block.h"
+#include "../memory/mm-block.h"
 
 typedef size_t          value_type;
 typedef unsigned char   container_type;
@@ -16,7 +16,7 @@ struct tail_info {
 };
 
 struct bit_pack_data {
-    struct mem_block_data  *data_;
+    struct mm_block_data  *data_;
     struct tail_info        ti_;
 };
 
@@ -138,7 +138,7 @@ bit_pack_data_type *bit_pack_new( )
 
     if( NULL == new_data ) return NULL;
 
-    new_data->data_ = mem_block_new(0);
+    new_data->data_ = mm_block_new(0);
 
     if( NULL == new_data->data_ ) {
         free( new_data );
@@ -154,7 +154,7 @@ bit_pack_data_type *bit_pack_new( )
 void bit_pack_free( bit_pack_data_type *bpd )
 {
     if( NULL != bpd ) {
-        mem_block_free(bpd->data_);
+        mm_block_free(bpd->data_);
         free( bpd );
     }
 }
@@ -162,18 +162,18 @@ void bit_pack_free( bit_pack_data_type *bpd )
 int bp_add_bits(struct bit_pack_data *bpd, size_t value, unsigned bit_count)
 {
     struct tail_info tmp_ti;
-    struct mem_block_data *tmp_data = bpd->data_;
+    struct mm_block_data *tmp_data = bpd->data_;
     unsigned tail = bit_count;
 
     tmp_ti.current_ = bpd->ti_.current_;
     tmp_ti.filling_ = bpd->ti_.filling_;
 
-    if( mem_block_available( bpd->data_ ) <= (bit_count / CHAR_BIT)) {
-        tmp_data = mem_block_new(0);
+    if( mm_block_available( bpd->data_ ) <= (bit_count / CHAR_BIT)) {
+        tmp_data = mm_block_new(0);
         if( NULL == tmp_data ) {
             return 0;
         }
-        mem_block_reserve( tmp_data, 8 );
+        mm_block_reserve( tmp_data, 8 );
     }
 
     do {
@@ -181,9 +181,9 @@ int bp_add_bits(struct bit_pack_data *bpd, size_t value, unsigned bit_count)
                          &tmp_ti.current_, &tmp_ti.filling_ );
 
         if( tmp_ti.filling_ == CHAR_BIT ) {
-            if( 0 == mem_block_push_back(tmp_data, tmp_ti.current_)) {
+            if( 0 == mm_block_push_back(tmp_data, tmp_ti.current_)) {
                 if( tmp_data != bpd->data_ )
-                    mem_block_free( tmp_data );
+                    mm_block_free( tmp_data );
                 return 0;
             }
             tmp_ti.current_ = 0;
@@ -193,12 +193,12 @@ int bp_add_bits(struct bit_pack_data *bpd, size_t value, unsigned bit_count)
 
     if( bpd->data_ != tmp_data ) { // this is new block
         int result = 0;
-        if( 0 != mem_block_concat2( bpd->data_, tmp_data )) {
+        if( 0 != mm_block_concat2( bpd->data_, tmp_data )) {
             bpd->ti_.current_ = tmp_ti.current_;
             bpd->ti_.filling_ = tmp_ti.filling_;
             result = 1;
         }
-        mem_block_free( tmp_data );
+        mm_block_free( tmp_data );
         return result;
     } else {
         bpd->ti_.current_ = tmp_ti.current_;
@@ -215,7 +215,7 @@ unsigned bp_get_padd( struct bit_pack_data *bpd )
 
 size_t bp_get_size( struct bit_pack_data *bpd )
 {
-    return mem_block_size(bpd->data_) + ((bpd->ti_.filling_ != 0) ? 1 : 0);
+    return mm_block_size(bpd->data_) + ((bpd->ti_.filling_ != 0) ? 1 : 0);
 }
 
 unsigned bp_get_tail_size( struct bit_pack_data *bpd )
@@ -225,8 +225,8 @@ unsigned bp_get_tail_size( struct bit_pack_data *bpd )
 
 size_t bp_copy_data( struct bit_pack_data *bpd, void *to, size_t maximum )
 {
-    size_t data_size = mem_block_size( bpd->data_ );
-    void *data = mem_block_data( bpd->data_ );
+    size_t data_size = mm_block_size( bpd->data_ );
+    void *data = mm_block_data( bpd->data_ );
 
     if( (maximum == 0) || (data_size == 0) ) {
 

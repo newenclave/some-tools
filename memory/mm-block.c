@@ -2,28 +2,28 @@
 #include <memory.h>
 #include <stdio.h>
 
-#include "mem-block.h"
+#include "mm-block.h"
 
-struct mem_block_data {
+struct mm_block_data {
     char    *data_;
     size_t   capacity_;
     size_t   used_;
 };
 
-typedef struct mem_block_data mem_block_data_type;
+typedef struct mm_block_data mm_block_data_type;
 
 static const size_t void_ptr_size      = sizeof(void *);
 static const size_t void_ptr_size_mask = sizeof(void *) - 1;
 
-#define mem_block_def_inc(size) (size + (size >> 1))
+#define mm_block_def_inc(size) (size + (size >> 1))
 
-#define mem_block_fix_size( new_size )                              \
+#define mm_block_fix_size( new_size )                              \
     ( new_size <= void_ptr_size)                                    \
       ? void_ptr_size                                               \
       : (new_size + ((new_size-void_ptr_size) & void_ptr_size_mask))
 
 #if 0
-size_t mem_block_fix_size( size_t new_size )
+size_t mm_block_fix_size( size_t new_size )
 {
     static const size_t void_ptr_size = sizeof(void *);
 
@@ -35,14 +35,14 @@ size_t mem_block_fix_size( size_t new_size )
 #endif
 
 
-/// mem_block_new
+/// mm_block_new
 /// creating new memory block
-mem_block_data_type *mem_block_new( size_t init_size )
+mm_block_data_type *mm_block_new( size_t init_size )
 {
-    mem_block_data_type *new_block =
-            (mem_block_data_type *)malloc(sizeof(mem_block_data_type));
+    mm_block_data_type *new_block =
+            (mm_block_data_type *)malloc(sizeof(mm_block_data_type));
 
-    size_t new_size = mem_block_fix_size(init_size);
+    size_t new_size = mm_block_fix_size(init_size);
 
     new_block->data_     = (char *)malloc(new_size);
     if( NULL == new_block->data_ ) {
@@ -59,10 +59,10 @@ mem_block_data_type *mem_block_new( size_t init_size )
     return new_block;
 }
 
-struct mem_block_data *mem_block_new_copy( const struct mem_block_data *oth )
+struct mm_block_data *mm_block_new_copy( const struct mm_block_data *oth )
 {
     size_t new_size = oth->used_;
-    struct mem_block_data *new_block = mem_block_new(new_size);
+    struct mm_block_data *new_block = mm_block_new(new_size);
     if( NULL == new_block ) {
         return NULL;
     }
@@ -72,9 +72,9 @@ struct mem_block_data *mem_block_new_copy( const struct mem_block_data *oth )
 }
 
 
-/// mem_block_free
+/// mm_block_free
 /// free memory
-void mem_block_free(mem_block_data_type *mb)
+void mm_block_free(mm_block_data_type *mb)
 {
     if( NULL != mb ) {
         free(mb->data_);
@@ -83,7 +83,7 @@ void mem_block_free(mem_block_data_type *mb)
 }
 
 
-int mem_block_reserve(struct mem_block_data *mb, size_t new_size)
+int mm_block_reserve(struct mm_block_data *mb, size_t new_size)
 {
     static int i=0;
 
@@ -93,8 +93,8 @@ int mem_block_reserve(struct mem_block_data *mb, size_t new_size)
     if( new_size <= mb->capacity_ ) return 1;
 
     old_capa = mb->capacity_;
-    new_capa = mem_block_fix_size(mem_block_def_inc(old_capa));
-    new_size = mem_block_fix_size(new_size);
+    new_capa = mm_block_fix_size(mm_block_def_inc(old_capa));
+    new_size = mm_block_fix_size(new_size);
 
     if( new_capa > new_size ) new_size = new_capa;
 
@@ -111,11 +111,11 @@ int mem_block_reserve(struct mem_block_data *mb, size_t new_size)
     return 1;
 }
 
-int mem_block_resize2(struct mem_block_data *mb, size_t new_size, int c)
+int mm_block_resize2(struct mm_block_data *mb, size_t new_size, int c)
 {
     size_t old_used = mb->used_;
 
-    if( 0 == mem_block_reserve( mb, new_size ) )
+    if( 0 == mm_block_reserve( mb, new_size ) )
         return 0;
 
     mb->used_ = new_size;
@@ -125,39 +125,39 @@ int mem_block_resize2(struct mem_block_data *mb, size_t new_size, int c)
     return 1;
 }
 
-int mem_block_resize(struct mem_block_data *mb, size_t new_size)
+int mm_block_resize(struct mm_block_data *mb, size_t new_size)
 {
-    return mem_block_resize2( mb, new_size, 0 );
+    return mm_block_resize2( mb, new_size, 0 );
 }
 
-size_t mem_block_size(mem_block_data_type *mb)
+size_t mm_block_size(mm_block_data_type *mb)
 {
     return mb->used_;
 }
 
-size_t mem_block_capacity(struct mem_block_data *mb)
+size_t mm_block_capacity(struct mm_block_data *mb)
 {
     return mb->capacity_;
 }
 
-size_t mem_block_available(struct mem_block_data *mb)
+size_t mm_block_available(struct mm_block_data *mb)
 {
     return (mb->capacity_ - mb->used_);
 }
 
-void*  mem_block_data(struct mem_block_data *mb)
+void*  mm_block_data(struct mm_block_data *mb)
 {
     return mb->data_;
 }
 
 
-int mem_block_clear(struct mem_block_data *mb)
+int mm_block_clear(struct mm_block_data *mb)
 {
     mb->used_ = 0;
     return 1;
 }
 
-int mem_block_swap(struct mem_block_data *lmb, struct mem_block_data *rmb)
+int mm_block_swap(struct mm_block_data *lmb, struct mm_block_data *rmb)
 {
     char   *tmp_data = lmb->data_;
     size_t  tmp_used = lmb->used_;
@@ -175,25 +175,25 @@ int mem_block_swap(struct mem_block_data *lmb, struct mem_block_data *rmb)
     return 1;
 }
 
-int mem_block_concat(struct mem_block_data *lmb, const void *data, size_t len)
+int mm_block_concat(struct mm_block_data *lmb, const void *data, size_t len)
 {
     size_t old_used = lmb->used_;
-    if( 0 == mem_block_resize2(lmb, old_used + len, 0) ) return 0;
+    if( 0 == mm_block_resize2(lmb, old_used + len, 0) ) return 0;
     memcpy( &lmb->data_[old_used], data, len );
     return 1;
 }
 
-int mem_block_concat2(struct mem_block_data *lmb, const struct mem_block_data *rmb)
+int mm_block_concat2(struct mm_block_data *lmb, const struct mm_block_data *rmb)
 {
-    return mem_block_concat(lmb, rmb->data_, rmb->used_);
+    return mm_block_concat(lmb, rmb->data_, rmb->used_);
 }
 
-int mem_block_push_back(struct mem_block_data *mb, char c)
+int mm_block_push_back(struct mm_block_data *mb, char c)
 {
     size_t old_capa = mb->capacity_;
     if( ( mb->used_ ) >= old_capa ) {
-        size_t new_capa = mem_block_def_inc( old_capa );
-        if( 0 == mem_block_reserve( mb, new_capa ) )
+        size_t new_capa = mm_block_def_inc( old_capa );
+        if( 0 == mm_block_reserve( mb, new_capa ) )
             return 0;
     }
     mb->data_[mb->used_++] = c;
