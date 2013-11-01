@@ -17,7 +17,7 @@ static const size_t void_ptr_size_mask = sizeof(void *) - 1;
 
 #define mm_block_def_inc(size) (size + (size >> 1))
 
-#define mm_block_fix_size( new_size )                              \
+#define mm_block_fix_size( new_size )                               \
     ( new_size <= void_ptr_size)                                    \
       ? void_ptr_size                                               \
       : (new_size + ((new_size-void_ptr_size) & void_ptr_size_mask))
@@ -163,14 +163,13 @@ int mm_block_swap(struct mm_block_data *lmb, struct mm_block_data *rmb)
     size_t  tmp_used = lmb->used_;
     size_t  tmp_capa = lmb->capacity_;
 
-    lmb->data_ = rmb->data_ ;
-    rmb->data_ = tmp_data;
+    lmb->data_      = rmb->data_ ;
+    lmb->used_      = rmb->used_ ;
+    lmb->capacity_  = rmb->capacity_;
 
-    lmb->used_ = rmb->used_ ;
-    rmb->used_ = tmp_used;
-
-    lmb->capacity_ = rmb->capacity_;
-    rmb->capacity_ = tmp_capa;
+    rmb->data_      = tmp_data;
+    rmb->used_      = tmp_used;
+    rmb->capacity_  = tmp_capa;
 
     return 1;
 }
