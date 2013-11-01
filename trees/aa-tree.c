@@ -270,11 +270,11 @@ int aa_tree_node_delete( aa_tree_node_ptr *top,
                 tmp->left_  = t->left_;
                 tmp->right_ = t->right_;
                 tmp->level_ = t->level_;
-
-                free_fun( t->data_.ptr_ );
-                free( t );
-                result = 1;
             }
+
+            free_fun( t->data_.ptr_ );
+            free( t );
+            result = 1;
             t = tmp;
         }
         *top = t;

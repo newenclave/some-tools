@@ -59,7 +59,8 @@ int main( )
     struct aa_tree *aat = aa_tree_new( );
     int k;
 
-    for( k=0; k<15; ++k )
+    //for( k=0; k<14; ++k )
+    for( k=15; k>=0; --k )
         aa_tree_insert( aat, k );
 
     aa_tree_delete2( aat, 7, aa_tree_fake_del );
