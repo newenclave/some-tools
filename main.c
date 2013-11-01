@@ -1,5 +1,6 @@
 
 #include <stdio.h>
+#include <string.h>
 
 #include "bitpacker/bitpack.h"
 #include "memory/mm-block.h"
@@ -7,7 +8,6 @@
 #include "lists/linked-list.h"
 #include "inc/struct-fields.h"
 #include "trees/aa-tree.h"
-
 
 char * byte_to_( unsigned char b, char *storage )
 {
@@ -60,8 +60,9 @@ int main( )
     struct mm_array_data *arr = mm_array_create3( 0, size_t, fake_freeing );
 
     size_t i;
-    for( i=0; i<100; ++i )
+    for( i=0; i<100; ++i ) {
         mm_array_push_back3( arr, &i, copy_element );
+    }
 
     mm_array_resize( arr, 10 );
 
