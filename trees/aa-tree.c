@@ -425,6 +425,6 @@ void aa_tree_set_free( struct aa_tree *aat,
 
 void aa_tree_non_rec_walk( struct aa_tree *aat )
 {
-
+    // not implemented yet
 }
 
