@@ -3,10 +3,18 @@
 
 #include <stdlib.h>
 
+struct aa_tree;
+
 typedef int  (* aa_tree_data_less)( const void *l, const void *r );
 typedef void (* aa_tree_data_free)( void *data );
+typedef int  (* aa_tree_walker)( void *data );
 
-struct aa_tree;
+enum aa_tree_directions {
+     AA_WALK_ORDER     = 0
+    ,AA_WALK_REVERSE    = 1
+    ,AA_WALK_ROOT_LEFT  = 2
+    ,AA_WALK_ROOT_RIGHT = 3
+};
 
 struct aa_tree *aa_tree_new  ( );
 struct aa_tree *aa_tree_new2 ( aa_tree_data_less less );
@@ -19,5 +27,9 @@ size_t          aa_tree_size( struct aa_tree *aat );
 int             aa_tree_delete( struct aa_tree *aat, void *data );
 int             aa_tree_delete2( struct aa_tree *aat,
                                  void *data, aa_tree_data_free free_fun );
+
+size_t          aa_tree_walk( struct aa_tree *aat,
+                              aa_tree_walker wlker,
+                              enum aa_tree_directions direction );
 
 #endif

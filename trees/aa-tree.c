@@ -183,24 +183,6 @@ int aa_tree_insert( struct aa_tree *aat, void *data )
 }
 
 
-int aa_tree_node_right_chk(struct aa_tree_node *t)
-{
-    if( t && t->right_ ) {
-        return t->right_->level_ < (t->level_ - 1);
-    } else {
-        return 0;
-    }
-}
-
-int aa_tree_node_left_chk(struct aa_tree_node *t)
-{
-    if( t && t->left_ ) {
-        return t->left_->level_ < (t->level_ - 1);
-    } else {
-        return 0;
-    }
-}
-
 #define aa_tree_node_check_levels(t)                            \
     ( t &&                                                      \
         (                                                       \
@@ -209,6 +191,55 @@ int aa_tree_node_left_chk(struct aa_tree_node *t)
          (t->left_  && (t->left_->level_  < (t->level_-1)))     \
         )                                                       \
     )
+
+
+struct aa_tree_node *aa_tree_node_rebalance( struct aa_tree_node *t )
+{
+    if( aa_tree_node_check_levels( t ) ) {
+
+        --t->level_;
+        if( t->right_->level_ > t->level_ )
+            t->right_->level_ = t->level_;
+
+        t                 = skew ( t );
+        t->right_         = skew ( t->right_ );
+        t->right_->right_ = skew ( t->right_->right_ );
+
+        t                 = split( t );
+        t->right_         = split( t->right_ );
+
+    }
+    return t;
+}
+
+struct aa_tree_node *aa_tree_node_take_left( struct aa_tree_node * cur,
+                                aa_tree_node_ptr *bup)
+{
+    if (NULL == cur->left_ ) {
+        *bup = cur;
+        return cur->right_;
+    }
+
+    cur->left_ = aa_tree_node_take_left(cur->left_, bup);
+
+    return aa_tree_node_rebalance(cur);
+}
+
+struct aa_tree_node *aa_tree_node_del( struct aa_tree_node *deleted )
+{
+    struct aa_tree_node *res_node = NULL;
+    if( NULL == deleted->left_ )
+        res_node = deleted->right_;
+    else if( NULL == deleted->right_ )
+        res_node = deleted->left_;
+    else {
+        deleted->right_  = aa_tree_node_take_left( deleted->right_, &res_node );
+        res_node->left_  = deleted->left_;
+        res_node->right_ = deleted->right_;
+        res_node->level_ = deleted->level_;
+    }
+    return res_node;
+}
 
 int aa_tree_node_delete( aa_tree_node_ptr *top,
                          void *data,
@@ -219,35 +250,32 @@ int aa_tree_node_delete( aa_tree_node_ptr *top,
     struct aa_tree_node *t = *top;
     if( t ) {
 
-        int equal = 0;
-
         if( less( data, t->data_.ptr_ ) ) {
             result = aa_tree_node_delete( &t->left_, data, less, free_fun );
         } else if( less( t->data_.ptr_, data ) ) {
             result = aa_tree_node_delete( &t->right_, data, less, free_fun );
         } else {
-            equal = 1;
-        }
 
-        if( equal ) {
-            struct aa_tree_node *tmp = t;
-            t = t->right_;
-            free_fun(tmp->data_.ptr_);
-            free( tmp );
-            result = 1;
-        } else if( aa_tree_node_check_levels( t ) ) {
+            /// aa_tree_node_del
 
-            --t->level_;
-            if( t->right_->level_ > t->level_ )
-                t->right_->level_ = t->level_;
+            struct aa_tree_node *tmp = NULL;
+            if( NULL == t->left_ ) {
+                tmp = t->right_;
+            } else if( NULL == t->right_ ) {
+                tmp = t->left_;
+            } else {
 
-            t                 = skew ( t );
-            t->right_         = skew ( t->right_ );
-            t->right_->right_ = skew ( t->right_->right_ );
+                t->right_ = aa_tree_node_take_left( t->right_, &tmp );
 
-            t                 = split( t );
-            t->right_         = split( t->right_ );
+                tmp->left_  = t->left_;
+                tmp->right_ = t->right_;
+                tmp->level_ = t->level_;
 
+                free_fun( t->data_.ptr_ );
+                free( t );
+                result = 1;
+            }
+            t = tmp;
         }
         *top = t;
     }
@@ -291,5 +319,92 @@ void aa_tree_free2( struct aa_tree *aat, aa_tree_data_free free_fun)
 void aa_tree_free( struct aa_tree *aat )
 {
     aa_tree_free2(aat, free);
+}
+
+int aa_tree_walk_ordered( struct aa_tree_node *t,
+                         aa_tree_walker wlker, size_t *accum )
+{
+    if( t ) {
+        if( 0 == aa_tree_walk_ordered( t->left_, wlker, accum ) ) return 0;
+        ++(*accum);
+        if( 0 == wlker( t->data_.ptr_ ) ) return 0;
+        ++(*accum);
+        if( 0 == aa_tree_walk_ordered( t->right_, wlker, accum ) ) return 0;
+        ++(*accum);
+    }
+    return 1;
+}
+
+int aa_tree_walk_reverse( struct aa_tree_node *t,
+                         aa_tree_walker wlker, size_t *accum )
+{
+    if( t ) {
+        if( 0 == aa_tree_walk_reverse( t->right_, wlker, accum ) ) return 0;
+        ++(*accum);
+        if( 0 == wlker( t->data_.ptr_ ) ) return 0;
+        ++(*accum);
+        if( 0 == aa_tree_walk_reverse( t->left_, wlker, accum ) ) return 0;
+        ++(*accum);
+    }
+    return 1;
+}
+
+int aa_tree_walk_root_left( struct aa_tree_node *t,
+                            aa_tree_walker wlker, size_t *accum )
+{
+    if( t ) {
+        if( 0 == wlker( t->data_.ptr_ ) ) return 0;
+        ++(*accum);
+        if( 0 == aa_tree_walk_root_left( t->left_, wlker, accum ) ) return 0;
+        ++(*accum);
+        if( 0 == aa_tree_walk_root_left( t->right_, wlker, accum ) ) return 0;
+        ++(*accum);
+    }
+    return 1;
+
+}
+
+int aa_tree_walk_root_right( struct aa_tree_node *t,
+                             aa_tree_walker wlker, size_t *accum )
+{
+    if( t ) {
+        if( 0 == wlker( t->data_.ptr_ ) ) return 0;
+        ++(*accum);
+        if( 0 == aa_tree_walk_root_right( t->right_, wlker, accum ) ) return 0;
+        ++(*accum);
+        if( 0 == aa_tree_walk_root_right( t->left_, wlker, accum ) ) return 0;
+        ++(*accum);
+    }
+    return 1;
+
+}
+
+void aa_tree_node_walk( struct aa_tree_node *t,
+                       aa_tree_walker wlker,
+                       enum aa_tree_directions direct,
+                       size_t *accum )
+{
+    switch( direct ) {
+    case AA_WALK_ORDER:
+        aa_tree_walk_ordered( t, wlker, accum );
+        break;
+    case  AA_WALK_REVERSE:
+        aa_tree_walk_reverse( t, wlker, accum );
+        break;
+    case  AA_WALK_ROOT_LEFT:
+        aa_tree_walk_root_left( t, wlker, accum );
+        break;
+    case  AA_WALK_ROOT_RIGHT:
+        aa_tree_walk_root_right( t, wlker, accum );
+        break;
+    }
+}
+
+size_t aa_tree_walk( struct aa_tree *aat, aa_tree_walker wlker,
+                     enum aa_tree_directions direct )
+{
+    size_t res = 0;
+    aa_tree_node_walk( aat->root_, wlker, direct, &res );
+    return res;
 }
 

@@ -6,6 +6,7 @@
 #include "memory/mem-array.h"
 #include "lists/list-work.h"
 #include "inc/struct-fields.h"
+#include "trees/aa-tree.h"
 
 
 char * byte_to_( unsigned char b, char *storage )
@@ -41,32 +42,38 @@ int list_printer( struct linked_list_header *lst )
     return 1;
 }
 
+int tree_walker( void *d )
+{
+    printf( " %u ", (unsigned)d );
+    return 1;
+}
+
+void aa_tree_fake_del( void *d )
+{
+    printf( "del %d\n", (int)( d ) );
+}
+
 int main( )
 {
 
-    struct test_list tl1 = {{0}, 0};
-    struct test_list tl2 = {{0}, 0};
-    struct test_list tl3 = {{0}, 0};
-    struct test_list tl4 = {{0}, 0};
+    struct aa_tree *aat = aa_tree_new( );
+    int k;
 
-    struct test_list *tp = &tl1;
+    for( k=0; k<15; ++k )
+        aa_tree_insert( aat, k );
 
-    tl1.data = 1;
-    tl2.data = 2;
-    tl3.data = 3;
-    tl4.data = 4;
+    aa_tree_delete2( aat, 7, aa_tree_fake_del );
 
-    linked_list_insert( &tl1, &tl2, list );
-    linked_list_insert( &tl3, &tl4, list );
+    aa_tree_walk( aat, tree_walker, AA_WALK_ORDER );
+    printf( "\n" );
+    aa_tree_walk( aat, tree_walker, AA_WALK_REVERSE );
+    printf( "\n" );
+    aa_tree_walk( aat, tree_walker, AA_WALK_ROOT_LEFT );
+    printf( "\n" );
+    aa_tree_walk( aat, tree_walker, AA_WALK_ROOT_RIGHT );
+    printf( "\n" );
 
-    linked_list_insert_list( &tl1, &tl3, list );
-
-    linked_list_map( tp, list_printer );
-
-    printf( "last data %u\n", field_entry( linked_list_last(&tl1.list), struct test_list, list )->data );
-
-    printf( "Len: %u\n", linked_list_length( &tl1.list )  );
-
+    aa_tree_free2( aat, aa_tree_fake_del );
     return 0;
 
     struct mem_array_data *mar = mem_array_create2( 10, int );
