@@ -44,7 +44,7 @@ int list_printer( struct linked_list_header *lst )
 
 int tree_walker( void *d )
 {
-    printf( " %u ", (unsigned)d );
+    printf( " %u ", (size_t)d );
     return 1;
 }
 
@@ -58,6 +58,8 @@ int main( )
 
     struct aa_tree *aat = aa_tree_new( );
     int k;
+
+    aa_tree_set_free( aat, aa_tree_fake_del );
 
     //for( k=0; k<14; ++k )
     for( k=15; k>=0; --k )
@@ -74,7 +76,7 @@ int main( )
     aa_tree_walk( aat, tree_walker, AA_WALK_ROOT_RIGHT );
     printf( "\n" );
 
-    aa_tree_free2( aat, aa_tree_fake_del );
+    aa_tree_free( aat );
     return 0;
 
     struct mem_array_data *mar = mem_array_create2( 10, int );

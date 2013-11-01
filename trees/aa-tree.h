@@ -5,7 +5,7 @@
 
 struct aa_tree;
 
-typedef int  (* aa_tree_data_less)( const void *l, const void *r );
+typedef int  (* aa_tree_data_compare)( const void *l, const void *r );
 typedef void (* aa_tree_data_free)( void *data );
 typedef int  (* aa_tree_walker)( void *data );
 
@@ -17,7 +17,7 @@ enum aa_tree_directions {
 };
 
 struct aa_tree *aa_tree_new  ( );
-struct aa_tree *aa_tree_new2 ( aa_tree_data_less less );
+struct aa_tree *aa_tree_new2 ( aa_tree_data_compare compare );
 
 void            aa_tree_set_free( struct aa_tree *aat,
                                   aa_tree_data_free free_call );
