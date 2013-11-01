@@ -3,11 +3,22 @@
 
 #include <stdlib.h>
 
+typedef void (*mm_array_element_free)( void *element );
+
 struct mm_array_data;
 
 struct mm_array_data *mm_array_new( size_t element_size );
 struct mm_array_data *mm_array_new2( size_t count, size_t element_size );
-void                   mm_array_free( struct mm_array_data *mar );
+struct mm_array_data *mm_array_new3( size_t count, size_t element_size,
+                                     mm_array_element_free free_call);
+
+void                  mm_array_free( struct mm_array_data *mar );
+void                  mm_array_free2( struct mm_array_data *mar,
+                                      mm_array_element_free free_call );
+
+void                  mm_array_set_free( struct mm_array_data *mar,
+                                         mm_array_element_free free_call );
+
 
 void  *mm_array_at( struct mm_array_data *mar, size_t element_index );
 size_t mm_array_size( struct mm_array_data *mar );
@@ -16,6 +27,8 @@ int    mm_array_push_back( struct mm_array_data *mar, void *element );
 int    mm_array_push_back2( struct mm_array_data *mar, void *element, size_t count );
 
 int    mm_array_resize( struct mm_array_data *mar, size_t new_count );
+int    mm_array_resize2( struct mm_array_data *mar, size_t new_count,
+                         mm_array_element_free free_call);
 
 int    mm_array_reserve( struct mm_array_data *mar, size_t count );
 size_t mm_array_available (struct mm_array_data *mar);

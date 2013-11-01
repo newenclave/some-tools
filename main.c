@@ -4,7 +4,7 @@
 #include "bitpacker/bitpack.h"
 #include "memory/mm-block.h"
 #include "memory/mm-array.h"
-#include "lists/list-work.h"
+#include "lists/linked-list.h"
 #include "inc/struct-fields.h"
 #include "trees/aa-tree.h"
 
@@ -30,18 +30,6 @@ void size_dump_( size_t b )
     printf( "\n" );
 }
 
-struct test_list {
-    struct linked_list_header list;
-    int data;
-};
-
-int list_printer( struct linked_list_header *lst )
-{
-    struct test_list *s = field_entry( lst, struct test_list, list );
-    printf( "data is: %u\n", s->data );
-    return 1;
-}
-
 int tree_walker( void *d )
 {
     printf( " %u ", (size_t)d );
@@ -53,9 +41,25 @@ void aa_tree_fake_del( void *d )
     printf( "del %d\n", (int)( d ) );
 }
 
+void fake_freeing( size_t *elem )
+{
+    printf( "free element: %u\n", *elem );
+}
+
 int main( )
 {
 
+    struct mm_array_data *arr = mm_array_new3( 0, sizeof( size_t ), fake_freeing );\
+
+    size_t i;
+    for( i=0; i<10; ++i )
+        mm_array_push_back( arr, &i );
+
+    mm_array_resize( arr, 1);
+
+    mm_array_free( arr );
+
+    return 0;
     struct aa_tree *aat = aa_tree_new( );
     int k;
 
@@ -81,7 +85,7 @@ int main( )
 
     struct mm_array_data *mar = mm_array_create2( 10, int );
 
-    int i = 0;
+    i = 0;
     for( ;i!=10; ++i ) {
         *((int *)mm_array_at( mar, i )) = i;
     }
