@@ -22,6 +22,7 @@ typedef struct aa_tree_node *aa_tree_node_ptr;
 
 struct aa_tree {
     aa_tree_data_less    less_;
+    aa_tree_data_free    free_;
     struct aa_tree_node *root_;
     size_t               count_;
 };
@@ -272,7 +273,8 @@ int aa_tree_node_delete( aa_tree_node_ptr *top,
                 tmp->level_ = t->level_;
             }
 
-            free_fun( t->data_.ptr_ );
+            if( free_fun )
+                free_fun( t->data_.ptr_ );
             free( t );
             result = 1;
             t = tmp;
@@ -285,12 +287,13 @@ int aa_tree_node_delete( aa_tree_node_ptr *top,
 int aa_tree_delete2( struct aa_tree *aat,
                      void *data, aa_tree_data_free free_fun )
 {
-    return aa_tree_node_delete( &aat->root_, data, aat->less_, free_fun );
+    return aa_tree_node_delete( &aat->root_, data, aat->less_,
+                                (free_fun ? free_fun : aat->free_));
 }
 
 int aa_tree_delete( struct aa_tree *aat, void *data )
 {
-    return aa_tree_node_delete( &aat->root_, data, aat->less_, free );
+    return aa_tree_node_delete( &aat->root_, data, aat->less_, aat->free_ );
 }
 
 size_t aa_tree_size( struct aa_tree *aat )
@@ -302,7 +305,8 @@ void aa_tree_free_node( struct aa_tree_node *t, aa_tree_data_free free_fun )
 {
     if( t ) {
         aa_tree_free_node( t->left_, free_fun );
-        free_fun( t->data_.ptr_ );
+        if( free_fun )
+            free_fun( t->data_.ptr_ );
         aa_tree_free_node( t->right_, free_fun );
         free( t );
     }
@@ -311,7 +315,7 @@ void aa_tree_free_node( struct aa_tree_node *t, aa_tree_data_free free_fun )
 void aa_tree_free2( struct aa_tree *aat, aa_tree_data_free free_fun)
 {
     if( aat ) {
-        aa_tree_free_node( aat->root_, free_fun );
+        aa_tree_free_node( aat->root_, (free_fun ? free_fun : aat->free_) );
         free( aat );
     }
 }
@@ -406,5 +410,11 @@ size_t aa_tree_walk( struct aa_tree *aat, aa_tree_walker wlker,
     size_t res = 0;
     aa_tree_node_walk( aat->root_, wlker, direct, &res );
     return res;
+}
+
+void aa_tree_set_free( struct aa_tree *aat,
+                       aa_tree_data_free free_call )
+{
+    aat->free_ = free_call;
 }
 
