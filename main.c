@@ -56,7 +56,7 @@ void copy_element( size_t *new_place,
 
 int main( )
 {
-
+    goto AATREE;
     struct mm_array_data *arr = mm_array_create3( 0, size_t, fake_freeing );
 
     size_t i;
@@ -69,6 +69,10 @@ int main( )
     mm_array_free( arr );
 
     return 0;
+
+AATREE:
+
+    printf( "" );
     struct aa_tree *aat = aa_tree_new( );
     int k;
 

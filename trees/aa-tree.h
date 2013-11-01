@@ -7,6 +7,7 @@ struct aa_tree;
 
 typedef int  (* aa_tree_data_compare)( const void *l, const void *r );
 typedef void (* aa_tree_data_free)( void *data );
+
 typedef int  (* aa_tree_walker)( void *data );
 
 enum aa_tree_directions {
@@ -28,6 +29,9 @@ void            aa_tree_free ( struct aa_tree *aat );
 void            aa_tree_free2( struct aa_tree *aat, aa_tree_data_free free_fun);
 
 int             aa_tree_insert ( struct aa_tree *aat, void *data );
+int             aa_tree_insert_update ( struct aa_tree *aat, void *data );
+int             aa_tree_update ( struct aa_tree *aat, void *data );
+
 void           *aa_tree_find   ( struct aa_tree *aat, void *data );
 size_t          aa_tree_size   ( struct aa_tree *aat );
 int             aa_tree_delete ( struct aa_tree *aat, void *data );

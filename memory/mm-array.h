@@ -3,10 +3,10 @@
 
 #include <stdlib.h>
 
-typedef void (*mm_array_element_free)( void *element );
-typedef void (*mm_array_element_copy)( void *new_place,
-                                       void *element,
-                                       size_t element_size );
+typedef void (* mm_array_element_free)( void *element );
+typedef void (* mm_array_element_copy)( void *new_place,
+                                        void *element,
+                                        size_t element_size );
 
 struct mm_array_data;
 
