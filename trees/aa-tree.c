@@ -27,19 +27,27 @@ struct aa_tree {
     unsigned             count_;
 };
 
-struct aa_tree *aa_tree_new2( aa_tree_data_compare compare )
+struct aa_tree *aa_tree_new3 ( aa_tree_data_compare compare,
+                               aa_tree_data_free free_call)
 {
     struct aa_tree *new_tree =
             (struct aa_tree *)calloc( 1, sizeof(struct aa_tree) );
     if( new_tree ) {
-        new_tree->cmp_ = compare;
+        new_tree->cmp_  = compare;
+        new_tree->free_ = free_call;
     }
     return new_tree;
 }
 
+
+struct aa_tree *aa_tree_new2( aa_tree_data_compare compare )
+{
+    return aa_tree_new3( compare, NULL );
+}
+
 struct aa_tree *aa_tree_new( )
 {
-    return aa_tree_new2( aa_tree_data_compare_default );
+    return aa_tree_new3( aa_tree_data_compare_default, NULL );
 }
 
 struct aa_tree_node *skew( struct aa_tree_node *t )
@@ -149,7 +157,9 @@ void *aa_tree_find( struct aa_tree *aat, void *data )
 
 
 int aa_tree_node_insert( aa_tree_node_ptr *top,
-                         void *data, aa_tree_data_compare compare )
+                         void *data,
+                         aa_tree_data_compare compare,
+                         aa_tree_data_free    free_call)
 {
     struct aa_tree_node *top_node = *top;
     int result = 0;
@@ -165,11 +175,15 @@ int aa_tree_node_insert( aa_tree_node_ptr *top,
         int cmp_res = compare( data, top_node->data_.ptr_ );
 
         if( -1 ==  cmp_res ) {
-            result = aa_tree_node_insert( &top_node->left_,  data, compare );
+            result = aa_tree_node_insert( &top_node->left_,
+                                          data, compare, free_call);
 
         } else if( 1 == cmp_res ) {
-            result = aa_tree_node_insert( &top_node->right_, data, compare );
+            result = aa_tree_node_insert( &top_node->right_,
+                                          data, compare, free_call );
         } else {
+            if( free_call )
+                free_call( top_node->data_.ptr_ );
             top_node->data_.ptr_ = data;
         }
 
@@ -183,7 +197,8 @@ int aa_tree_node_insert( aa_tree_node_ptr *top,
 
 int aa_tree_insert( struct aa_tree *aat, void *data )
 {
-    int result = aa_tree_node_insert( &aat->root_, data, aat->cmp_ );
+    int result =
+            aa_tree_node_insert( &aat->root_, data, aat->cmp_, aat->free_ );
     aat->count_ += (result == 1);
     return (result != -1);
 }

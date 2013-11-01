@@ -18,6 +18,8 @@ enum aa_tree_directions {
 
 struct aa_tree *aa_tree_new  ( );
 struct aa_tree *aa_tree_new2 ( aa_tree_data_compare compare );
+struct aa_tree *aa_tree_new3 ( aa_tree_data_compare compare,
+                               aa_tree_data_free free_call);
 
 void            aa_tree_set_free( struct aa_tree *aat,
                                   aa_tree_data_free free_call );
