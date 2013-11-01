@@ -1,5 +1,5 @@
-#if !defined(MEMARRAY_20132910_H)
-#define MEMARRAY_20132910_H
+#if !defined(MM_ARRAY_20132910_H)
+#define MM_ARRAY_20132910_H
 
 #include <stdlib.h>
 
@@ -23,4 +23,4 @@ size_t mm_array_available (struct mm_array_data *mar);
 #define mm_array_create( type ) mm_array_new( sizeof( type ) )
 #define mm_array_create2( count, type ) mm_array_new2(count, sizeof(type))
 
-#endif // MEMARRAY_H
+#endif // MM_ARRAY_20132910_H

@@ -3,8 +3,8 @@
 #include "mm-block.h"
 
 struct mm_array_data {
-    struct mm_block_data *mem_;
-    size_t                 element_size_;
+    struct mm_block_data *mmblock_;
+    size_t                element_size_;
 };
 
 struct mm_array_data *mm_array_new2( size_t count, size_t element_size )
@@ -13,8 +13,8 @@ struct mm_array_data *mm_array_new2( size_t count, size_t element_size )
         (struct mm_array_data *)calloc( 1, sizeof( struct mm_array_data ) );
 
     if( new_data ) {
-        new_data->mem_ = mm_block_new( count * element_size );
-        if( NULL == new_data->mem_ ) {
+        new_data->mmblock_ = mm_block_new( count * element_size );
+        if( NULL == new_data->mmblock_ ) {
             free( new_data );
             return NULL;
         }
@@ -31,25 +31,25 @@ struct mm_array_data *mm_array_new( size_t element_size )
 void mm_array_free( struct mm_array_data *mar )
 {
     if( NULL != mar ) {
-        mm_block_free( mar->mem_ );
+        mm_block_free( mar->mmblock_ );
         free( mar );
     }
 }
 
 void  *mm_array_at( struct mm_array_data *mar, size_t element_index )
 {
-    char *d = mm_block_data( mar->mem_ );
+    char *d = mm_block_data( mar->mmblock_ );
     return (d + (element_index * mar->element_size_));
 }
 
 size_t mm_array_size( struct mm_array_data *mar )
 {
-    return (mm_block_size( mar->mem_ ) / mar->element_size_);
+    return (mm_block_size( mar->mmblock_ ) / mar->element_size_);
 }
 
 int mm_array_push_back2( struct mm_array_data *mar, void *element, size_t count )
 {
-    return mm_block_concat( mar->mem_, element, count * mar->element_size_ );
+    return mm_block_concat( mar->mmblock_, element, count * mar->element_size_ );
 }
 
 int mm_array_push_back( struct mm_array_data *mar, void *element )
@@ -59,15 +59,15 @@ int mm_array_push_back( struct mm_array_data *mar, void *element )
 
 int mm_array_resize( struct mm_array_data *mar, size_t new_count )
 {
-    return mm_block_resize2( mar->mem_, new_count * mar->element_size_, 0 );
+    return mm_block_resize2( mar->mmblock_, new_count * mar->element_size_, 0 );
 }
 
 int mm_array_reserve( struct mm_array_data *mar, size_t count )
 {
-    return mm_block_reserve( mar->mem_, count * mar->element_size_ );
+    return mm_block_reserve( mar->mmblock_, count * mar->element_size_ );
 }
 
 size_t mm_array_available (struct mm_array_data *mar)
 {
-    return (mm_block_available( mar->mem_ ) / mar->element_size_);
+    return (mm_block_available( mar->mmblock_ ) / mar->element_size_);
 }

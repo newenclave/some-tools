@@ -1,5 +1,5 @@
-#if !defined(mm_block_20131026_H)
-#define mm_block_20131026_H
+#if !defined(MM_BLOCK_20131026_H)
+#define MM_BLOCK_20131026_H
 
 #include <stdlib.h>
 
@@ -28,4 +28,4 @@ int mm_block_concat2  (struct mm_block_data *mb,
 
 int mm_block_push_back(struct mm_block_data *mb, char c);
 
-#endif
+#endif // MM_BLOCK_20131026_H
