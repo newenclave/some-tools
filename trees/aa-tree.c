@@ -67,10 +67,10 @@ void skew0( aa_tree_node_ptr *top )
     }
 
     if( t->level_ == l->level_ ) {
-        *top      = l;
-        *left     = t;
-        t->left_  = l->right_;
-        l->right_ = t;
+        *top      =  l;
+        *left     =  t;
+        t->left_  =  l->right_;
+        l->right_ =  t;
     }
 }
 
@@ -290,15 +290,14 @@ int aa_tree_node_delete( aa_tree_node_ptr *top,
 int aa_tree_delete2( struct aa_tree *aat,
                      void *data, aa_tree_data_free free_fun )
 {
-    int res = aa_tree_node_delete( &aat->root_, data, aat->cmp_,
-                                (free_fun ? free_fun : aat->free_));
+    int res = aa_tree_node_delete( &aat->root_, data, aat->cmp_, free_fun );
     aat->count_ -= (res == 1);
     return res;
 }
 
 int aa_tree_delete( struct aa_tree *aat, void *data )
 {
-    return aa_tree_delete2( aat, data, NULL );
+    return aa_tree_delete2( aat, data, aat->free_ );
 }
 
 size_t aa_tree_size( struct aa_tree *aat )
@@ -320,14 +319,14 @@ void aa_tree_free_node( struct aa_tree_node *t, aa_tree_data_free free_fun )
 void aa_tree_free2( struct aa_tree *aat, aa_tree_data_free free_fun)
 {
     if( aat ) {
-        aa_tree_free_node( aat->root_, (free_fun ? free_fun : aat->free_) );
+        aa_tree_free_node( aat->root_, free_fun );
         free( aat );
     }
 }
 
 void aa_tree_free( struct aa_tree *aat )
 {
-    aa_tree_free2(aat, NULL);
+    aa_tree_free2(aat, aat->free_ );
 }
 
 int aa_tree_walk_ordered( struct aa_tree_node *t,
