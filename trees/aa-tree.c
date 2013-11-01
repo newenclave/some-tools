@@ -24,7 +24,7 @@ struct aa_tree {
     aa_tree_data_compare cmp_;
     aa_tree_data_free    free_;
     struct aa_tree_node *root_;
-    size_t               count_;
+    unsigned             count_;
 };
 
 struct aa_tree *aa_tree_new2( aa_tree_data_compare compare )
@@ -190,13 +190,9 @@ int aa_tree_insert( struct aa_tree *aat, void *data )
 
 
 #define aa_tree_node_check_levels(t)                            \
-    ( t &&                                                      \
-        (                                                       \
          (t->right_ && (t->right_->level_ < (t->level_-1)))     \
             ||                                                  \
-         (t->left_  && (t->left_->level_  < (t->level_-1)))     \
-        )                                                       \
-    )
+         (t->left_  && (t->left_->level_  < (t->level_-1)))
 
 
 struct aa_tree_node *aa_tree_node_rebalance( struct aa_tree_node *t )
