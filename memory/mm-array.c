@@ -15,7 +15,7 @@ struct mm_array_data *mm_array_new3( size_t count, size_t element_size,
                                      mm_array_element_free free_call)
 {
     struct mm_array_data *new_data =
-        (struct mm_array_data *)calloc( 1, sizeof( struct mm_array_data ) );
+        (struct mm_array_data *)malloc(sizeof( struct mm_array_data ) );
 
     if( new_data ) {
         new_data->mmblock_ = mm_block_new( count * element_size );
@@ -86,6 +86,18 @@ int mm_array_push_back( struct mm_array_data *mar, void *element )
     return mm_array_push_back2( mar, element, 1 );
 }
 
+int mm_array_push_back3( struct mm_array_data *mar, void *element,
+                         mm_array_element_copy copy_call)
+{
+    size_t count = mm_array_size( mar );
+    size_t new_mem_size = (count + 1) * mar->element_size_;
+    int resize_res = mm_block_resize( mar->mmblock_, new_mem_size );
+
+    if( resize_res && copy_call) {
+        copy_call( mm_array_at( mar, count ), element, mar->element_size_ );
+    }
+    return resize_res;
+}
 
 int mm_array_resize2( struct mm_array_data *mar, size_t new_count,
                       mm_array_element_free free_call)

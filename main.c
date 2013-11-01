@@ -46,16 +46,24 @@ void fake_freeing( size_t *elem )
     printf( "free element: %u\n", *elem );
 }
 
+void copy_element( size_t *new_place,
+                   size_t *element, size_t element_size  )
+{
+    printf( "copy element: %u to %p, (%u)\n",
+            *element, new_place, element_size );
+    *new_place = *element;
+}
+
 int main( )
 {
 
-    struct mm_array_data *arr = mm_array_new3( 0, sizeof( size_t ), fake_freeing );\
+    struct mm_array_data *arr = mm_array_create3( 0, size_t, fake_freeing );
 
     size_t i;
-    for( i=0; i<10; ++i )
-        mm_array_push_back( arr, &i );
+    for( i=0; i<100; ++i )
+        mm_array_push_back3( arr, &i, copy_element );
 
-    mm_array_resize( arr, 1);
+    mm_array_resize( arr, 10 );
 
     mm_array_free( arr );
 
