@@ -5,7 +5,40 @@
 
 struct cnt_deque;
 
-struct cnt_deque* cnt_deque_new( );
+typedef void (* cnt_deque_element_free)( void *element );
+typedef void (* cnt_deque_element_copy)( void *new_place,
+                                         void *element,
+                                         size_t element_size );
+
+
+struct cnt_deque* cnt_deque_new( size_t element_size  );
+struct cnt_deque* cnt_deque_new2( size_t element_size,
+                                  cnt_deque_element_free free_call );
+
 void              cnt_deque_free( struct cnt_deque *cnd );
+void              cnt_deque_free2( struct cnt_deque *cnd,
+                                   cnt_deque_element_free free_call );
+
+void              cnt_deque_set_free( struct cnt_deque *cnd,
+                                      cnt_deque_element_free free_call );
+
+void              cnt_deque_empty( struct cnt_deque *cnd );
+size_t            cnt_deque_size ( struct cnt_deque *cnd );
+void             *cnt_deque_front( struct cnt_deque *cnd );
+void             *cnt_deque_back ( struct cnt_deque *cnd );
+
+int               cnt_deque_pop_front ( struct cnt_deque *cnd );
+int               cnt_deque_pop_front2( struct cnt_deque *cnd,
+                                        cnt_deque_element_free free_call);
+int               cnt_deque_push_front( struct cnt_deque *cnd, void *element );
+int               cnt_deque_push_front2(struct cnt_deque *cnd, void *element,
+                                        cnt_deque_element_copy copy_call);
+
+int               cnt_deque_pop_back  ( struct cnt_deque *cnd );
+int               cnt_deque_pop_back2 ( struct cnt_deque *cnd,
+                                        cnt_deque_element_free free_call );
+int               cnt_deque_push_back ( struct cnt_deque *cnd, void *element );
+int               cnt_deque_push_back2( struct cnt_deque *cnd, void *element,
+                                        cnt_deque_element_copy copy_call);
 
 #endif // CNT_DEQUE_20131111_H

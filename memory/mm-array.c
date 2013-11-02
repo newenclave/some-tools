@@ -2,7 +2,7 @@
 #include "mm-array.h"
 #include "mm-block.h"
 
-struct mm_array_data {
+struct mm_array {
     struct mm_block  *mmblock_;
     mm_array_element_free  free_;
     size_t                 element_size_;
@@ -17,11 +17,11 @@ struct mm_array_data {
 #define mm_element_shift( ptr, element_size, count )    \
     (((char *)ptr) + ((element_size) * (count)))
 
-struct mm_array_data *mm_array_new3( size_t count, size_t element_size,
+struct mm_array *mm_array_new3( size_t count, size_t element_size,
                                      mm_array_element_free free_call)
 {
-    struct mm_array_data *new_data =
-        (struct mm_array_data *)malloc(sizeof( struct mm_array_data ) );
+    struct mm_array *new_data =
+        (struct mm_array *)malloc(sizeof( struct mm_array ) );
 
     if( new_data ) {
         new_data->mmblock_ = mm_block_new( count * element_size );
@@ -36,17 +36,17 @@ struct mm_array_data *mm_array_new3( size_t count, size_t element_size,
 }
 
 
-struct mm_array_data *mm_array_new2( size_t count, size_t element_size )
+struct mm_array *mm_array_new2( size_t count, size_t element_size )
 {
     return mm_array_new3( count, element_size, NULL );
 }
 
-struct mm_array_data *mm_array_new( size_t element_size )
+struct mm_array *mm_array_new( size_t element_size )
 {
     return mm_array_new3( 0, element_size, NULL );
 }
 
-void mm_array_free2( struct mm_array_data *mar,
+void mm_array_free2( struct mm_array *mar,
                      mm_array_element_free free_call )
 {
     if( NULL != mar ) {
@@ -61,33 +61,43 @@ void mm_array_free2( struct mm_array_data *mar,
     }
 }
 
-void mm_array_free( struct mm_array_data *mar )
+void mm_array_free( struct mm_array *mar )
 {
     mm_array_free2(mar, mar->free_);
 }
 
-void mm_array_set_free( struct mm_array_data *mar,
+void mm_array_set_free( struct mm_array *mar,
                         mm_array_element_free free_call )
 {
     mar->free_ = free_call;
 }
 
-void  *mm_array_at( struct mm_array_data *mar, size_t element_index )
+void  *mm_array_at( struct mm_array *mar, size_t element_index )
 {
     return mm_array_at_local( mar, element_index );
 }
 
-size_t mm_array_size( struct mm_array_data *mar )
+size_t mm_array_size( struct mm_array *mar )
 {
     return (mm_block_size( mar->mmblock_ ) / mar->element_size_);
 }
 
-size_t mm_array_element_size( struct mm_array_data *mar )
+void *mm_array_begin( struct mm_array *mar )
+{
+    return mm_array_at_local( mar, 0);
+}
+
+void  *mm_array_end( struct mm_array *mar )
+{
+    return mm_array_at_local( mar, mm_array_size(mar));
+}
+
+size_t mm_array_element_size( struct mm_array *mar )
 {
     return mar->element_size_;
 }
 
-void *mm_array_create_back( struct mm_array_data *mar, size_t count )
+void *mm_array_create_back( struct mm_array *mar, size_t count )
 {
     void *tail = mm_block_create_back( mar->mmblock_,
                                        mm_elements_size(mar, count));
@@ -107,19 +117,19 @@ void mm_array_copy_elements( void *dst, void *src,
     }
 }
 
-int mm_array_push_back2( struct mm_array_data *mar, void *element, size_t count)
+int mm_array_push_back2( struct mm_array *mar, void *element, size_t count)
 {
     int res = mm_block_concat(mar->mmblock_, element,
                               mm_elements_size(mar, count));
     return res;
 }
 
-int mm_array_push_back( struct mm_array_data *mar, void *element )
+int mm_array_push_back( struct mm_array *mar, void *element )
 {
     return mm_array_push_back2( mar, element, 1 );
 }
 
-int mm_array_push_back3( struct mm_array_data *mar,
+int mm_array_push_back3( struct mm_array *mar,
                          void *element, size_t count,
                          mm_array_element_copy copy_call)
 {
@@ -129,14 +139,14 @@ int mm_array_push_back3( struct mm_array_data *mar,
     return (tail != NULL);
 }
 
-void *mm_array_create_front( struct mm_array_data *mar, size_t count )
+void *mm_array_create_front( struct mm_array *mar, size_t count )
 {
     void *head = mm_block_create_front(mar->mmblock_,
                                        mm_elements_size(mar, count));
     return head;
 }
 
-int mm_array_push_front2 ( struct mm_array_data *mar, void *element,
+int mm_array_push_front2 ( struct mm_array *mar, void *element,
                            size_t count )
 {
     void *head = mm_array_create_front( mar, count );
@@ -146,12 +156,12 @@ int mm_array_push_front2 ( struct mm_array_data *mar, void *element,
     return (head != NULL);
 }
 
-int mm_array_push_front  ( struct mm_array_data *mar, void *element )
+int mm_array_push_front  ( struct mm_array *mar, void *element )
 {
     return mm_array_push_front2( mar, element, 1 );
 }
 
-int mm_array_push_front3 ( struct mm_array_data *mar,
+int mm_array_push_front3 ( struct mm_array *mar,
                               void *element, size_t count,
                               mm_array_element_copy copy_call)
 {
@@ -160,7 +170,7 @@ int mm_array_push_front3 ( struct mm_array_data *mar,
     return (head != NULL);
 }
 
-int mm_array_resize2( struct mm_array_data *mar, size_t new_count,
+int mm_array_resize2( struct mm_array *mar, size_t new_count,
                       mm_array_element_free free_call)
 {
     size_t count = mm_array_size( mar );
@@ -173,22 +183,22 @@ int mm_array_resize2( struct mm_array_data *mar, size_t new_count,
     return res;
 }
 
-int mm_array_resize( struct mm_array_data *mar, size_t new_count )
+int mm_array_resize( struct mm_array *mar, size_t new_count )
 {
     return mm_array_resize2( mar, new_count, mar->free_ );
 }
 
-int mm_array_reserve( struct mm_array_data *mar, size_t count )
+int mm_array_reserve( struct mm_array *mar, size_t count )
 {
     return mm_block_reserve( mar->mmblock_, mm_elements_size(mar, count) );
 }
 
-size_t mm_array_available (struct mm_array_data *mar)
+size_t mm_array_available (struct mm_array *mar)
 {
     return (mm_block_available( mar->mmblock_ ) / mar->element_size_);
 }
 
-void  *mm_array_create_insertion( struct mm_array_data *mar,
+void  *mm_array_create_insertion( struct mm_array *mar,
                                   size_t pos, size_t count )
 {
     void *insertion =
@@ -198,7 +208,7 @@ void  *mm_array_create_insertion( struct mm_array_data *mar,
     return insertion;
 }
 
-int mm_array_insert2 ( struct mm_array_data *mar, void *element,
+int mm_array_insert2 ( struct mm_array *mar, void *element,
                               size_t pos, size_t count )
 {
     void * insertion = mm_array_create_insertion( mar, pos, count );
@@ -208,13 +218,13 @@ int mm_array_insert2 ( struct mm_array_data *mar, void *element,
     return (insertion != NULL);
 }
 
-int mm_array_insert  ( struct mm_array_data *mar,
+int mm_array_insert  ( struct mm_array *mar,
                                   void *element, size_t pos )
 {
     return mm_array_insert( mar, element, 1 );
 }
 
-int mm_array_insert3 ( struct mm_array_data *mar,
+int mm_array_insert3 ( struct mm_array *mar,
                        void *element, size_t pos, size_t count,
                        mm_array_element_copy copy_call)
 {

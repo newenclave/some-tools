@@ -8,6 +8,7 @@
 #include "lists/linked-list.h"
 #include "inc/struct-fields.h"
 #include "trees/aa-tree.h"
+#include "containers/cnt-deque.h"
 
 char * byte_to_( unsigned char b, char *storage )
 {
@@ -43,7 +44,12 @@ void aa_tree_fake_del( void *d )
 
 void fake_freeing( size_t *elem )
 {
-    printf( "free element: %u\n", *elem );
+    printf( "free element: %u %p\n", *elem, elem );
+}
+
+void fake_pop( size_t *elem )
+{
+    printf( "pop element: %u %p\n", *elem, elem );
 }
 
 void copy_element( size_t *new_place,
@@ -56,8 +62,23 @@ void copy_element( size_t *new_place,
 
 int main( )
 {
+
+    struct cnt_deque *cnd = cnt_deque_new2( sizeof(size_t), fake_freeing );
+
+    size_t ci;
+    for(ci=0; ci<211; ci++) {
+        cnt_deque_push_back2( cnd, &ci, copy_element );
+    }
+    while ( cnt_deque_size(cnd) ) {
+        cnt_deque_pop_back2( cnd, fake_pop );
+        if( cnt_deque_size(cnd) == 57 ) break;
+    }
+    cnt_deque_free( cnd );
+
+    return 0;
+
     //goto AATREE;
-    struct mm_array_data *arr = mm_array_create3( 0, size_t, fake_freeing );
+    struct mm_array *arr = mm_array_create3( 0, size_t, fake_freeing );
 
     size_t aaa[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0};
     mm_array_push_back3( arr, aaa, 10, copy_element );
@@ -114,7 +135,7 @@ AATREE:
     aa_tree_free( aat );
     return 0;
 
-    struct mm_array_data *mar = mm_array_create2( 10, int );
+    struct mm_array *mar = mm_array_create2( 10, int );
 
     i = 0;
     for( ;i!=10; ++i ) {
