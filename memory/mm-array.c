@@ -8,13 +8,13 @@ struct mm_array_data {
     size_t                 element_size_;
 };
 
-#define mm_array_at_local( arr, index ) \
+#define mm_array_at_local( arr, index )                 \
     (((char *)mm_block_data((arr)->mmblock_)) + ((index)*(arr)->element_size_))
 
-#define mm_elements_size( arr, count ) \
+#define mm_elements_size( arr, count )                  \
         ((arr)->element_size_ * count)
 
-#define mm_element_shift( ptr, element_size, count ) \
+#define mm_element_shift( ptr, element_size, count )    \
     (((char *)ptr) + ((element_size) * (count)))
 
 struct mm_array_data *mm_array_new3( size_t count, size_t element_size,
