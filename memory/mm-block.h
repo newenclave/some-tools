@@ -26,6 +26,8 @@ int mm_block_concat   (struct mm_block_data *mb,
 int mm_block_concat2  (struct mm_block_data *mb,
                          const struct mm_block_data *cmb);
 
-int mm_block_push_back(struct mm_block_data *mb, char c);
+int    mm_block_push_back( struct mm_block_data *mb, char c);
+void  *mm_block_create_back( struct mm_block_data *mb, size_t count );
+
 
 #endif // MM_BLOCK_20131026_H

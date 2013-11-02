@@ -108,11 +108,9 @@ int mm_array_push_back3( struct mm_array_data *mar, void *element,
 
 void *mm_array_create_back( struct mm_array_data *mar, size_t count )
 {
-    size_t old_count = mm_array_size( mar );
-    void *tail = NULL;
-    int result = mm_array_resize( mar, old_count + count );
-    if( 0 != result ) {
-        tail = mm_array_at_local( mar, old_count );
+    void *tail = mm_block_create_back( mar->mmblock_, count * mar->element_size_ );
+    if( tail ) {
+        mar->current_count_ += count;
     }
     return tail;
 }

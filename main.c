@@ -56,15 +56,20 @@ void copy_element( size_t *new_place,
 
 int main( )
 {
-    goto AATREE;
+    //goto AATREE;
     struct mm_array_data *arr = mm_array_create3( 0, size_t, fake_freeing );
 
     size_t i;
-    for( i=0; i<100; ++i ) {
+    for( i=0; i<10; ++i ) {
         mm_array_push_back3( arr, &i, copy_element );
     }
 
-    mm_array_resize( arr, 10 );
+    size_t *back = (size_t *)mm_array_create_back( arr, 3 );
+    back[0] = 666666;
+    back[1] = 777777;
+    back[2] = 888888;
+
+    //mm_array_resize( arr, 10 );
 
     mm_array_free( arr );
 

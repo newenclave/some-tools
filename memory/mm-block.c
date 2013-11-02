@@ -199,4 +199,15 @@ int mm_block_push_back(struct mm_block_data *mb, char c)
     return 1;
 }
 
+void *mm_block_create_back( struct mm_block_data *mb, size_t count )
+{
+    size_t old_size = mb->used_;
+    void *tail = NULL;
+    int res = mm_block_resize( mb, old_size + count );
+    if( 0 != res ) {
+        tail = ( mb->data_ + old_size );
+    }
+    return tail;
+}
+
 
