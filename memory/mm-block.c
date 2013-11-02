@@ -29,7 +29,7 @@ static const size_t void_ptr_size_mask =   sizeof(void *) - 1;
 #define mm_block_fix_size0( new_size )                              \
       ( new_size <= void_ptr_size)                                  \
       ? void_ptr_size                                               \
-      : ((new_size + void_ptr_size_mask) & (~(void_ptr_size_mask)))
+      : mm_block_fix_size( new_size )
 
 
 size_t mm_block_calc_prefer_size( size_t old_capa, size_t desired_size )
