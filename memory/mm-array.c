@@ -106,6 +106,17 @@ int mm_array_push_back3( struct mm_array_data *mar, void *element,
     return resize_res;
 }
 
+void *mm_array_create_back( struct mm_array_data *mar, size_t count )
+{
+    size_t old_count = mm_array_size( mar );
+    void *tail = NULL;
+    int result = mm_array_resize( mar, old_count + count );
+    if( 0 != result ) {
+        tail = mm_array_at_local( mar, old_count );
+    }
+    return tail;
+}
+
 int mm_array_resize2( struct mm_array_data *mar, size_t new_count,
                       mm_array_element_free free_call)
 {

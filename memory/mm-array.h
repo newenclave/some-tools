@@ -27,9 +27,12 @@ void  *mm_array_at( struct mm_array_data *mar, size_t element_index );
 size_t mm_array_size( struct mm_array_data *mar );
 
 int    mm_array_push_back( struct mm_array_data *mar, void *element );
-int    mm_array_push_back2( struct mm_array_data *mar, void *element, size_t count );
+int    mm_array_push_back2( struct mm_array_data *mar, void *element,
+                            size_t count );
 int    mm_array_push_back3( struct mm_array_data *mar, void *element,
                             mm_array_element_copy copy_call);
+
+void  *mm_array_create_back( struct mm_array_data *mar, size_t count );
 
 int    mm_array_resize( struct mm_array_data *mar, size_t new_count );
 int    mm_array_resize2( struct mm_array_data *mar, size_t new_count,

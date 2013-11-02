@@ -1,7 +1,7 @@
 
 #include "aa-tree.h"
 
-#define BOTTOM_LEVEL_VALUE 0
+#define AA_BOTTOM_LEVEL_VALUE 1
 
 int aa_tree_data_compare_default( const void *l, const void *r )
 {
@@ -128,7 +128,7 @@ struct aa_tree_node *aa_tree_create_node( void *data )
             (struct aa_tree_node *)calloc(1, sizeof(struct aa_tree_node) );
     if( new_data ) {
         new_data->data_.ptr_ = data;
-        new_data->level_ = BOTTOM_LEVEL_VALUE;
+        new_data->level_     = AA_BOTTOM_LEVEL_VALUE;
     }
     return new_data;
 }
