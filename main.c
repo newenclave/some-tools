@@ -56,24 +56,6 @@ void copy_element( size_t *new_place,
 
 int main( )
 {
-    struct mm_block *block = mm_block_new( 0 );
-
-    mm_block_concat( block, "1234567890", 10 );
-
-    int j=0;
-    for( j=0; j<11; ++j ) {
-        char *d = mm_block_create_insertion( block, mm_block_size( block ), 3 );
-        d[0] = 'a';
-        d[1] = 'b';
-        d[2] = 'c';
-        printf( "new  block size: %u %u\n", mm_block_size( block ), 4*j );
-    }
-
-    mm_block_push_back( block, 0 );
-
-    printf( "str: %s\n", mm_block_data( block ) );
-
-    return 0;
     //goto AATREE;
     struct mm_array_data *arr = mm_array_create3( 0, size_t, fake_freeing );
 
@@ -85,7 +67,7 @@ int main( )
         mm_array_push_front3( arr, &i, 1, copy_element );
     }
 
-    size_t *back = (size_t *)mm_array_create_front( arr, 3 );
+    size_t *back = (size_t *)mm_array_create_insertion( arr, mm_array_size(arr), 3 );
     back[0] = 666666;
     back[1] = 777777;
     back[2] = 888888;

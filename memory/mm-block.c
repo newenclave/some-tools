@@ -31,14 +31,23 @@ static const size_t void_ptr_size_mask =   sizeof(void *) - 1;
       ? void_ptr_size                                               \
       : ((new_size + void_ptr_size_mask) & (~(void_ptr_size_mask)))
 
-/// mm_block_new
-/// creating new memory block
-mm_block_data_type *mm_block_new( size_t init_size )
+
+size_t mm_block_calc_prefer_size( size_t old_capa, size_t desired_size )
+{
+    size_t new_capa = mm_block_fix_size(mm_block_def_inc(old_capa));
+    desired_size = mm_block_fix_size(desired_size);
+
+    if( new_capa > desired_size ) desired_size = new_capa;
+
+    return desired_size;
+}
+
+struct mm_block *mm_block_new_reserved( size_t reserve_size )
 {
     mm_block_data_type *new_block =
             (mm_block_data_type *)malloc(sizeof(mm_block_data_type));
 
-    size_t new_size = mm_block_fix_size0(init_size);
+    size_t new_size = mm_block_fix_size0(reserve_size);
 
     new_block->data_ = NULL;
     if( new_size ) {
@@ -50,10 +59,22 @@ mm_block_data_type *mm_block_new( size_t init_size )
     }
 
     new_block->capacity_ = new_size;
-    new_block->used_     = init_size;
+    new_block->used_     = 0;
 
-    if( 0 != init_size )
-        memset( new_block->data_, 0, init_size );
+    return new_block;
+}
+
+/// mm_block_new
+/// creating new memory block
+mm_block_data_type *mm_block_new( size_t init_size )
+{
+    mm_block_data_type *new_block = mm_block_new_reserved( init_size );
+
+    if( new_block ) {
+        new_block->used_ = init_size;
+        if( init_size )
+            memset(new_block->data_, 0, init_size);
+    }
 
     return new_block;
 }
@@ -78,21 +99,13 @@ void mm_block_free(mm_block_data_type *mb)
     }
 }
 
-
 int mm_block_reserve(struct mm_block *mb, size_t new_size)
 {
     static int i=0;
 
-    size_t old_capa;
-    size_t new_capa;
-
     if( new_size <= mb->capacity_ ) return 1;
 
-    old_capa = mb->capacity_;
-    new_capa = mm_block_fix_size(mm_block_def_inc(old_capa));
-    new_size = mm_block_fix_size(new_size);
-
-    if( new_capa > new_size ) new_size = new_capa;
+    new_size = mm_block_calc_prefer_size( mb->capacity_, new_size );
 
     printf("reallock %d %d\n", i++, new_size);
 
@@ -145,7 +158,6 @@ void*  mm_block_data(struct mm_block *mb)
 {
     return mb->data_;
 }
-
 
 int mm_block_clear(struct mm_block *mb)
 {
@@ -214,8 +226,14 @@ void *mm_block_create_insertion( struct mm_block *mb,
     if( position == mb->used_ ) {
         block = mm_block_create_back( mb, count );
     } else if( mm_block_available_local( mb ) < count ) {
-        struct mm_block *new_block = mm_block_new( mb->used_ + count );
+
+        size_t new_size
+                = mm_block_calc_prefer_size( mb->capacity_, mb->used_ + count );
+
+        struct mm_block *new_block = mm_block_new_reserved( new_size );
+
         if( new_block ) {
+            new_block->used_ = mb->used_+count;
             size_t new_tail_shift  = position + count;
             if( position ) {
                 memcpy( new_block->data_, mb->data_, position );
@@ -228,13 +246,10 @@ void *mm_block_create_insertion( struct mm_block *mb,
             block = mb->data_ + position;
         }
     } else {
-        size_t old_used = mb->used_;
-        if(mm_block_resize( mb, mb->used_ + count )) {
-            char *from = mb->data_ + position;
-            memmove( from + count, from,
-                     old_used - position);
-            block = from;
-        }
+        char *from = mb->data_ + position;
+        memmove( from + count, from, mb->used_ - position);
+        mb->used_ += count;
+        block = from;
     }
 
     return block;

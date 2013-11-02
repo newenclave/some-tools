@@ -82,6 +82,11 @@ size_t mm_array_size( struct mm_array_data *mar )
     return (mm_block_size( mar->mmblock_ ) / mar->element_size_);
 }
 
+size_t mm_array_element_size( struct mm_array_data *mar )
+{
+    return mar->element_size_;
+}
+
 void *mm_array_create_back( struct mm_array_data *mar, size_t count )
 {
     void *tail = mm_block_create_back( mar->mmblock_,
@@ -181,4 +186,42 @@ int mm_array_reserve( struct mm_array_data *mar, size_t count )
 size_t mm_array_available (struct mm_array_data *mar)
 {
     return (mm_block_available( mar->mmblock_ ) / mar->element_size_);
+}
+
+void  *mm_array_create_insertion( struct mm_array_data *mar,
+                                  size_t pos, size_t count )
+{
+    void *insertion =
+        mm_block_create_insertion( mar->mmblock_,
+               mm_elements_size( mar, pos ),
+               mm_elements_size( mar, count ));
+    return insertion;
+}
+
+int mm_array_insert2 ( struct mm_array_data *mar, void *element,
+                              size_t pos, size_t count )
+{
+    void * insertion = mm_array_create_insertion( mar, pos, count );
+    if( insertion ) {
+        memcpy( insertion, element, mm_elements_size(mar, count));
+    }
+    return (insertion != NULL);
+}
+
+int mm_array_insert  ( struct mm_array_data *mar,
+                                  void *element, size_t pos )
+{
+    return mm_array_insert( mar, element, 1 );
+}
+
+int mm_array_insert3 ( struct mm_array_data *mar,
+                       void *element, size_t pos, size_t count,
+                       mm_array_element_copy copy_call)
+{
+    void * insertion = mm_array_create_insertion( mar, pos, count );
+    if( insertion ) {
+        mm_array_copy_elements( insertion, element,
+                                mar->element_size_, count, copy_call );
+    }
+    return (insertion != NULL);
 }

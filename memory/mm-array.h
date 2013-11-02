@@ -25,6 +25,7 @@ void                  mm_array_set_free( struct mm_array_data *mar,
 
 void  *mm_array_at( struct mm_array_data *mar, size_t element_index );
 size_t mm_array_size( struct mm_array_data *mar );
+size_t mm_array_element_size( struct mm_array_data *mar );
 
 void  *mm_array_create_back( struct mm_array_data *mar, size_t count );
 int    mm_array_push_back  ( struct mm_array_data *mar, void *element );
@@ -40,6 +41,16 @@ int    mm_array_push_front2 ( struct mm_array_data *mar, void *element,
                               size_t count );
 int    mm_array_push_front3 ( struct mm_array_data *mar,
                               void *element, size_t count,
+                              mm_array_element_copy copy_call);
+
+void  *mm_array_create_insertion( struct mm_array_data *mar,
+                                  size_t pos, size_t count );
+int    mm_array_insert  ( struct mm_array_data *mar,
+                                  void *element, size_t pos );
+int    mm_array_insert2 ( struct mm_array_data *mar, void *element,
+                              size_t pos, size_t count );
+int    mm_array_insert3 ( struct mm_array_data *mar,
+                              void *element, size_t pos, size_t count,
                               mm_array_element_copy copy_call);
 
 int    mm_array_resize( struct mm_array_data *mar, size_t new_count );
