@@ -81,14 +81,14 @@ size_t mm_array_size( struct mm_array_data *mar )
 
 void *mm_array_create_back( struct mm_array_data *mar, size_t count )
 {
-    void *tail = mm_block_create_back( mar->mmblock_, count * mar->element_size_ );
+    void *tail = mm_block_create_back( mar->mmblock_, count*mar->element_size_);
     if( tail ) {
         mar->current_count_ += count;
     }
     return tail;
 }
 
-int mm_array_push_back2( struct mm_array_data *mar, void *element, size_t count )
+int mm_array_push_back2( struct mm_array_data *mar, void *element, size_t count)
 {
     int res = mm_block_concat(mar->mmblock_, element, count*mar->element_size_);
     if( res ) mar->current_count_ += count;
