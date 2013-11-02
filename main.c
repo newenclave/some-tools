@@ -67,7 +67,17 @@ int main( )
         mm_array_push_front3( arr, &i, 1, copy_element );
     }
 
-    size_t *back = (size_t *)mm_array_create_insertion( arr, mm_array_size(arr), 3 );
+    size_t *back = (size_t *)mm_array_create_insertion( arr, 5, 3 );
+    back[0] = 666666;
+    back[1] = 777777;
+    back[2] = 888888;
+
+    back = (size_t *)mm_array_create_insertion( arr, 10, 3 );
+    back[0] = 666666;
+    back[1] = 777777;
+    back[2] = 888888;
+
+    back = (size_t *)mm_array_create_insertion( arr, 0, 3 );
     back[0] = 666666;
     back[1] = 777777;
     back[2] = 888888;
