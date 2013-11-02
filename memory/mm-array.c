@@ -3,7 +3,7 @@
 #include "mm-block.h"
 
 struct mm_array_data {
-    struct mm_block_data  *mmblock_;
+    struct mm_block  *mmblock_;
     mm_array_element_free  free_;
     size_t                 element_size_;
 };
@@ -89,6 +89,19 @@ void *mm_array_create_back( struct mm_array_data *mar, size_t count )
     return tail;
 }
 
+void mm_array_copy_elements( void *dst, void *src,
+                             size_t element_size, size_t count,
+                             mm_array_element_copy copy_call)
+{
+    if( dst && copy_call ) {
+        while ( count-- ) {
+            copy_call( dst, src, element_size );
+            dst = mm_element_shift( dst, element_size, 1 );
+            src = mm_element_shift( src, element_size, 1 );
+        }
+    }
+}
+
 int mm_array_push_back2( struct mm_array_data *mar, void *element, size_t count)
 {
     int res = mm_block_concat(mar->mmblock_, element,
@@ -107,18 +120,40 @@ int mm_array_push_back3( struct mm_array_data *mar,
 {
     void *tail = mm_block_create_back( mar->mmblock_,
                                        mm_elements_size(mar, count));
-    if( tail ) {
-        if( copy_call ) {
-            while (count--) {
-                copy_call( tail, element, mar->element_size_ );
-                tail = mm_element_shift( tail, mar->element_size_, 1 );
-                element = mm_element_shift( element, mar->element_size_, 1 );
-            }
-        }
-    }
+    mm_array_copy_elements(tail, element, mar->element_size_, count, copy_call);
     return (tail != NULL);
 }
 
+void *mm_array_create_front( struct mm_array_data *mar, size_t count )
+{
+    void *head = mm_block_create_front(mar->mmblock_,
+                                       mm_elements_size(mar, count));
+    return head;
+}
+
+int mm_array_push_front2 ( struct mm_array_data *mar, void *element,
+                           size_t count )
+{
+    void *head = mm_array_create_front( mar, count );
+    if( head ) {
+        memcpy( head, element, mm_elements_size( mar, count) );
+    }
+    return (head != NULL);
+}
+
+int mm_array_push_front  ( struct mm_array_data *mar, void *element )
+{
+    return mm_array_push_front2( mar, element, 1 );
+}
+
+int mm_array_push_front3 ( struct mm_array_data *mar,
+                              void *element, size_t count,
+                              mm_array_element_copy copy_call)
+{
+    void *head = mm_array_create_front( mar, count );
+    mm_array_copy_elements(head, element, mar->element_size_, count, copy_call);
+    return (head != NULL);
+}
 
 int mm_array_resize2( struct mm_array_data *mar, size_t new_count,
                       mm_array_element_free free_call)

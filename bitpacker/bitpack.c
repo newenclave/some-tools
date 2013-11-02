@@ -16,7 +16,7 @@ struct tail_info {
 };
 
 struct bit_pack_data {
-    struct mm_block_data  *data_;
+    struct mm_block  *data_;
     struct tail_info        ti_;
 };
 
@@ -162,7 +162,7 @@ void bit_pack_free( bit_pack_data_type *bpd )
 int bp_add_bits(struct bit_pack_data *bpd, size_t value, unsigned bit_count)
 {
     struct tail_info tmp_ti;
-    struct mm_block_data *tmp_data = bpd->data_;
+    struct mm_block *tmp_data = bpd->data_;
     unsigned tail = bit_count;
 
     tmp_ti.current_ = bpd->ti_.current_;
