@@ -59,10 +59,13 @@ int main( )
     //goto AATREE;
     struct mm_array_data *arr = mm_array_create3( 0, size_t, fake_freeing );
 
+    size_t aaa[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0};
+    mm_array_push_back3( arr, aaa, 10, copy_element );
+
     size_t i;
-    for( i=0; i<10; ++i ) {
-        mm_array_push_back3( arr, &i, copy_element );
-    }
+    //for( i=0; i<10; ++i ) {
+    //    mm_array_push_back3( arr, &i, 1, copy_element );
+    //}
 
     size_t *back = (size_t *)mm_array_create_back( arr, 3 );
     back[0] = 666666;
