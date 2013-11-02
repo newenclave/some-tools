@@ -2,13 +2,13 @@
 #include <memory.h>
 
 #include "cnt-deque.h"
-#include "../memory/mm-array.h"
 #include "../lists/bilinked-list.h"
 #include "../inc/struct-fields.h"
 
 struct cnt_deque_unit {
     struct bilinked_list_head list_;
-    struct mm_array          *array_;
+    char                     *array_;
+    size_t                    length_;
 };
 
 struct cnt_deque {
@@ -27,15 +27,36 @@ struct cnt_deque {
 #define cnt_deque_element_prev( cnd, ptr ) \
             (((char *)ptr) - ((cnd)->element_size_))
 
+#define cnt_deque_block_begin( unit ) ((unit)->array_)
+#define cnt_deque_block_at( unit, element_size, count ) \
+    (((unit)->array_ + ((element_size) * count)))
+
+#define cnt_deque_block_end( unit ) ((unit)->array_ + (unit)->length_)
+
+#define cnt_deque_block_is_end( unit, ptr ) \
+    (cnt_deque_block_end( unit ) == (ptr))
+
 #define cnt_deque_is_on_top( cnd ) \
-    ((cnd)->first_ == mm_array_begin( (cnd)->first_unit_->array_ ))
+    ((cnd)->first_ == (cnd)->first_unit_->array_ )
 
 #define cnt_deque_is_on_bottom( cnd ) \
-    ((cnd)->last_ == mm_array_end( (cnd)->last_unit_->array_ ))
-
+    ((cnd)->last_ == ( (cnd)->last_unit_->array_ + (cnd)->last_unit_->length_))
 
 #define cnt_deque_empty_local( cnd ) ((cnd)->first_ == (cnd)->last_)
 
+#define cnt_deque_def_inc(size) (size + (size >> 1))
+
+size_t cnt_deque_calc_prefer_size( size_t old_size, size_t element_size )
+{
+    size_t new_count = cnt_deque_def_inc(old_size / element_size);
+    return new_count;
+}
+
+#define cnt_deque_pref_first_size( cnd ) \
+    cnt_deque_calc_prefer_size((cnd)->first_unit_->length_,(cnd)->element_size_)
+
+#define cnt_deque_pref_last_size( cnd ) \
+    cnt_deque_calc_prefer_size((cnd)->last_unit_->length_,(cnd)->element_size_)
 
 struct cnt_deque_unit *cnt_deque_unit_create( struct cnt_deque* cnd,
                                               size_t elements )
@@ -43,7 +64,8 @@ struct cnt_deque_unit *cnt_deque_unit_create( struct cnt_deque* cnd,
     struct cnt_deque_unit *new_unit =
             (struct cnt_deque_unit *)calloc(1, sizeof(struct cnt_deque_unit) );
     if( new_unit ) {
-        new_unit->array_ = mm_array_new2( elements, cnd->element_size_ );
+        new_unit->length_ = elements * cnd->element_size_;
+        new_unit->array_ = (char *)malloc( new_unit->length_ );
         if( !new_unit->array_ ) {
             free( new_unit );
             new_unit = NULL;
@@ -54,7 +76,7 @@ struct cnt_deque_unit *cnt_deque_unit_create( struct cnt_deque* cnd,
 
 void cnt_deque_unit_free_no_arr( struct cnt_deque_unit  *unit )
 {
-    mm_array_free( unit->array_ );
+    free( unit->array_ );
     free( unit );
 }
 
@@ -63,7 +85,7 @@ void cnt_deque_unit_free( struct cnt_deque *cnd,
                           void *begin, void *end,
                           cnt_deque_element_free free_call )
 {
-    void *arr_end = mm_array_end( unit->array_ );
+    void *arr_end = cnt_deque_block_end( unit );
 
     while ( begin != end && begin != arr_end ) {
         free_call( begin );
@@ -85,7 +107,9 @@ struct cnt_deque* cnt_deque_new2( size_t element_size,
         struct cnt_deque_unit *unit = cnt_deque_unit_create( new_deq, 8 );
         if( unit ) {
             new_deq->first_unit_ = new_deq->last_unit_ = unit;
-            new_deq->first_ = new_deq->last_ = mm_array_at( unit->array_, 4 );
+            new_deq->first_ = new_deq->last_ =
+                    cnt_deque_block_at( unit, element_size, 4 );
+
         } else {
             free(new_deq);
             new_deq = NULL;
@@ -121,12 +145,13 @@ int cnt_deque_push_front2(struct cnt_deque *cnd, void *element,
 {
     int res = 0;
     if( cnt_deque_is_on_top( cnd ) ) {
-        struct cnt_deque_unit *new_top = cnt_deque_unit_create( cnd, 16 );
+        struct cnt_deque_unit *new_top =
+                cnt_deque_unit_create( cnd, cnt_deque_pref_first_size(cnd) );
         if( new_top ) {
             bilinked_list_insert( &cnd->first_unit_->list_,
                                   &new_top->list_, BILINK_DIRECT_BACKWARD );
             cnd->first_unit_ = new_top;
-            cnd->first_ = mm_array_end( new_top->array_ );
+            cnd->first_ = cnt_deque_block_end( new_top );
             res = 1;
         }
     } else {
@@ -157,15 +182,17 @@ int cnt_deque_pop_front2( struct cnt_deque *cnd,
         if( free_call ) {
             free_call( old_top );
         }
-        struct mm_array *first_arr = cnd->first_unit_->array_;
-        if( mm_array_is_end(first_arr, new_top) && new_top!=cnd->last_) {
+        char *first_arr = cnd->first_unit_->array_;
+        if( cnt_deque_block_is_end(cnd->first_unit_, new_top)
+                                && new_top!=cnd->last_)
+        {
             struct cnt_deque_unit  *next_unit =
                     bilinked_list_next(&cnd->first_unit_->list_,
                                        BILINK_DIRECT_FORWARD);
             bilinked_list_remove( &cnd->first_unit_->list_ );
             cnt_deque_unit_free_no_arr( cnd->first_unit_ );
             cnd->first_unit_ = next_unit;
-            new_top = mm_array_begin( next_unit->array_ );
+            new_top = next_unit->array_;
         }
         cnd->first_ = new_top;
         --cnd->count_;
@@ -179,7 +206,7 @@ int cnt_deque_pop_front ( struct cnt_deque *cnd )
 }
 
 int cnt_deque_pop_back2 ( struct cnt_deque *cnd,
-                                        cnt_deque_element_free free_call )
+                          cnt_deque_element_free free_call )
 {
     int res = 0;
     if( !cnt_deque_empty_local(cnd) ) {
@@ -188,15 +215,15 @@ int cnt_deque_pop_back2 ( struct cnt_deque *cnd,
         if( free_call ) {
             free_call( new_last );
         }
-        struct mm_array *last_arr = cnd->last_unit_->array_;
-        if( mm_array_is_begin(last_arr, new_last) && new_last!=cnd->first_) {
+        char *last_arr = cnd->last_unit_->array_;
+        if( (last_arr == new_last) && new_last!=cnd->first_) {
             struct cnt_deque_unit  *next_unit =
                     bilinked_list_next(&cnd->last_unit_->list_,
                                        BILINK_DIRECT_BACKWARD);
             bilinked_list_remove( &cnd->last_unit_->list_ );
             cnt_deque_unit_free_no_arr( cnd->last_unit_ );
             cnd->last_unit_ = next_unit;
-            new_last = mm_array_end( next_unit->array_ );
+            new_last = cnt_deque_block_end( next_unit );
         }
         cnd->last_ = new_last;
         --cnd->count_;
@@ -214,12 +241,14 @@ int cnt_deque_push_back2( struct cnt_deque *cnd, void *element,
 {
     int res = 0;
     if( cnt_deque_is_on_bottom( cnd ) ) {
-        struct cnt_deque_unit *new_bottom = cnt_deque_unit_create( cnd, 16 );
+        struct cnt_deque_unit *new_bottom =
+                cnt_deque_unit_create( cnd, cnt_deque_pref_last_size(cnd) );
+
         if( new_bottom ) {
             bilinked_list_insert( &cnd->last_unit_->list_,
                                   &new_bottom->list_, BILINK_DIRECT_FORWARD );
             cnd->last_unit_ = new_bottom;
-            cnd->last_ = mm_array_begin( new_bottom->array_ );
+            cnd->last_ = new_bottom->array_;
             res = 1;
         }
     } else {
@@ -268,7 +297,7 @@ void cnt_deque_list_free( struct cnt_deque *cnd,
         cnt_deque_unit_free( cnd, unit, begin, end, free_call );
         if( lh ) {
             unit  = field_entry( lh, struct cnt_deque_unit, list_ );
-            begin = mm_array_begin( unit->array_ );
+            begin = unit->array_;
         } else {
             unit  = NULL;
         }

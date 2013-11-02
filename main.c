@@ -66,7 +66,10 @@ int main( )
     struct cnt_deque *cnd = cnt_deque_new2( sizeof(size_t), fake_freeing );
 
     size_t ci;
-    for(ci=0; ci<211; ci++) {
+    for(ci=0; ci<100; ci++) {
+        cnt_deque_push_front2( cnd, &ci, copy_element );
+    }
+    for(ci=0; ci<100; ci++) {
         cnt_deque_push_back2( cnd, &ci, copy_element );
     }
     while ( cnt_deque_size(cnd) ) {
