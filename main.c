@@ -63,9 +63,9 @@ int main( )
     mm_array_push_back3( arr, aaa, 10, copy_element );
 
     size_t i;
-    //for( i=0; i<10; ++i ) {
-    //    mm_array_push_back3( arr, &i, 1, copy_element );
-    //}
+    for( i=0; i<10; ++i ) {
+        mm_array_push_back3( arr, &i, 1, copy_element );
+    }
 
     size_t *back = (size_t *)mm_array_create_back( arr, 3 );
     back[0] = 666666;
