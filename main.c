@@ -124,7 +124,13 @@ AATREE:
     aa_tree_insert( aat, "dfghdgh" );
     aa_tree_insert( aat, "abct" );
     aa_tree_insert( aat, "gdfg" );
+    aa_tree_insert( aat, "gdfg" );
+    aa_tree_insert( aat, "1234567890" );
+    aa_tree_insert( aat, "gdfg" );
     aa_tree_insert( aat, "gdfaasdfasd" );
+
+
+    printf( "String is %d \n", (aa_tree_find( aat, "1234567890" ) != 0) );
 
     //aa_tree_delete2( aat, 7, aa_tree_fake_del );
 

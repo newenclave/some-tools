@@ -8,9 +8,13 @@ int aa_tree_data_compare_default( const void *l, const void *r )
     return (l < r) ? -1 : (r < l);
 }
 
+enum aa_tree_link_position {
+     AA_LINK_LEFT   = 0
+    ,AA_LINK_RIGHT  = 1
+};
+
 struct aa_tree_node {
-    struct aa_tree_node    *left_;
-    struct aa_tree_node    *right_;
+    struct aa_tree_node    *links_[2];
     union  node_data {
         void    *ptr_;
         char    *str_;
@@ -53,13 +57,13 @@ struct aa_tree *aa_tree_new( )
 
 struct aa_tree_node *skew( struct aa_tree_node *t )
 {
-    aa_tree_node_ptr *left = &(t->left_);
-    struct aa_tree_node *l =   t->left_;
+    aa_tree_node_ptr *left = &(t->links_[AA_LINK_LEFT]);
+    struct aa_tree_node *l =   t->links_[AA_LINK_LEFT];
 
     if( (l != 0) && (t->level_ == l->level_) ) {
         *left     = t;
-        t->left_  = l->right_;
-        l->right_ = t;
+        t->links_[AA_LINK_LEFT]  = l->links_[AA_LINK_RIGHT];
+        l->links_[AA_LINK_RIGHT] = t;
         return l;
     }
     return t;
@@ -68,8 +72,8 @@ struct aa_tree_node *skew( struct aa_tree_node *t )
 void skew0( aa_tree_node_ptr *top )
 {
     struct aa_tree_node *t = *top;
-    aa_tree_node_ptr *left = &(t->left_);
-    struct aa_tree_node *l =   t->left_;
+    aa_tree_node_ptr *left = &(t->links_[AA_LINK_LEFT]);
+    struct aa_tree_node *l =   t->links_[AA_LINK_LEFT];
 
     if( l == 0 ) {
         return;
@@ -78,25 +82,25 @@ void skew0( aa_tree_node_ptr *top )
     if( t->level_ == l->level_ ) {
         *top      =  l;
         *left     =  t;
-        t->left_  =  l->right_;
-        l->right_ =  t;
+        t->links_[AA_LINK_LEFT]  =  l->links_[AA_LINK_RIGHT];
+        l->links_[AA_LINK_RIGHT] =  t;
     }
 }
 
 struct aa_tree_node * split( struct aa_tree_node *t )
 {
-    aa_tree_node_ptr    *right = &(t->right_);
-    struct aa_tree_node *r     =   t->right_;
+    aa_tree_node_ptr    *right = &(t->links_[AA_LINK_RIGHT]);
+    struct aa_tree_node *r     =   t->links_[AA_LINK_RIGHT];
 
-    if( 0 == r || 0 == r->right_ ) {
+    if( 0 == r || 0 == r->links_[AA_LINK_RIGHT] ) {
         return t;
     }
 
-    if( t->level_ == r->right_->level_ ) {
+    if( t->level_ == r->links_[AA_LINK_RIGHT]->level_ ) {
         *right    = t;
 
-        t->right_ = r->left_;
-        r->left_  = t;
+        t->links_[AA_LINK_RIGHT] = r->links_[AA_LINK_LEFT];
+        r->links_[AA_LINK_LEFT]  = t;
         ++r->level_;
         return r;
     }
@@ -106,19 +110,19 @@ struct aa_tree_node * split( struct aa_tree_node *t )
 void split0( aa_tree_node_ptr *top )
 {
     struct aa_tree_node *t =      *top;
-    aa_tree_node_ptr    *right = &(t->right_);
-    struct aa_tree_node *r     =   t->right_;
+    aa_tree_node_ptr    *right = &(t->links_[AA_LINK_RIGHT]);
+    struct aa_tree_node *r     =   t->links_[AA_LINK_RIGHT];
 
-    if( 0 == r || 0 == r->right_ ) {
+    if( 0 == r || 0 == r->links_[AA_LINK_RIGHT] ) {
         return;
     }
 
-    if( t->level_ == r->right_->level_ ) {
+    if( t->level_ == r->links_[AA_LINK_RIGHT]->level_ ) {
         *top      = r;
         *right    = t;
 
-        t->right_ = r->left_;
-        r->left_  = t;
+        t->links_[AA_LINK_RIGHT] = r->links_[AA_LINK_LEFT];
+        r->links_[AA_LINK_LEFT]  = t;
         ++r->level_;
     }
 }
@@ -137,17 +141,16 @@ struct aa_tree_node *aa_tree_create_node( void *data )
 void *aa_tree_node_find( struct aa_tree_node *top, void *data,
                          aa_tree_data_compare cmp)
 {
-    if( !top ) {
-        return NULL;
-    } else {
+    void *res = NULL;
+    if( top ) {
         int cmp_res = cmp( data, top->data_.ptr_ );
-        if( cmp_res < 0) {
-            return aa_tree_node_find( top->left_, data, cmp );
-        } else if( 0 < cmp_res  ) {
-            return aa_tree_node_find( top->right_, data, cmp );
+        if( 0 == cmp_res ) {
+            res = top->data_.ptr_;
+        } else {
+            res = aa_tree_node_find( top->links_[ cmp_res > 0 ], data, cmp );
         }
     }
-    return top->data_.ptr_;
+    return res;
 }
 
 
@@ -175,22 +178,17 @@ int aa_tree_node_insert( aa_tree_node_ptr *top,
     } else {
         int cmp_res = compare( data, top_node->data_.ptr_ );
 
-        if( cmp_res < 0) {
-            result = aa_tree_node_insert( &top_node->left_,
-                                          data, compare, update_call,
-                                          update);
-
-        } else if( 0 < cmp_res ) {
-            result = aa_tree_node_insert( &top_node->right_,
-                                          data, compare, update_call,
-                                          update );
-        } else {
+        if( 0 == cmp_res ) {
             if( update && update_call) {
                 if( update_call )
                     update_call( top_node->data_.ptr_, data );
                 else
                     top_node->data_.ptr_ = data;
             }
+        } else {
+            result = aa_tree_node_insert( &top_node->links_[cmp_res > 0],
+                                          data, compare, update_call,
+                                          update);
         }
 
         if( result == 1 ) {
@@ -227,27 +225,28 @@ int aa_tree_update( struct aa_tree *aat, void *data,
     return aa_tree_insert_or_update(aat, data, 1, update_call);
 }
 
-#define aa_tree_node_check_levels(t)                            \
-         (t->right_ && (t->right_->level_ < (t->level_-1)))     \
-            ||                                                  \
-         (t->left_  && (t->left_->level_  < (t->level_-1)))
-
+#define aa_tree_node_check_levels(t)                                   \
+         (t->links_[AA_LINK_RIGHT] &&                                  \
+             (t->links_[AA_LINK_RIGHT]->level_ < (t->level_-1)))       \
+            ||                                                         \
+         (t->links_[AA_LINK_LEFT]  &&                                  \
+            (t->links_[AA_LINK_LEFT]->level_  < (t->level_-1)))
 
 struct aa_tree_node *aa_tree_node_rebalance( struct aa_tree_node *t )
 {
     if( aa_tree_node_check_levels( t ) ) {
 
         --t->level_;
-        if( t->right_->level_ > t->level_ )
-            t->right_->level_ = t->level_;
+        if( t->links_[AA_LINK_RIGHT]->level_ > t->level_ )
+            t->links_[AA_LINK_RIGHT]->level_ = t->level_;
 
-        t                 = skew ( t );
-        t->right_         = skew ( t->right_ );
-        t->right_->right_ = skew ( t->right_->right_ );
-
-        t                 = split( t );
-        t->right_         = split( t->right_ );
-
+        t                        = skew ( t );
+        t->links_[AA_LINK_RIGHT] = skew ( t->links_[AA_LINK_RIGHT] );
+        t->links_[AA_LINK_RIGHT]
+         ->links_[AA_LINK_RIGHT] = skew ( t->links_[AA_LINK_RIGHT]
+                                           ->links_[AA_LINK_RIGHT] );
+        t                        = split( t );
+        t->links_[AA_LINK_RIGHT] = split( t->links_[AA_LINK_RIGHT] );
     }
     return t;
 }
@@ -255,28 +254,35 @@ struct aa_tree_node *aa_tree_node_rebalance( struct aa_tree_node *t )
 struct aa_tree_node *aa_tree_node_take_left( struct aa_tree_node * cur,
                                 aa_tree_node_ptr *bup)
 {
-    if (NULL == cur->left_ ) {
+    if (NULL == cur->links_[AA_LINK_LEFT] ) {
         *bup = cur;
-        return cur->right_;
+        return cur->links_[AA_LINK_RIGHT];
     }
 
-    cur->left_ = aa_tree_node_take_left(cur->left_, bup);
+    cur->links_[AA_LINK_LEFT] =
+            aa_tree_node_take_left(cur->links_[AA_LINK_LEFT], bup);
 
     return aa_tree_node_rebalance(cur);
 }
 
-struct aa_tree_node *aa_tree_node_del( struct aa_tree_node *deleted )
+struct aa_tree_node *aa_tree_node_del( struct aa_tree_node *del )
 {
     struct aa_tree_node *res_node = NULL;
-    if( NULL == deleted->left_ )
-        res_node = deleted->right_;
-    else if( NULL == deleted->right_ )
-        res_node = deleted->left_;
-    else {
-        deleted->right_  = aa_tree_node_take_left( deleted->right_, &res_node );
-        res_node->left_  = deleted->left_;
-        res_node->right_ = deleted->right_;
-        res_node->level_ = deleted->level_;
+    if( NULL == del->links_[AA_LINK_LEFT] ) {
+
+        res_node = del->links_[AA_LINK_RIGHT];
+
+    } else if( NULL == del->links_[AA_LINK_RIGHT] ) {
+
+        res_node = del->links_[AA_LINK_LEFT];
+
+    } else {
+
+        del->links_[AA_LINK_RIGHT]  =
+                aa_tree_node_take_left( del->links_[AA_LINK_RIGHT], &res_node );
+        res_node->links_[AA_LINK_LEFT]  = del->links_[AA_LINK_LEFT];
+        res_node->links_[AA_LINK_RIGHT] = del->links_[AA_LINK_RIGHT];
+        res_node->level_ = del->level_;
     }
     return res_node;
 }
@@ -292,25 +298,22 @@ int aa_tree_node_delete( aa_tree_node_ptr *top,
 
         int cmp_res = compare( data, t->data_.ptr_ );
 
-        if( cmp_res < 0) {
-            result = aa_tree_node_delete( &t->left_, data, compare, free_fun );
-        } else if( 0 < cmp_res ) {
-            result = aa_tree_node_delete( &t->right_, data, compare, free_fun);
-        } else {
+        if( 0 == cmp_res ) {
 
             /// aa_tree_node_del
 
             struct aa_tree_node *tmp = NULL;
-            if( NULL == t->left_ ) {
-                tmp = t->right_;
-            } else if( NULL == t->right_ ) {
-                tmp = t->left_;
+            if( NULL == t->links_[AA_LINK_LEFT] ) {
+                tmp = t->links_[AA_LINK_RIGHT];
+            } else if( NULL == t->links_[AA_LINK_RIGHT] ) {
+                tmp = t->links_[AA_LINK_LEFT];
             } else {
 
-                t->right_ = aa_tree_node_take_left( t->right_, &tmp );
+                t->links_[AA_LINK_RIGHT] =
+                        aa_tree_node_take_left(t->links_[AA_LINK_RIGHT], &tmp);
 
-                tmp->left_  = t->left_;
-                tmp->right_ = t->right_;
+                tmp->links_[AA_LINK_LEFT]  = t->links_[AA_LINK_LEFT];
+                tmp->links_[AA_LINK_RIGHT] = t->links_[AA_LINK_RIGHT];
                 tmp->level_ = t->level_;
             }
 
@@ -319,7 +322,12 @@ int aa_tree_node_delete( aa_tree_node_ptr *top,
             free( t );
             result = 1;
             t = tmp;
+
+        } else {
+            result = aa_tree_node_delete( &t->links_[cmp_res > 0],
+                                          data, compare, free_fun );
         }
+
         *top = t;
     }
     return result;
@@ -346,10 +354,10 @@ size_t aa_tree_size( struct aa_tree *aat )
 void aa_tree_free_node( struct aa_tree_node *t, aa_tree_data_free free_fun )
 {
     if( t ) {
-        aa_tree_free_node( t->left_, free_fun );
+        aa_tree_free_node( t->links_[AA_LINK_LEFT], free_fun );
         if( free_fun )
             free_fun( t->data_.ptr_ );
-        aa_tree_free_node( t->right_, free_fun );
+        aa_tree_free_node( t->links_[AA_LINK_RIGHT], free_fun );
         free( t );
     }
 }
@@ -367,58 +375,34 @@ void aa_tree_free( struct aa_tree *aat )
     aa_tree_free2(aat, aat->free_ );
 }
 
-int aa_tree_walk_ordered( struct aa_tree_node *t,
-                         aa_tree_walker wlker, size_t *accum )
+int aa_tree_walk_ordered( struct aa_tree_node *t, int order,
+                          aa_tree_walker wlker,
+                          size_t *accum )
 {
     if( t ) {
-        if( 0 == aa_tree_walk_ordered( t->left_, wlker, accum ) ) return 0;
+        if( 0 == aa_tree_walk_ordered(t->links_[order!=0], order, wlker, accum))
+            return 0;
         ++(*accum);
         if( 0 == wlker( t->data_.ptr_ ) ) return 0;
         ++(*accum);
-        if( 0 == aa_tree_walk_ordered( t->right_, wlker, accum ) ) return 0;
+        if( 0 == aa_tree_walk_ordered(t->links_[order==0], order, wlker, accum))
+            return 0;
         ++(*accum);
     }
     return 1;
 }
 
-int aa_tree_walk_reverse( struct aa_tree_node *t,
-                         aa_tree_walker wlker, size_t *accum )
-{
-    if( t ) {
-        if( 0 == aa_tree_walk_reverse( t->right_, wlker, accum ) ) return 0;
-        ++(*accum);
-        if( 0 == wlker( t->data_.ptr_ ) ) return 0;
-        ++(*accum);
-        if( 0 == aa_tree_walk_reverse( t->left_, wlker, accum ) ) return 0;
-        ++(*accum);
-    }
-    return 1;
-}
-
-int aa_tree_walk_root_left( struct aa_tree_node *t,
+int aa_tree_walk_root( struct aa_tree_node *t, int order,
                             aa_tree_walker wlker, size_t *accum )
 {
     if( t ) {
         if( 0 == wlker( t->data_.ptr_ ) ) return 0;
         ++(*accum);
-        if( 0 == aa_tree_walk_root_left( t->left_, wlker, accum ) ) return 0;
+        if( 0 == aa_tree_walk_root( t->links_[order!=0], order, wlker, accum ) )
+            return 0;
         ++(*accum);
-        if( 0 == aa_tree_walk_root_left( t->right_, wlker, accum ) ) return 0;
-        ++(*accum);
-    }
-    return 1;
-
-}
-
-int aa_tree_walk_root_right( struct aa_tree_node *t,
-                             aa_tree_walker wlker, size_t *accum )
-{
-    if( t ) {
-        if( 0 == wlker( t->data_.ptr_ ) ) return 0;
-        ++(*accum);
-        if( 0 == aa_tree_walk_root_right( t->right_, wlker, accum ) ) return 0;
-        ++(*accum);
-        if( 0 == aa_tree_walk_root_right( t->left_, wlker, accum ) ) return 0;
+        if( 0 == aa_tree_walk_root( t->links_[order==0], order, wlker, accum ) )
+            return 0;
         ++(*accum);
     }
     return 1;
@@ -432,16 +416,16 @@ void aa_tree_node_walk( struct aa_tree_node *t,
 {
     switch( direct ) {
     case AA_WALK_ORDER:
-        aa_tree_walk_ordered( t, wlker, accum );
+        aa_tree_walk_ordered( t, AA_LINK_LEFT, wlker, accum );
         break;
     case  AA_WALK_REVERSE:
-        aa_tree_walk_reverse( t, wlker, accum );
+        aa_tree_walk_ordered( t, AA_LINK_RIGHT, wlker, accum );
         break;
     case  AA_WALK_ROOT_LEFT:
-        aa_tree_walk_root_left( t, wlker, accum );
+        aa_tree_walk_root( t, AA_LINK_LEFT, wlker, accum );
         break;
     case  AA_WALK_ROOT_RIGHT:
-        aa_tree_walk_root_right( t, wlker, accum );
+        aa_tree_walk_root( t, AA_LINK_RIGHT, wlker, accum );
         break;
     }
 }
