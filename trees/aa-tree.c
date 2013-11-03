@@ -497,9 +497,11 @@ struct aa_tree_iterator *aa_tree_iterator_create_both( struct aa_tree *aat,
     if( new_iter ) {
         new_iter->stack_ = cnt_deque_new_reserved( sizeof(void *), 32 );
         if( new_iter->stack_ ) {
-            new_iter->current_ = aat->root_;
+
+            new_iter->current_   = aat->root_;
             new_iter->push_side_ = ( forward == 0 );
             new_iter->next_side_ = ( forward != 0 );
+
             if( !aa_tree_iterator_shift( new_iter, new_iter->current_ ) ) {
                 cnt_deque_free( new_iter->stack_ );
                 res = 0;
@@ -562,25 +564,5 @@ void aa_tree_non_rec_node_walk_test( struct aa_tree *aat )
             root = root->links_[1];
         }
     }
-}
-
-void aa_tree_non_rec_node_walk( struct aa_tree *aat )
-{
-    struct aa_tree_node *root = aat->root_;
-    if( root ) {
-        struct aa_tree_iterator *iter = aa_tree_reverse_iterator_create( aat );
-        if( iter ) {
-            while( !aa_tree_iterator_end( iter ) ) {
-                printf( "walk value %u\n", aa_tree_iterator_get( iter ) );
-                aa_tree_iterator_next( iter );
-            }
-            aa_tree_iterator_free( iter );
-        }
-    }
-}
-
-void aa_tree_non_rec_walk( struct aa_tree *aat )
-{
-    aa_tree_non_rec_node_walk( aat );
 }
 
