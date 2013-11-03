@@ -314,7 +314,7 @@ int aa_tree_node_delete( aa_tree_node_ptr *top,
 
                 tmp->links_[AA_LINK_LEFT]  = t->links_[AA_LINK_LEFT];
                 tmp->links_[AA_LINK_RIGHT] = t->links_[AA_LINK_RIGHT];
-                tmp->level_ = t->level_;
+                tmp->level_                = t->level_;
             }
 
             if( free_fun )
@@ -349,6 +349,12 @@ int aa_tree_delete( struct aa_tree *aat, void *data )
 size_t aa_tree_size( struct aa_tree *aat )
 {
     return aat->count_;
+}
+
+unsigned aa_tree_top_level(struct aa_tree *aat)
+{
+    if( aat->root_ ) return aat->root_->level_;
+    else return 0;
 }
 
 void aa_tree_free_node( struct aa_tree_node *t, aa_tree_data_free free_fun )

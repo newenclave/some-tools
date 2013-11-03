@@ -140,9 +140,9 @@ void *cnt_deque_back( struct cnt_deque *cnd )
     return ptr;
 }
 
-int cnt_deque_push_front2(struct cnt_deque *cnd, void *element,
-                          cnt_deque_element_copy copy_call)
+void *cnt_deque_create_front( struct cnt_deque *cnd )
 {
+    void *new_front_ptr = NULL;
     int res = 0;
     if( cnt_deque_is_on_top( cnd ) ) {
         struct cnt_deque_unit *new_top =
@@ -155,15 +155,25 @@ int cnt_deque_push_front2(struct cnt_deque *cnd, void *element,
             res = 1;
         }
     } else {
-        res = 1;
+        res  = 1;
     }
     if( res ) {
         cnd->first_ = cnt_deque_element_prev( cnd, cnd->first_ );
-        if( copy_call )
-            copy_call( cnd->first_, element, cnd->element_size_ );
+        new_front_ptr = cnd->first_;
         ++cnd->count_;
     }
-    return res;
+    return new_front_ptr;
+}
+
+
+int cnt_deque_push_front2(struct cnt_deque *cnd, void *element,
+                          cnt_deque_element_copy copy_call)
+{
+    void *new_front = cnt_deque_create_front( cnd );
+    if( new_front && copy_call) {
+        copy_call( new_front, element, cnd->element_size_ );
+    }
+    return new_front != NULL;
 }
 
 int cnt_deque_push_front( struct cnt_deque *cnd, void *element )
@@ -236,9 +246,9 @@ int cnt_deque_pop_back ( struct cnt_deque *cnd )
     return cnt_deque_pop_back2( cnd, cnd->free_ );
 }
 
-int cnt_deque_push_back2( struct cnt_deque *cnd, void *element,
-                          cnt_deque_element_copy copy_call )
+void *cnt_deque_create_back( struct cnt_deque *cnd)
 {
+    void *new_back = NULL;
     int res = 0;
     if( cnt_deque_is_on_bottom( cnd ) ) {
         struct cnt_deque_unit *new_bottom =
@@ -255,13 +265,21 @@ int cnt_deque_push_back2( struct cnt_deque *cnd, void *element,
         res = 1;
     }
     if( res ) {
-        if( copy_call )
-            copy_call( cnd->last_, element, cnd->element_size_ );
+        new_back = cnd->last_;
         cnd->last_ = cnt_deque_element_next( cnd, cnd->last_ );
         ++cnd->count_;
     }
-    return res;
+    return new_back;
+}
 
+
+int cnt_deque_push_back2( struct cnt_deque *cnd, void *element,
+                          cnt_deque_element_copy copy_call )
+{
+    void *new_back = cnt_deque_create_back( cnd );
+    if( new_back && copy_call )
+        copy_call( new_back, element, cnd->element_size_ );
+    return new_back != NULL;
 }
 
 int cnt_deque_push_back ( struct cnt_deque *cnd, void *element )

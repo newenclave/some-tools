@@ -39,7 +39,7 @@ int tree_walker( void *c )
 
 void aa_tree_fake_del( void *d )
 {
-    printf( "del %d %s\n", (int)( d ), (char *)d );
+    printf( "del %d\n", (int)( d ) );
 }
 
 void fake_freeing( size_t *elem )
@@ -62,7 +62,6 @@ void copy_element( size_t *new_place,
 
 int main( )
 {
-    goto AATREE;
 
     struct cnt_deque *cnd = cnt_deque_new2( sizeof(size_t), fake_freeing );
 
@@ -78,6 +77,7 @@ int main( )
         if( cnt_deque_size(cnd) == 57 ) break;
     }
     cnt_deque_free( cnd );
+    //goto AATREE;
 
     //return 0;
 
@@ -110,38 +110,51 @@ int main( )
 
     mm_array_free( arr );
 
-    return 0;
+    //return 0;
 
 AATREE:
 
     printf( "" );
-    struct aa_tree *aat = aa_tree_new2( strcmp );
-    int k;
+    struct aa_tree *aat = aa_tree_new( );
+    size_t k;
 
-    aa_tree_set_free( aat, aa_tree_fake_del );
+    size_t max_count = 10000000;
 
-    //for( k=0; k<14; ++k )
-    aa_tree_insert( aat, "dfghdgh" );
-    aa_tree_insert( aat, "abct" );
-    aa_tree_insert( aat, "gdfg" );
-    aa_tree_insert( aat, "gdfg" );
-    aa_tree_insert( aat, "1234567890" );
-    aa_tree_insert( aat, "gdfg" );
-    aa_tree_insert( aat, "gdfaasdfasd" );
+    for( k=0; k<max_count; k++ ) {
+        aa_tree_insert( aat, (void *)k );
+    }
+
+    for( k=0; k<max_count; k++  ) {
+        if( !aa_tree_find( aat, (void *)k  ) )
+            printf( "%u is not found\n", k );
+    }
+
+    printf("aatree top level: %u, size: %u\n",
+           aa_tree_top_level( aat ), aa_tree_size( aat ));
+    //aa_tree_set_free( aat, aa_tree_fake_del );
+
+//    //for( k=0; k<14; ++k )
+//    aa_tree_insert( aat, "dfghdgh" );
+//    aa_tree_insert( aat, "abct" );
+//    aa_tree_insert( aat, "gdfg" );
+//    aa_tree_insert( aat, "gdfg" );
+//    aa_tree_insert( aat, "1234567890" );
+//    aa_tree_insert( aat, "gdfg" );
+//    aa_tree_insert( aat, "gdfaasdfasd" );
 
 
-    printf( "String is %d \n", (aa_tree_find( aat, "1234567890" ) != 0) );
+//    printf( "String is %d \n", (aa_tree_find( aat, "1234567890" ) != 0) );
 
-    //aa_tree_delete2( aat, 7, aa_tree_fake_del );
+//    //aa_tree_delete2( aat, 7, aa_tree_fake_del );
 
-    aa_tree_walk( aat, tree_walker, AA_WALK_ORDER );
-    printf( "\n" );
-    aa_tree_walk( aat, tree_walker, AA_WALK_REVERSE );
-    printf( "\n" );
-    aa_tree_walk( aat, tree_walker, AA_WALK_ROOT_LEFT );
-    printf( "\n" );
-    aa_tree_walk( aat, tree_walker, AA_WALK_ROOT_RIGHT );
-    printf( "\n" );
+//    aa_tree_walk( aat, tree_walker, AA_WALK_ORDER );
+//    printf( "\n" );
+//    aa_tree_walk( aat, tree_walker, AA_WALK_REVERSE );
+//    printf( "\n" );
+//    aa_tree_walk( aat, tree_walker, AA_WALK_ROOT_LEFT );
+//    printf( "\n" );
+//    aa_tree_walk( aat, tree_walker, AA_WALK_ROOT_RIGHT );
+//    printf( "\n" );
 
     aa_tree_free( aat );
     return 0;
