@@ -1,5 +1,6 @@
 
 #include "aa-tree.h"
+#include "containers/cnt-deque.h"
 
 #define AA_BOTTOM_LEVEL_VALUE 1
 
@@ -30,6 +31,14 @@ struct aa_tree {
     aa_tree_data_free    free_;
     struct aa_tree_node *root_;
     unsigned             count_;
+};
+
+struct aa_tree_iterator
+{
+    struct cnt_deque    *stack_;
+    struct aa_tree_node *current_;
+    short  push_side_;
+    short  next_side_;
 };
 
 struct aa_tree *aa_tree_new3 ( aa_tree_data_compare compare,
@@ -450,8 +459,128 @@ void aa_tree_set_free( struct aa_tree *aat,
     aat->free_ = free_call;
 }
 
+int aa_tree_iterator_end( struct aa_tree_iterator *iter )
+{
+    return iter->current_ == NULL;
+}
+
+int aa_tree_iterator_shift( struct aa_tree_iterator *iter,
+                            struct aa_tree_node *root )
+{
+    while( root ) {
+        if( !cnt_deque_push_front( iter->stack_, &root ) )
+            return 0;
+        root = root->links_[iter->push_side_];
+    }
+    if( !cnt_deque_empty( iter->stack_ ) ) {
+        void **top = cnt_deque_front(iter->stack_);
+        root = (struct aa_tree_node *)*top;
+        cnt_deque_pop_front( iter->stack_ );
+    }
+    iter->current_ = root;
+    return 1;
+}
+
+
+int aa_tree_iterator_next( struct aa_tree_iterator *iter )
+{
+    struct aa_tree_node *root = iter->current_->links_[iter->next_side_];
+    return aa_tree_iterator_shift( iter, root );
+}
+
+struct aa_tree_iterator *aa_tree_iterator_create_both( struct aa_tree *aat,
+                                                       int forward)
+{
+    struct aa_tree_iterator *new_iter =
+            (struct aa_tree_iterator *)malloc( sizeof(struct aa_tree_iterator));
+    int res = 1;
+    if( new_iter ) {
+        new_iter->stack_ = cnt_deque_new_reserved( sizeof(void *), 32 );
+        if( new_iter->stack_ ) {
+            new_iter->current_ = aat->root_;
+            new_iter->push_side_ = ( forward == 0 );
+            new_iter->next_side_ = ( forward != 0 );
+            if( !aa_tree_iterator_shift( new_iter, new_iter->current_ ) ) {
+                cnt_deque_free( new_iter->stack_ );
+                res = 0;
+            }
+        } else {
+            res = 0;
+        }
+    }
+    if( !res ) {
+        free(new_iter);
+        new_iter = NULL;
+    }
+    return new_iter;
+}
+
+struct aa_tree_iterator *aa_tree_iterator_create( struct aa_tree *aat )
+{
+    return aa_tree_iterator_create_both( aat, 1 );
+}
+
+struct aa_tree_iterator *aa_tree_reverse_iterator_create( struct aa_tree *aat )
+{
+    return aa_tree_iterator_create_both( aat, 0 );
+}
+
+void aa_tree_iterator_free( struct aa_tree_iterator *iter )
+{
+    if( iter ) {
+        cnt_deque_free( iter->stack_ );
+        free(iter);
+    }
+}
+
+void *aa_tree_iterator_get( struct aa_tree_iterator *iter )
+{
+    if( !aa_tree_iterator_end( iter ) )
+        return iter->current_->data_.ptr_;
+    else
+        return NULL;
+}
+
+
+void aa_tree_non_rec_node_walk_test( struct aa_tree *aat )
+{
+    struct aa_tree_node *root = aat->root_;
+    if( root ) {
+        struct cnt_deque *deq =
+                cnt_deque_new_reserved( sizeof(struct aa_tree_node *), 32 );
+        while( 1 ) {
+            while( root ) {
+                if( !cnt_deque_push_front( deq, &root ) )
+                    return;
+                root = root->links_[0];
+            }
+            if( cnt_deque_empty( deq ) )
+                break;
+            root = (struct aa_tree_node *)(*((void **)cnt_deque_front( deq )));
+            cnt_deque_pop_front( deq );
+            printf( "walk value %u\n", root->data_.number_ );
+            root = root->links_[1];
+        }
+    }
+}
+
+void aa_tree_non_rec_node_walk( struct aa_tree *aat )
+{
+    struct aa_tree_node *root = aat->root_;
+    if( root ) {
+        struct aa_tree_iterator *iter = aa_tree_reverse_iterator_create( aat );
+        if( iter ) {
+            while( !aa_tree_iterator_end( iter ) ) {
+                printf( "walk value %u\n", aa_tree_iterator_get( iter ) );
+                aa_tree_iterator_next( iter );
+            }
+            aa_tree_iterator_free( iter );
+        }
+    }
+}
+
 void aa_tree_non_rec_walk( struct aa_tree *aat )
 {
-    // not implemented yet
+    aa_tree_non_rec_node_walk( aat );
 }
 

@@ -11,9 +11,14 @@ typedef void (* cnt_deque_element_copy)( void *new_place,
                                          size_t element_size );
 
 
-struct cnt_deque* cnt_deque_new( size_t element_size  );
-struct cnt_deque* cnt_deque_new2( size_t element_size,
+struct cnt_deque *cnt_deque_new( size_t element_size  );
+struct cnt_deque *cnt_deque_new2( size_t element_size,
                                   cnt_deque_element_free free_call );
+struct cnt_deque *cnt_deque_new_reserved ( size_t element_size,
+                                           size_t init_reserve);
+struct cnt_deque *cnt_deque_new_reserved2( size_t element_size,
+                                           size_t init_reserve,
+                                           cnt_deque_element_free free_call);
 
 void              cnt_deque_free( struct cnt_deque *cnd );
 void              cnt_deque_free2( struct cnt_deque *cnd,
@@ -22,7 +27,7 @@ void              cnt_deque_free2( struct cnt_deque *cnd,
 void              cnt_deque_set_free( struct cnt_deque *cnd,
                                       cnt_deque_element_free free_call );
 
-void              cnt_deque_empty( struct cnt_deque *cnd );
+int               cnt_deque_empty( struct cnt_deque *cnd );
 size_t            cnt_deque_size ( struct cnt_deque *cnd );
 void             *cnt_deque_front( struct cnt_deque *cnd );
 void             *cnt_deque_back ( struct cnt_deque *cnd );

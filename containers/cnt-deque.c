@@ -94,9 +94,9 @@ void cnt_deque_unit_free( struct cnt_deque *cnd,
     cnt_deque_unit_free_no_arr( unit );
 }
 
-
-struct cnt_deque* cnt_deque_new2( size_t element_size,
-                                  cnt_deque_element_free free_call )
+struct cnt_deque* cnt_deque_new_reserved2( size_t element_size,
+                                           size_t init_reserve,
+                                           cnt_deque_element_free free_call)
 {
     struct cnt_deque *new_deq =
             (struct cnt_deque *)malloc(sizeof(struct cnt_deque));
@@ -104,19 +104,38 @@ struct cnt_deque* cnt_deque_new2( size_t element_size,
         memset( new_deq, 0, sizeof(struct cnt_deque) );
         new_deq->element_size_ = element_size;
         new_deq->free_         = free_call;
-        struct cnt_deque_unit *unit = cnt_deque_unit_create( new_deq, 8 );
+        struct cnt_deque_unit *unit =
+                cnt_deque_unit_create( new_deq,
+                                       init_reserve ? init_reserve : 8);
         if( unit ) {
             new_deq->first_unit_ = new_deq->last_unit_ = unit;
             new_deq->first_ = new_deq->last_ =
-                    cnt_deque_block_at( unit, element_size, 4 );
+                    cnt_deque_block_at( unit, element_size, init_reserve >> 1 );
 
         } else {
             free(new_deq);
             new_deq = NULL;
         }
     }
-
     return new_deq;
+}
+
+struct cnt_deque* cnt_deque_new_reserved( size_t element_size,
+                                           size_t init_reserve)
+{
+    return cnt_deque_new_reserved2( element_size, init_reserve, NULL );
+}
+
+
+struct cnt_deque* cnt_deque_new2( size_t element_size,
+                                  cnt_deque_element_free free_call )
+{
+    return cnt_deque_new_reserved2( element_size, 8, free_call );
+}
+
+struct cnt_deque* cnt_deque_new( size_t element_size )
+{
+    return cnt_deque_new2( element_size, NULL );
 }
 
 void  cnt_deque_set_free( struct cnt_deque *cnd,
@@ -287,13 +306,7 @@ int cnt_deque_push_back ( struct cnt_deque *cnd, void *element )
     return cnt_deque_push_back2( cnd, element, NULL );
 }
 
-
-struct cnt_deque* cnt_deque_new( size_t element_size )
-{
-    return cnt_deque_new2( element_size, NULL );
-}
-
-void  cnt_deque_empty( struct cnt_deque *cnd )
+int cnt_deque_empty( struct cnt_deque *cnd )
 {
     return cnt_deque_empty_local(cnd);
 }

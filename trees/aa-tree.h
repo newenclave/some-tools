@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 struct aa_tree;
+struct aa_tree_iterator;
 
 typedef int  (* aa_tree_data_compare)( const void *l, const void *r );
 typedef int  (* aa_tree_data_update )( const void *old, const void *new_data );
@@ -45,6 +46,11 @@ size_t          aa_tree_walk   ( struct aa_tree *aat,
                                  aa_tree_walker wlker,
                                  enum aa_tree_directions direction );
 
-void            aa_tree_non_rec_walk( struct aa_tree *aat );
+struct aa_tree_iterator *aa_tree_iterator_create( struct aa_tree *aat );
+struct aa_tree_iterator *aa_tree_reverse_iterator_create( struct aa_tree *aat );
+void                     aa_tree_iterator_free( struct aa_tree_iterator *iter );
+int                      aa_tree_iterator_end( struct aa_tree_iterator *iter );
+int                      aa_tree_iterator_next( struct aa_tree_iterator *iter );
+void                    *aa_tree_iterator_get( struct aa_tree_iterator *iter );
 
 #endif
