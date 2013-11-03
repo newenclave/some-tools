@@ -31,15 +31,15 @@ void size_dump_( size_t b )
     printf( "\n" );
 }
 
-int tree_walker( void *d )
+int tree_walker( void *c )
 {
-    printf( " %u ", (size_t)d );
+    printf( "%s\n", c );
     return 1;
 }
 
 void aa_tree_fake_del( void *d )
 {
-    printf( "del %d\n", (int)( d ) );
+    printf( "del %d %s\n", (int)( d ), (char *)d );
 }
 
 void fake_freeing( size_t *elem )
@@ -62,6 +62,7 @@ void copy_element( size_t *new_place,
 
 int main( )
 {
+    goto AATREE;
 
     struct cnt_deque *cnd = cnt_deque_new2( sizeof(size_t), fake_freeing );
 
@@ -80,7 +81,6 @@ int main( )
 
     //return 0;
 
-    goto AATREE;
     struct mm_array *arr = mm_array_create3( 0, size_t, fake_freeing );
 
     size_t aaa[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0};
@@ -115,16 +115,18 @@ int main( )
 AATREE:
 
     printf( "" );
-    struct aa_tree *aat = aa_tree_new( );
+    struct aa_tree *aat = aa_tree_new2( strcmp );
     int k;
 
     aa_tree_set_free( aat, aa_tree_fake_del );
 
     //for( k=0; k<14; ++k )
-    for( k=15; k>=0; --k )
-        aa_tree_insert( aat, k );
+    aa_tree_insert( aat, "dfghdgh" );
+    aa_tree_insert( aat, "abct" );
+    aa_tree_insert( aat, "gdfg" );
+    aa_tree_insert( aat, "gdfaasdfasd" );
 
-    aa_tree_delete2( aat, 7, aa_tree_fake_del );
+    //aa_tree_delete2( aat, 7, aa_tree_fake_del );
 
     aa_tree_walk( aat, tree_walker, AA_WALK_ORDER );
     printf( "\n" );

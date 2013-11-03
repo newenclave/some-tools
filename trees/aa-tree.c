@@ -13,6 +13,7 @@ struct aa_tree_node {
     struct aa_tree_node    *right_;
     union  node_data {
         void    *ptr_;
+        char    *str_;
         int      number_;
     }                       data_;
     size_t                  level_;
@@ -140,9 +141,9 @@ void *aa_tree_node_find( struct aa_tree_node *top, void *data,
         return NULL;
     } else {
         int cmp_res = cmp( data, top->data_.ptr_ );
-        if( -1 == cmp_res ) {
+        if( cmp_res < 0) {
             return aa_tree_node_find( top->left_, data, cmp );
-        } else if( 1 == cmp_res  ) {
+        } else if( 0 < cmp_res  ) {
             return aa_tree_node_find( top->right_, data, cmp );
         }
     }
@@ -174,12 +175,12 @@ int aa_tree_node_insert( aa_tree_node_ptr *top,
     } else {
         int cmp_res = compare( data, top_node->data_.ptr_ );
 
-        if( -1 ==  cmp_res ) {
+        if( cmp_res < 0) {
             result = aa_tree_node_insert( &top_node->left_,
                                           data, compare, update_call,
                                           update);
 
-        } else if( 1 == cmp_res ) {
+        } else if( 0 < cmp_res ) {
             result = aa_tree_node_insert( &top_node->right_,
                                           data, compare, update_call,
                                           update );
@@ -291,9 +292,9 @@ int aa_tree_node_delete( aa_tree_node_ptr *top,
 
         int cmp_res = compare( data, t->data_.ptr_ );
 
-        if( -1 ==  cmp_res ) {
+        if( cmp_res < 0) {
             result = aa_tree_node_delete( &t->left_, data, compare, free_fun );
-        } else if( 1 == cmp_res ) {
+        } else if( 0 < cmp_res ) {
             result = aa_tree_node_delete( &t->right_, data, compare, free_fun);
         } else {
 
