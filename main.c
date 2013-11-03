@@ -78,9 +78,9 @@ int main( )
     }
     cnt_deque_free( cnd );
 
-    return 0;
+    //return 0;
 
-    //goto AATREE;
+    goto AATREE;
     struct mm_array *arr = mm_array_create3( 0, size_t, fake_freeing );
 
     size_t aaa[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0};
