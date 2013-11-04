@@ -171,6 +171,7 @@ void *aa_tree_find( struct aa_tree *aat, void *data )
 
 int aa_tree_node_insert( aa_tree_node_ptr *top,
                          void *data,
+                         aa_tree_node_ptr *inserted,
                          aa_tree_data_compare  compare,
                          aa_tree_data_update update_call, int update)
 {
@@ -179,15 +180,16 @@ int aa_tree_node_insert( aa_tree_node_ptr *top,
     if( NULL == top_node ) {
         top_node = aa_tree_create_node( data );
         if( top_node ) {
-            *top = top_node;
+            *top = *inserted = top_node;
             result = 1;
         } else {
-            result = -1;
+            *inserted = NULL;
+            result    = -1;
         }
     } else {
         int cmp_res = compare( data, top_node->data_.ptr_ );
-
         if( 0 == cmp_res ) {
+            *inserted = top_node;
             if( update && update_call) {
                 if( update_call )
                     update_call( top_node->data_.ptr_, data );
@@ -196,7 +198,8 @@ int aa_tree_node_insert( aa_tree_node_ptr *top,
             }
         } else {
             result = aa_tree_node_insert( &top_node->links_[cmp_res > 0],
-                                          data, compare, update_call,
+                                          data, inserted,
+                                          compare, update_call,
                                           update);
         }
 
@@ -211,7 +214,8 @@ int aa_tree_insert_or_update ( struct aa_tree *aat, void *data,
                                int update,
                                aa_tree_data_update update_call )
 {
-    int result = aa_tree_node_insert( &aat->root_, data,
+    struct aa_tree *node = NULL;
+    int result = aa_tree_node_insert( &aat->root_, data, &node,
                                        aat->cmp_, update_call, update );
     aat->count_ += (result == 1);
     return (result != -1);

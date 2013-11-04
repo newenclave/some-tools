@@ -88,7 +88,7 @@ void cnt_deque_unit_free( struct cnt_deque *cnd,
     void *arr_end = cnt_deque_block_end( unit );
 
     while ( begin != end && begin != arr_end ) {
-        free_call( begin );
+        if( free_call ) free_call( begin );
         begin = cnt_deque_element_next( cnd, begin );
     }
     cnt_deque_unit_free_no_arr( unit );
