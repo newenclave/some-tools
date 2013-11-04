@@ -94,9 +94,30 @@ void cnt_deque_unit_free( struct cnt_deque *cnd,
     cnt_deque_unit_free_no_arr( unit );
 }
 
-struct cnt_deque* cnt_deque_new_reserved2( size_t element_size,
-                                           size_t init_reserve,
-                                           cnt_deque_element_free free_call)
+void cnt_deque_init_unit_position( struct cnt_deque *cnd, size_t reserve,
+                                   enum cnt_deque_start_point position)
+{
+    switch( position ) {
+    case DEQUE_START_TOP:
+        cnd->first_ = cnd->last_ =
+                cnt_deque_block_begin( cnd->first_unit_ );
+        break;
+    case DEQUE_START_MIDDLE:
+        cnd->first_ = cnd->last_ =
+                cnt_deque_block_at( cnd->first_unit_, cnd->element_size_,
+                                    reserve >> 1);
+        break;
+    case DEQUE_START_BOTTOM:
+        cnd->first_ = cnd->last_ =
+                cnt_deque_block_end( cnd->first_unit_ );
+        break;
+    }
+}
+
+struct cnt_deque* cnt_deque_new_all( size_t element_size,
+                                     size_t init_reserve,
+                                     cnt_deque_element_free free_call,
+                                     enum cnt_deque_start_point position)
 {
     struct cnt_deque *new_deq =
             (struct cnt_deque *)malloc(sizeof(struct cnt_deque));
@@ -109,9 +130,7 @@ struct cnt_deque* cnt_deque_new_reserved2( size_t element_size,
                                        init_reserve ? init_reserve : 8);
         if( unit ) {
             new_deq->first_unit_ = new_deq->last_unit_ = unit;
-            new_deq->first_ = new_deq->last_ =
-                    cnt_deque_block_at( unit, element_size, init_reserve >> 1 );
-
+            cnt_deque_init_unit_position( new_deq, init_reserve, position );
         } else {
             free(new_deq);
             new_deq = NULL;
@@ -120,22 +139,37 @@ struct cnt_deque* cnt_deque_new_reserved2( size_t element_size,
     return new_deq;
 }
 
+struct cnt_deque* cnt_deque_new_reserved2( size_t element_size,
+                                           size_t init_reserve,
+                                           cnt_deque_element_free free_call)
+{
+    return cnt_deque_new_all( element_size, init_reserve,
+                              free_call, DEQUE_START_MIDDLE );
+}
+
 struct cnt_deque* cnt_deque_new_reserved( size_t element_size,
                                            size_t init_reserve)
 {
-    return cnt_deque_new_reserved2( element_size, init_reserve, NULL );
+    return cnt_deque_new_all( element_size, init_reserve,
+                              NULL, DEQUE_START_MIDDLE );
 }
 
+struct cnt_deque *cnt_deque_new_reserved_pos ( size_t element_size,
+                                     size_t init_reserve,
+                                     enum cnt_deque_start_point position)
+{
+    return cnt_deque_new_all( element_size, init_reserve, NULL, position );
+}
 
 struct cnt_deque* cnt_deque_new2( size_t element_size,
                                   cnt_deque_element_free free_call )
 {
-    return cnt_deque_new_reserved2( element_size, 8, free_call );
+    return cnt_deque_new_all( element_size, 8, free_call, DEQUE_START_MIDDLE );
 }
 
 struct cnt_deque* cnt_deque_new( size_t element_size )
 {
-    return cnt_deque_new2( element_size, NULL );
+    return cnt_deque_new_all( element_size, 8, NULL, DEQUE_START_MIDDLE );
 }
 
 void  cnt_deque_set_free( struct cnt_deque *cnd,
@@ -166,6 +200,7 @@ void *cnt_deque_create_front( struct cnt_deque *cnd )
     if( cnt_deque_is_on_top( cnd ) ) {
         struct cnt_deque_unit *new_top =
                 cnt_deque_unit_create( cnd, cnt_deque_pref_first_size(cnd) );
+
         if( new_top ) {
             bilinked_list_insert( &cnd->first_unit_->list_,
                                   &new_top->list_, BILINK_DIRECT_BACKWARD );
@@ -189,6 +224,7 @@ int cnt_deque_push_front2(struct cnt_deque *cnd, void *element,
                           cnt_deque_element_copy copy_call)
 {
     void *new_front = cnt_deque_create_front( cnd );
+    printf( "push front\n" );
     if( new_front && copy_call) {
         copy_call( new_front, element, cnd->element_size_ );
     }
