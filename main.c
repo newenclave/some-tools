@@ -119,16 +119,23 @@ AATREE:
     struct aa_tree *aat = aa_tree_new( );
     size_t k;
 
-    size_t max_count = 100;
+    size_t max_count = 10;
 
     for( k=0; k<max_count; k++ ) {
-        aa_tree_insert( aat, (void *)k );
+        int res =  aa_tree_insert( aat, (void *)k );
+        printf( "first insert: %u, %d\n", k, res );
+    }
+
+    for( k=0; k<max_count; k++ ) {
+        int res =  aa_tree_insert( aat, (void *)k );
+        printf( "second insert: %u, %d\n", k, res );
     }
 
     for( k=0; k<max_count; k++  ) {
         if( !aa_tree_find( aat, (void *)k  ) )
             printf( "%u is not found\n", k );
     }
+
 
 
     printf("aatree top level: %u, size: %u\n",
