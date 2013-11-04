@@ -464,11 +464,17 @@ int aa_tree_iterator_end( struct aa_tree_iterator *iter )
     return iter->current_ == NULL;
 }
 
+static void void_ptr_copy(void *new_place, void *element, size_t es )
+{
+    *((void **)new_place) = *((void **)element);
+    (void)(es);
+}
+
 int aa_tree_iterator_shift( struct aa_tree_iterator *iter,
                             struct aa_tree_node *root )
 {
     while( root ) {
-        if( !cnt_deque_push_front( iter->stack_, &root ) )
+        if( !cnt_deque_push_front2( iter->stack_, &root, void_ptr_copy ) )
             return 0;
         root = root->links_[iter->push_side_];
     }
@@ -495,7 +501,10 @@ struct aa_tree_iterator *aa_tree_iterator_create_both( struct aa_tree *aat,
             (struct aa_tree_iterator *)malloc( sizeof(struct aa_tree_iterator));
     int res = 1;
     if( new_iter ) {
-        new_iter->stack_ = cnt_deque_new_reserved( sizeof(void *), 32 );
+        new_iter->stack_ =
+                cnt_deque_new_reserved_pos( sizeof(void *),
+                                            aat->root_->level_ << 1,
+                                            DEQUE_START_BOTTOM);
         if( new_iter->stack_ ) {
 
             new_iter->current_   = aat->root_;
@@ -537,10 +546,7 @@ void aa_tree_iterator_free( struct aa_tree_iterator *iter )
 
 void *aa_tree_iterator_get( struct aa_tree_iterator *iter )
 {
-    if( !aa_tree_iterator_end( iter ) )
-        return iter->current_->data_.ptr_;
-    else
-        return NULL;
+    return iter->current_->data_.ptr_;
 }
 
 
