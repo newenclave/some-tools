@@ -44,7 +44,7 @@ void aa_tree_fake_del( void *d )
 
 void fake_freeing( size_t *elem )
 {
-    printf( "free element: %u %p\n", *elem, elem );
+    printf( "free element: %p\n", elem );
 }
 
 void fake_pop( size_t *elem )
@@ -117,14 +117,22 @@ AATREE:
 
     printf( "" );
     struct aa_tree *aat = aa_tree_new( );
+    aa_tree_set_free( aat, fake_freeing );
+
     size_t k;
 
-    size_t max_count = 10;
+    size_t max_count = 100;
 
     for( k=0; k<max_count; k++ ) {
         int res =  aa_tree_insert( aat, (void *)k );
         printf( "first insert: %u, %d\n", k, res );
     }
+
+    for( k=10; k<max_count-60; k++ ) {
+        int res = aa_tree_delete( aat, (void *)(k) );
+        printf( "free res: %u, %d\n", k, res );
+    }
+
 
     for( k=0; k<max_count; k++ ) {
         int res =  aa_tree_insert( aat, (void *)k );
