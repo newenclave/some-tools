@@ -119,7 +119,7 @@ AATREE:
     struct aa_tree *aat = aa_tree_new( );
     size_t k;
 
-    size_t max_count = 99;
+    size_t max_count = 100;
 
     for( k=0; k<max_count; k++ ) {
         aa_tree_insert( aat, (void *)k );
@@ -134,11 +134,12 @@ AATREE:
     printf("aatree top level: %u, size: %u\n",
            aa_tree_top_level( aat ), aa_tree_size( aat ));
 
-    struct aa_tree_iterator *iter = aa_tree_iterator_create( aat );
-    if( iter ) while ( !aa_tree_iterator_end( iter ) ) {
-        printf( "iterator data: %u\n", aa_tree_iterator_get( iter ) );
-        aa_tree_iterator_next( iter );
-    }
+    struct aa_tree_iterator *iter = aa_tree_reverse_iterator_create( aat );
+
+    //if( iter ) while ( !aa_tree_iterator_end( iter ) ) {
+        //printf( "iterator data: %u\n", aa_tree_iterator_get( iter ) );
+        //aa_tree_iterator_next( iter );
+    //}
 
     aa_tree_iterator_free( iter );
 
