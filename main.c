@@ -127,15 +127,17 @@ int main( )
     srand( time(NULL) );
 
     int i;
-    for( i=0; i<100; i++ ) {
+    for( i=0; i<10; i++ ) {
         int r = rand( ) % 1000;
         mm_array_bin_insert( bin, &i, cmp );
+        mm_array_bin_insert( bin, &r, cmp );
     }
 
     for( i=0; i<mm_array_size( bin ); ++i  ) {
         int *data = mm_array_at( bin, i );
         printf( " %u ", *data );
     }
+    printf( "\n" );
 
     return 0;
 //    goto AATREE;

@@ -3,10 +3,10 @@
 
 #include <stdlib.h>
 
-typedef void (* mm_array_element_free)( void *element );
-typedef void (* mm_array_element_copy)( void *new_place,
-                                        void *element,
-                                        size_t element_size );
+typedef void  (* mm_array_element_free)( void *element );
+typedef void *(* mm_array_element_copy)( void *new_place,
+                                         void *element,
+                                         size_t element_size );
 
 typedef int  (* mm_array_compare)( const void *lelem, const void *relem );
 

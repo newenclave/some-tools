@@ -9,13 +9,13 @@ struct mm_array {
     size_t                 element_size_;
 };
 
-#define mm_array_at_local( arr, index )                 \
+#define MM_ARRAY_AT_LOCAL( arr, index )                 \
     (((char *)mm_block_data((arr)->mmblock_)) + ((index)*(arr)->element_size_))
 
-#define mm_elements_size( arr, count )                  \
+#define MM_ELEMENTS_SIZE( arr, count )                  \
         ((arr)->element_size_ * count)
 
-#define mm_element_shift( ptr, element_size, count )    \
+#define MM_ELEMENT_SHIFT( ptr, element_size, count )    \
     (((char *)ptr) + ((element_size) * (count)))
 
 struct mm_array *mm_array_new3( size_t count, size_t element_size,
@@ -55,7 +55,7 @@ void mm_array_free2( struct mm_array *mar,
             size_t count = mm_array_size( mar );
             size_t i;
             for( i=0; i<count; ++i )
-                free_call( mm_array_at_local( mar, i ) );
+                free_call( MM_ARRAY_AT_LOCAL( mar, i ) );
         }
         mm_block_free( mar->mmblock_ );
         free( mar );
@@ -75,7 +75,7 @@ void mm_array_set_free( struct mm_array *mar,
 
 void  *mm_array_at( struct mm_array *mar, size_t element_index )
 {
-    return mm_array_at_local( mar, element_index );
+    return MM_ARRAY_AT_LOCAL( mar, element_index );
 }
 
 size_t mm_array_size( struct mm_array *mar )
@@ -85,12 +85,12 @@ size_t mm_array_size( struct mm_array *mar )
 
 void *mm_array_begin( struct mm_array *mar )
 {
-    return mm_array_at_local( mar, 0);
+    return MM_ARRAY_AT_LOCAL( mar, 0);
 }
 
 void  *mm_array_end( struct mm_array *mar )
 {
-    return mm_array_at_local( mar, mm_array_size(mar));
+    return MM_ARRAY_AT_LOCAL( mar, mm_array_size(mar));
 }
 
 size_t mm_array_element_size( struct mm_array *mar )
@@ -101,7 +101,7 @@ size_t mm_array_element_size( struct mm_array *mar )
 void *mm_array_create_back( struct mm_array *mar, size_t count )
 {
     void *tail = mm_block_create_back( mar->mmblock_,
-                                       mm_elements_size(mar, count));
+                                       MM_ELEMENTS_SIZE(mar, count));
     return tail;
 }
 
@@ -112,8 +112,8 @@ void mm_array_copy_elements( void *dst, void *src,
     if( dst && copy_call ) {
         while ( count-- ) {
             copy_call( dst, src, element_size );
-            dst = mm_element_shift( dst, element_size, 1 );
-            src = mm_element_shift( src, element_size, 1 );
+            dst = MM_ELEMENT_SHIFT( dst, element_size, 1 );
+            src = MM_ELEMENT_SHIFT( src, element_size, 1 );
         }
     }
 }
@@ -121,7 +121,7 @@ void mm_array_copy_elements( void *dst, void *src,
 int mm_array_push_back2( struct mm_array *mar, void *element, size_t count)
 {
     int res = mm_block_concat(mar->mmblock_, element,
-                              mm_elements_size(mar, count));
+                              MM_ELEMENTS_SIZE(mar, count));
     return res;
 }
 
@@ -135,7 +135,7 @@ int mm_array_push_back3( struct mm_array *mar,
                          mm_array_element_copy copy_call)
 {
     void *tail = mm_block_create_back( mar->mmblock_,
-                                       mm_elements_size(mar, count));
+                                       MM_ELEMENTS_SIZE(mar, count));
     mm_array_copy_elements(tail, element, mar->element_size_, count, copy_call);
     return (tail != NULL);
 }
@@ -143,7 +143,7 @@ int mm_array_push_back3( struct mm_array *mar,
 void *mm_array_create_front( struct mm_array *mar, size_t count )
 {
     void *head = mm_block_create_front(mar->mmblock_,
-                                       mm_elements_size(mar, count));
+                                       MM_ELEMENTS_SIZE(mar, count));
     return head;
 }
 
@@ -152,7 +152,7 @@ int mm_array_push_front2 ( struct mm_array *mar, void *element,
 {
     void *head = mm_array_create_front( mar, count );
     if( head ) {
-        memcpy( head, element, mm_elements_size( mar, count) );
+        memcpy( head, element, MM_ELEMENTS_SIZE( mar, count) );
     }
     return (head != NULL);
 }
@@ -178,9 +178,9 @@ int mm_array_resize2( struct mm_array *mar, size_t new_count,
     int res = 0;
     if( (new_count < count) && free_call ) {
         for( ; count > new_count; --count )
-            free_call( mm_array_at_local( mar, count-1 ) );
+            free_call( MM_ARRAY_AT_LOCAL( mar, count-1 ) );
     }
-    res = mm_block_resize2( mar->mmblock_, mm_elements_size(mar, new_count), 0);
+    res = mm_block_resize2( mar->mmblock_, MM_ELEMENTS_SIZE(mar, new_count), 0);
     return res;
 }
 
@@ -191,7 +191,7 @@ int mm_array_resize( struct mm_array *mar, size_t new_count )
 
 int mm_array_reserve( struct mm_array *mar, size_t count )
 {
-    return mm_block_reserve( mar->mmblock_, mm_elements_size(mar, count) );
+    return mm_block_reserve( mar->mmblock_, MM_ELEMENTS_SIZE(mar, count) );
 }
 
 size_t mm_array_available (struct mm_array *mar)
@@ -209,8 +209,8 @@ void  *mm_array_create_insertion( struct mm_array *mar,
 {
     void *insertion =
         mm_block_create_insertion( mar->mmblock_,
-               mm_elements_size( mar, pos ),
-               mm_elements_size( mar, count ));
+               MM_ELEMENTS_SIZE( mar, pos ),
+               MM_ELEMENTS_SIZE( mar, count ));
     return insertion;
 }
 
@@ -219,7 +219,7 @@ int mm_array_insert2 ( struct mm_array *mar, void *element,
 {
     void * insertion = mm_array_create_insertion( mar, pos, count );
     if( insertion ) {
-        mm_array_memcopy( insertion, element, mm_elements_size(mar, count));
+        mm_array_memcopy( insertion, element, MM_ELEMENTS_SIZE(mar, count));
     }
     return (insertion != NULL);
 }
