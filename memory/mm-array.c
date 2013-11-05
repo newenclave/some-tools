@@ -253,8 +253,7 @@ int mm_array_bin_lower_bound( struct mm_array *mar,
 
         middle = left + ((right - left) >> 1);
 
-        void *data = mm_array_at( mar, middle );
-        cmp        = cmp_call( element, data );
+        cmp    = cmp_call( element, mm_array_at( mar, middle ) );
 
         if( cmp != 0 ) {
             if( cmp < 0 ) {

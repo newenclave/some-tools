@@ -145,7 +145,11 @@ int main( )
         int *data = mm_array_at( bin, i );
         printf( " %u ", *data );
     }
-    printf( "\n" );
+
+    i = 4;
+    i = mm_array_bin_search( bin, &i, cmp );
+
+    printf( "found: %d\n", i );
 
     return 0;
 //    goto AATREE;
