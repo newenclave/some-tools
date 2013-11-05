@@ -81,7 +81,8 @@ int main( )
     //goto AATREE;
 
     //return 0;
-
+AATREE:
+    (void)( 0 );
     struct mm_array *arr = mm_array_create3( 0, size_t, fake_freeing );
 
     size_t aaa[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0};
@@ -107,13 +108,12 @@ int main( )
     back[1] = 777777;
     back[2] = 888888;
 
-    //mm_array_resize( arr, 10 );
+    mm_array_resize( arr, 10 );
 
     mm_array_free( arr );
 
-    //return 0;
+    return 0;
 
-AATREE:
 
     printf( "" );
     struct aa_tree *aat = aa_tree_new( );

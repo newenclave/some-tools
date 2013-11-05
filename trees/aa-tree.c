@@ -524,7 +524,7 @@ struct aa_tree_iterator *aa_tree_reverse_iterator_create( struct aa_tree *aat )
 void aa_tree_iterator_free( struct aa_tree_iterator *iter )
 {
     if( iter ) {
-        cnt_deque_free( iter->stack_ );
+        cnt_deque_free(iter->stack_);
         free(iter);
     }
 }
