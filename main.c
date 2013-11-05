@@ -60,6 +60,34 @@ void copy_element( size_t *new_place,
     *new_place = *element;
 }
 
+//bool bin_search( std::vector<int> &data,
+//                int val, size_t &pos )
+//{
+//    const size_t len = data.size( );
+//    size_t left   = 0;
+//    size_t right  = len;
+//    size_t middle = 0;
+//    while( right > left ) {
+//        middle = left + ((right - left) >> 1);
+//        int cmp = cmp_data( val, data[middle] );
+//        if( cmp == 0 ) {
+//            pos = middle;
+//            return true;
+//        } else if( cmp < 0 ) {
+//            right = middle;
+//        } else {
+//            if( left == middle ) {
+//                pos = left + 1;
+//                return false;
+//            } else {
+//                left  = middle;
+//            }
+//        }
+//    }
+//    pos = middle;
+//    return false;
+//}
+
 int main( )
 {
 
