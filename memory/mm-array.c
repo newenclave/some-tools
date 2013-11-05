@@ -1,4 +1,5 @@
 
+#include <string.h>
 #include "mm-array.h"
 #include "mm-block.h"
 
@@ -221,6 +222,7 @@ int mm_array_insert2 ( struct mm_array *mar, void *element,
 int mm_array_insert  ( struct mm_array *mar,
                                   void *element, size_t pos )
 {
+    (void)(pos);
     return mm_array_insert( mar, element, 1 );
 }
 
@@ -232,4 +234,55 @@ int mm_array_insert3 ( struct mm_array *mar,
     mm_array_copy_elements( insertion, element,
                                 mar->element_size_, count, copy_call );
     return (insertion != NULL);
+}
+
+int mm_array_bin_lower_bound( struct mm_array *mar,
+                              void    *element, mm_array_compare cmp_call,
+                              size_t  *position )
+{
+    size_t right  =  mm_array_element_size( mar );
+    size_t left   =  0;
+    size_t middle =  0;
+    int cmp       = -1;
+    while( (right != left) && (cmp != 0) ) {
+        middle = left + ((right - left) >> 1);
+        void *data = mm_array_at( mar, middle );
+        cmp    = cmp_call( element, data );
+        if( cmp != 0 ) {
+            if( cmp < 0 ) {
+                right = middle;
+            } else if( left == middle ) {
+                middle = left + 1;
+                right  = left;
+            } else {
+                left  = middle;
+            }
+        }
+    }
+    *position = middle;
+    return (cmp == 0);
+}
+
+int mm_array_bin_search( struct mm_array *mar, void *element,
+                         mm_array_compare cmp_call )
+{
+    size_t pos = 0;
+    int res = mm_array_bin_lower_bound( mar, element, cmp_call, &pos );
+    return res;
+}
+
+int mm_array_bin_insert2( struct mm_array *mar, void *element,
+                             mm_array_compare cmp_call,
+                             mm_array_element_copy copy_call)
+{
+    size_t pos = 0;
+    mm_array_bin_lower_bound( mar, element, cmp_call, &pos );
+    return mm_array_insert3(mar, element, pos, 1, copy_call);
+}
+
+
+int mm_array_bin_insert( struct mm_array *mar, void *element,
+                         mm_array_compare cmp_call)
+{
+    return mm_array_bin_insert2( mar, element, cmp_call, NULL );
 }

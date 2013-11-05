@@ -8,6 +8,8 @@ typedef void (* mm_array_element_copy)( void *new_place,
                                         void *element,
                                         size_t element_size );
 
+typedef int  (* mm_array_compare)( const void *lelem, const void *relem );
+
 struct mm_array;
 
 struct mm_array *mm_array_new( size_t element_size );
@@ -66,6 +68,15 @@ int    mm_array_resize2( struct mm_array *mar, size_t new_count,
 
 int    mm_array_reserve   ( struct mm_array *mar, size_t count );
 size_t mm_array_available ( struct mm_array *mar);
+
+int    mm_array_bin_search( struct mm_array *mar, void *element,
+                            mm_array_compare cmp_call);
+
+int    mm_array_bin_insert( struct mm_array *mar, void *element,
+                            mm_array_compare cmp_call);
+int    mm_array_bin_insert2( struct mm_array *mar, void *element,
+                             mm_array_compare cmp_call,
+                             mm_array_element_copy copy_call);
 
 #define MM_ARRAY_CREATE ( type ) mm_array_new( sizeof( type ) )
 #define MM_ARRAY_CREATE2( count, type ) mm_array_new2(count, sizeof(type))

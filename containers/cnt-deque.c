@@ -273,7 +273,7 @@ int cnt_deque_pop_front2( struct cnt_deque *cnd,
 
 int cnt_deque_pop_front ( struct cnt_deque *cnd )
 {
-    cnt_deque_pop_front2( cnd, cnd->free_ );
+    return cnt_deque_pop_front2( cnd, cnd->free_ );
 }
 
 int cnt_deque_pop_back2 ( struct cnt_deque *cnd,
