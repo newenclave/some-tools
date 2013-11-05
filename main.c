@@ -98,13 +98,15 @@ void copy_element( size_t *new_place,
 //    while( (right != left) && (cmp != 0) ) {
 //        middle = left + ((right - left) >> 1);
 //        cmp    = cmp_data( val, data[middle] );
-//        if( cmp < 0 ) {
-//            right = middle;
-//        } else if( left == middle ) {
-//            middle = left + 1;
-//            right  = left;
-//        } else {
-//            left  = middle;
+//        if( cmp != 0 ) {
+//            if( cmp < 0 ) {
+//                right = middle;
+//            } else if( left == middle ) {
+//                middle = left + 1;
+//                right  = left;
+//            } else {
+//                left  = middle;
+//            }
 //        }
 //    }
 //    pos = middle;
