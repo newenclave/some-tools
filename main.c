@@ -114,8 +114,10 @@ void copy_element( size_t *new_place,
 //    return (cmp == 0);
 //}
 
-int cmp( int *r, int *l )
+int cmp( int *l, int *r )
 {
+    static int i = 0;
+    printf( "chek %u\n", i++ );
     return *l < *r ? -1 : *r < *l;
 }
 
@@ -128,8 +130,15 @@ int main( )
     srand( time(NULL) );
 
     int i;
+    for( i=10; i>0; i-- ) {
+        printf( "insert\n" );
+        mm_array_bin_insert( bin, &i, cmp );
+    }
+
     for( i=0; i<10; i++ ) {
-        int r = rand( ) % 1000;
+        int r = rand( ) % 20;
+        printf( "insert\n" );
+        mm_array_bin_insert( bin, &i, cmp );
         mm_array_bin_insert( bin, &i, cmp );
         mm_array_bin_insert( bin, &r, cmp );
     }

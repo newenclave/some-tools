@@ -259,10 +259,8 @@ int mm_array_bin_lower_bound( struct mm_array *mar,
         if( cmp != 0 ) {
             if( cmp < 0 ) {
                 right = middle;
-            } else if( left == middle ) {
-                middle = left + 1;
-                right  = left;
-            } else {
+            } else  {
+                middle++;
                 left  = middle;
             }
         }
