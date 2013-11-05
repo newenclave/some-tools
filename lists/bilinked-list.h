@@ -33,10 +33,10 @@ enum bilinked_list_direction  {
 
 #define BILINKED_LIST_STEP( l, forward ) ((l)->links_[forward!=0])
 
-#define BILINKED_LIST_NEXT( l, forward ) \
+#define BILINKED_LIST_NEXT( l ) \
     BILINKED_LIST_STEP( l, BILINK_DIRECT_FORWARD )
 
-#define BILINKED_LIST_PREV( l, forward ) \
+#define BILINKED_LIST_PREV( l ) \
     BILINKED_LIST_STEP( l, BILINK_DIRECT_BACKWARD )
 
 

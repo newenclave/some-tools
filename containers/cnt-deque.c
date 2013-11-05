@@ -257,8 +257,7 @@ int cnt_deque_pop_front2( struct cnt_deque *cnd,
                                 && new_top!=cnd->last_)
         { 
             struct bilinked_list_head  *next_unit =
-                    BILINKED_LIST_NEXT(&cnd->first_unit_->list_,
-                                       BILINK_DIRECT_FORWARD);
+                    BILINKED_LIST_NEXT(&cnd->first_unit_->list_);
             BILINKED_LIST_REMOVE( &cnd->first_unit_->list_ );
             cnt_deque_unit_free_no_arr( cnd->first_unit_ );
             cnd->first_unit_ =
@@ -289,8 +288,7 @@ int cnt_deque_pop_back2 ( struct cnt_deque *cnd,
         char *last_arr = cnd->last_unit_->array_;
         if( (last_arr == new_last) && new_last!=cnd->first_) {
             struct bilinked_list_head  *next_unit =
-                    BILINKED_LIST_NEXT(&cnd->last_unit_->list_,
-                                       BILINK_DIRECT_BACKWARD);
+                    BILINKED_LIST_NEXT(&cnd->last_unit_->list_);
             BILINKED_LIST_REMOVE( &cnd->last_unit_->list_ );
             cnt_deque_unit_free_no_arr( cnd->last_unit_ );
             cnd->last_unit_ =
@@ -366,8 +364,7 @@ void cnt_deque_list_free( struct cnt_deque *cnd,
     void *begin = cnd->first_;
     void *end   = cnd->last_;
     while( unit ) {
-        struct bilinked_list_head *lh =
-                BILINKED_LIST_NEXT( &unit->list_, BILINK_DIRECT_FORWARD );
+        struct bilinked_list_head *lh = BILINKED_LIST_NEXT( &unit->list_);
         cnt_deque_unit_free( cnd, unit, begin, end, free_call );
         if( lh ) {
             unit  = FIELD_ENTRY( lh, struct cnt_deque_unit, list_ );
