@@ -114,7 +114,7 @@ void copy_element( size_t *new_place,
 //    return (cmp == 0);
 //}
 
-int cmp( int *l, int *r )
+int cmp( int *r, int *l )
 {
     return *l < *r ? -1 : *r < *l;
 }
