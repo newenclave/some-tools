@@ -137,9 +137,11 @@ int main( )
 
     for( i=0; i<10; i++ ) {
         int r = rand( ) % 20;
-        printf( "insert\n" );
+        printf( "insert %d %d %u\n", i, r, mm_array_size( bin ) );
         mm_array_bin_insert( bin, &i, cmp );
+        printf( "insert %d %d %u\n", i, r, mm_array_size( bin ) );
         mm_array_bin_insert( bin, &i, cmp );
+        printf( "insert %d %d %u\n", i, r, mm_array_size( bin ) );
         mm_array_bin_insert( bin, &r, cmp );
     }
 
