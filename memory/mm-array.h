@@ -29,9 +29,6 @@ void  *mm_array_at( struct mm_array *mar, size_t element_index );
 void  *mm_array_end( struct mm_array *mar );
 void  *mm_array_begin( struct mm_array *mar );
 
-#define mm_array_is_end( mar, ptr ) ((ptr) == mm_array_end(mar))
-#define mm_array_is_begin( mar, ptr ) ((ptr) == mm_array_begin(mar))
-
 size_t mm_array_size( struct mm_array *mar );
 size_t mm_array_element_size( struct mm_array *mar );
 
@@ -77,6 +74,9 @@ int    mm_array_bin_insert( struct mm_array *mar, void *element,
 int    mm_array_bin_insert2( struct mm_array *mar, void *element,
                              mm_array_compare cmp_call,
                              mm_array_element_copy copy_call);
+
+#define MM_ARRAY_IS_END( mar, ptr ) ((ptr) == mm_array_end(mar))
+#define MM_ARRAY_IS_BEGIN( mar, ptr ) ((ptr) == mm_array_begin(mar))
 
 #define MM_ARRAY_CREATE( type_name ) mm_array_new( sizeof(type_name) )
 #define MM_ARRAY_CREATE2( count, type_name ) \
