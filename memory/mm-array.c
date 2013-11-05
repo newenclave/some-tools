@@ -199,6 +199,11 @@ size_t mm_array_available (struct mm_array *mar)
     return (mm_block_available( mar->mmblock_ ) / mar->element_size_);
 }
 
+void *mm_array_memcopy( void *new_place, void *element, size_t element_size )
+{
+    return memcpy( new_place, element, element_size );
+}
+
 void  *mm_array_create_insertion( struct mm_array *mar,
                                   size_t pos, size_t count )
 {
@@ -214,16 +219,16 @@ int mm_array_insert2 ( struct mm_array *mar, void *element,
 {
     void * insertion = mm_array_create_insertion( mar, pos, count );
     if( insertion ) {
-        memcpy( insertion, element, mm_elements_size(mar, count));
+        mm_array_memcopy( insertion, element, mm_elements_size(mar, count));
     }
     return (insertion != NULL);
 }
 
-int mm_array_insert  ( struct mm_array *mar,
-                                  void *element, size_t pos )
+int mm_array_insert ( struct mm_array *mar,
+                       void *element, size_t pos )
 {
     (void)(pos);
-    return mm_array_insert( mar, element, 1 );
+    return mm_array_insert2( mar, element, pos, 1 );
 }
 
 int mm_array_insert3 ( struct mm_array *mar,
@@ -240,7 +245,7 @@ int mm_array_bin_lower_bound( struct mm_array *mar,
                               void    *element, mm_array_compare cmp_call,
                               size_t  *position )
 {
-    size_t right  =  mm_array_element_size( mar );
+    size_t right  =  mm_array_size( mar );
     size_t left   =  0;
     size_t middle =  0;
     int cmp       = -1;
@@ -266,6 +271,7 @@ int mm_array_bin_lower_bound( struct mm_array *mar,
     return (cmp == 0);
 }
 
+
 int mm_array_bin_search( struct mm_array *mar, void *element,
                          mm_array_compare cmp_call )
 {
@@ -287,5 +293,5 @@ int mm_array_bin_insert2( struct mm_array *mar, void *element,
 int mm_array_bin_insert( struct mm_array *mar, void *element,
                          mm_array_compare cmp_call)
 {
-    return mm_array_bin_insert2( mar, element, cmp_call, NULL );
+    return mm_array_bin_insert2( mar, element, cmp_call, mm_array_memcopy );
 }

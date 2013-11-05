@@ -78,9 +78,10 @@ int    mm_array_bin_insert2( struct mm_array *mar, void *element,
                              mm_array_compare cmp_call,
                              mm_array_element_copy copy_call);
 
-#define MM_ARRAY_CREATE ( type ) mm_array_new( sizeof( type ) )
-#define MM_ARRAY_CREATE2( count, type ) mm_array_new2(count, sizeof(type))
-#define MM_ARRAY_CREATE3( count, type, free_call ) \
-            mm_array_new3(count, sizeof(type), free_call)
+#define MM_ARRAY_CREATE( type_name ) mm_array_new( sizeof(type_name) )
+#define MM_ARRAY_CREATE2( count, type_name ) \
+            mm_array_new2(count, sizeof(type_name))
+#define MM_ARRAY_CREATE3( count, type_name, free_call ) \
+            mm_array_new3(count, sizeof(type_name), free_call)
 
 #endif // MM_ARRAY_20132910_H
