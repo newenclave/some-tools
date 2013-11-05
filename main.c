@@ -202,7 +202,7 @@ AATREE:
     printf("aatree top level: %u, size: %u\n",
            aa_tree_top_level( aat ), aa_tree_size( aat ));
 
-    struct aa_tree_iterator *iter = aa_tree_reverse_iterator_create( aat );
+    struct aa_tree_iterator *iter = aa_tree_reverse_iterator_new( aat );
 
     //if( iter ) while ( !aa_tree_iterator_end( iter ) ) {
         //printf( "iterator data: %u\n", aa_tree_iterator_get( iter ) );

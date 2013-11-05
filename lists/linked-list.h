@@ -15,18 +15,18 @@ struct linked_list_head *linked_list_last(struct linked_list_head *lst);
 size_t linked_list_length(const struct linked_list_head *lst);
 
 
-#define linked_list_insert( element, new_ptr )      \
+#define LINKED_LIST_INSERT( element, new_ptr )      \
     (new_ptr)->flink =  (element)->flink,           \
     (element)->flink =   new_ptr
 
-#define linked_list_insert_list( src, oth  )        \
+#define LINKED_LIST_INSERT_LIST( src, oth  )        \
     linked_list_last(oth)->flink = (src)->flink,    \
     (src)->flink =                 (oth)
 
-#define linked_list_insert_by_field( element, new_ptr, field_name )     \
+#define LINKED_LIST_INSERT_BY_FIELD( element, new_ptr, field_name )     \
     linked_list_insert( &(element)->field_name, &(new_ptr)->field_name )
 
-#define linked_list_insert_list_by_field( src, oth, field_name )        \
+#define LINKED_LIST_INSERT_LIST_BY_FIELD( src, oth, field_name )        \
     linked_list_insert_list( &(src)->field_name, &(oth)->field_name )
 
 size_t linked_list_map( struct linked_list_head *lst,

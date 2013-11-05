@@ -449,10 +449,11 @@ int aa_tree_iterator_end( struct aa_tree_iterator *iter )
     return iter->current_ == NULL;
 }
 
-static void void_ptr_copy(void *new_place, void *element, size_t es )
+static void *void_ptr_copy(void *new_place, void *element, size_t es )
 {
-    *((void **)new_place) = *((void **)element);
     (void)(es);
+    *((void **)new_place) = *((void **)element);
+    return new_place;
 }
 
 int aa_tree_iterator_shift( struct aa_tree_iterator *iter,
@@ -479,7 +480,7 @@ int aa_tree_iterator_next( struct aa_tree_iterator *iter )
     return aa_tree_iterator_shift( iter, root );
 }
 
-struct aa_tree_iterator *aa_tree_iterator_create_both( struct aa_tree *aat,
+struct aa_tree_iterator *aa_tree_iterator_new_both( struct aa_tree *aat,
                                                        int forward)
 {
     struct aa_tree_iterator *new_iter =
@@ -511,14 +512,14 @@ struct aa_tree_iterator *aa_tree_iterator_create_both( struct aa_tree *aat,
     return new_iter;
 }
 
-struct aa_tree_iterator *aa_tree_iterator_create( struct aa_tree *aat )
+struct aa_tree_iterator *aa_tree_iterator_new( struct aa_tree *aat )
 {
-    return aa_tree_iterator_create_both( aat, 1 );
+    return aa_tree_iterator_new_both( aat, 1 );
 }
 
-struct aa_tree_iterator *aa_tree_reverse_iterator_create( struct aa_tree *aat )
+struct aa_tree_iterator *aa_tree_reverse_iterator_new( struct aa_tree *aat )
 {
-    return aa_tree_iterator_create_both( aat, 0 );
+    return aa_tree_iterator_new_both( aat, 0 );
 }
 
 void aa_tree_iterator_free( struct aa_tree_iterator *iter )

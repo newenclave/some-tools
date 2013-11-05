@@ -30,7 +30,14 @@ enum bilinked_list_direction  {
 #define BILINKED_LIST_REMOVE_BY_FIELD( src, list_field )                      \
     BILINKED_LIST_REMOVE( &(src)->list_field )
 
-#define BILINKED_LIST_NEXT( l, forward ) ((l)->links_[forward!=0])
+
+#define BILINKED_LIST_STEP( l, forward ) ((l)->links_[forward!=0])
+
+#define BILINKED_LIST_NEXT( l, forward ) \
+    BILINKED_LIST_STEP( l, BILINK_DIRECT_FORWARD )
+
+#define BILINKED_LIST_PREV( l, forward ) \
+    BILINKED_LIST_STEP( l, BILINK_DIRECT_BACKWARD )
 
 
 size_t bilinked_list_length( struct bilinked_list_head *bll,
