@@ -67,9 +67,9 @@ int    mm_array_resize2( struct mm_array *mar, size_t new_count,
 int    mm_array_reserve   ( struct mm_array *mar, size_t count );
 size_t mm_array_available ( struct mm_array *mar);
 
-#define mm_array_create ( type ) mm_array_new( sizeof( type ) )
-#define mm_array_create2( count, type ) mm_array_new2(count, sizeof(type))
-#define mm_array_create3( count, type, free_call ) \
+#define MM_ARRAY_CREATE ( type ) mm_array_new( sizeof( type ) )
+#define MM_ARRAY_CREATE2( count, type ) mm_array_new2(count, sizeof(type))
+#define MM_ARRAY_CREATE3( count, type, free_call ) \
             mm_array_new3(count, sizeof(type), free_call)
 
 #endif // MM_ARRAY_20132910_H

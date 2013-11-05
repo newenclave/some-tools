@@ -12,25 +12,25 @@ enum bilinked_list_direction  {
     ,BILINK_DIRECT_FORWARD   = 1
 };
 
-#define bilinked_list_insert( src, new_l, forward )                           \
+#define BILINKED_LIST_INSERT( src, new_l, forward )                           \
     (new_l)->links_[forward!=0] = (src)->links_[forward!=0],                  \
     (src)  ->links_[forward!=0] = (new_l),                                    \
     (new_l)->links_[forward==0] = (src)
 
-#define bilinked_list_insert_by_field( src, new_l, list_field, forward )      \
-    bilinked_list_insert( &(src)->list_field, &(new_l)->list_field, forward )
+#define BILINKED_LIST_INSERT_BY_FIELD( src, new_l, list_field, forward )      \
+    BILINKED_LIST_INSERT( &(src)->list_field, &(new_l)->list_field, forward )
 
-#define bilinked_list_remove( src )                                           \
+#define BILINKED_LIST_REMOVE( src )                                           \
     (src)->links_[0] ?                                                        \
     (src)->links_[0]->links_[1] = (src)->links_[1] : (NULL),                  \
     (src)->links_[1] ?                                                        \
     (src)->links_[1]->links_[0] = (src)->links_[0] : (NULL)
 
 
-#define bilinked_list_remove_by_field( src, list_field )                      \
-    bilinked_list_remove( &(src)->list_field )
+#define BILINKED_LIST_REMOVE_BY_FIELD( src, list_field )                      \
+    BILINKED_LIST_REMOVE( &(src)->list_field )
 
-#define bilinked_list_next( l, forward ) ((l)->links_[forward!=0])
+#define BILINKED_LIST_NEXT( l, forward ) ((l)->links_[forward!=0])
 
 
 size_t bilinked_list_length( struct bilinked_list_head *bll,

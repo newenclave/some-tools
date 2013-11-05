@@ -5,10 +5,10 @@
 
 struct cnt_deque;
 
-typedef void (* cnt_deque_element_free)( void *element );
-typedef void (* cnt_deque_element_copy)( void *new_place,
-                                         void *element,
-                                         size_t element_size );
+typedef void  (* cnt_deque_element_free)( void *element );
+typedef void *(* cnt_deque_element_copy)( void *new_place,
+                                          void *element,
+                                          size_t element_size );
 
 enum cnt_deque_start_point {
      DEQUE_START_TOP    = 0

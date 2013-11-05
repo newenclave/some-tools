@@ -136,7 +136,7 @@ int main( )
     //return 0;
 AATREE:
     (void)( 0 );
-    struct mm_array *arr = mm_array_create3( 0, size_t, fake_freeing );
+    struct mm_array *arr = MM_ARRAY_CREATE3( 0, size_t, fake_freeing );
 
     size_t aaa[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 0};
     mm_array_push_back3( arr, aaa, 10, copy_element );
@@ -239,7 +239,7 @@ AATREE:
     aa_tree_free( aat );
     return 0;
 
-    struct mm_array *mar = mm_array_create2( 10, int );
+    struct mm_array *mar = MM_ARRAY_CREATE2( 10, int );
 
     i = 0;
     for( ;i!=10; ++i ) {
