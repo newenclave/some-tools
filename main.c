@@ -63,29 +63,52 @@ void copy_element( size_t *new_place,
 //bool bin_search( std::vector<int> &data,
 //                int val, size_t &pos )
 //{
-//    const size_t len = data.size( );
+//    size_t right  = data.size( );
 //    size_t left   = 0;
-//    size_t right  = len;
 //    size_t middle = 0;
+//    int cmp       = -1;
 //    while( right > left ) {
-//        middle = left + ((right - left) >> 1);
-//        int cmp = cmp_data( val, data[middle] );
+//        middle  = left + ((right - left) >> 1);
+//        cmp     = cmp_data( val, data[middle] );
 //        if( cmp == 0 ) {
-//            pos = middle;
-//            return true;
+//            break;
 //        } else if( cmp < 0 ) {
 //            right = middle;
 //        } else {
 //            if( left == middle ) {
-//                pos = left + 1;
-//                return false;
+//                middle = left + 1;
+//                break;
 //            } else {
 //                left  = middle;
 //            }
 //        }
 //    }
 //    pos = middle;
-//    return false;
+//    return (cmp == 0);
+//}
+
+
+//bool bin_search( std::vector<int> &data,
+//                int val, size_t &pos )
+//{
+//    size_t right  =  data.size( );
+//    size_t left   =  0;
+//    size_t middle =  0;
+//    int cmp       = -1;
+//    while( (right != left) && (cmp != 0) ) {
+//        middle = left + ((right - left) >> 1);
+//        cmp    = cmp_data( val, data[middle] );
+//        if( cmp < 0 ) {
+//            right = middle;
+//        } else if( left == middle ) {
+//            middle = left + 1;
+//            right  = left;
+//        } else {
+//            left  = middle;
+//        }
+//    }
+//    pos = middle;
+//    return (cmp == 0);
 //}
 
 int main( )
