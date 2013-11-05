@@ -245,9 +245,12 @@ int mm_array_bin_lower_bound( struct mm_array *mar,
     size_t middle =  0;
     int cmp       = -1;
     while( (right != left) && (cmp != 0) ) {
+
         middle = left + ((right - left) >> 1);
+
         void *data = mm_array_at( mar, middle );
-        cmp    = cmp_call( element, data );
+        cmp        = cmp_call( element, data );
+
         if( cmp != 0 ) {
             if( cmp < 0 ) {
                 right = middle;
