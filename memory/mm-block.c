@@ -169,13 +169,12 @@ void *mm_block_at( struct mm_block *mb, size_t position )
     return mb->data_ + position;
 }
 
-int mm_block_clear(struct mm_block *mb)
+void mm_block_clear(struct mm_block *mb)
 {
     mb->used_ = 0;
-    return 1;
 }
 
-int mm_block_swap(struct mm_block *lmb, struct mm_block *rmb)
+void mm_block_swap(struct mm_block *lmb, struct mm_block *rmb)
 {
     char   *tmp_data = lmb->data_;
     size_t  tmp_used = lmb->used_;
@@ -190,6 +189,11 @@ int mm_block_swap(struct mm_block *lmb, struct mm_block *rmb)
     rmb->capacity_   = tmp_capa;
 
     return 1;
+}
+
+void mm_block_zero(struct mm_block *mb)
+{
+    memset( mb->data_, 0, mb->used_ );
 }
 
 int mm_block_concat(struct mm_block *lmb, const void *data, size_t len)

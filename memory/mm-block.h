@@ -23,11 +23,12 @@ void  *mm_block_begin     (struct mm_block *mb);
 void  *mm_block_end       (struct mm_block *mb);
 void  *mm_block_at        (struct mm_block *mb, size_t posision);
 
-int mm_block_resize  (struct mm_block *mb, size_t new_size);
-int mm_block_resize2 (struct mm_block *mb, size_t new_size, int c);
-int mm_block_reserve (struct mm_block *mb, size_t new_size);
-int mm_block_clear   (struct mm_block *mb);
-int mm_block_swap    (struct mm_block *lmb, struct mm_block *rmb);
+int  mm_block_resize  (struct mm_block *mb, size_t new_size);
+int  mm_block_resize2 (struct mm_block *mb, size_t new_size, int c);
+int  mm_block_reserve (struct mm_block *mb, size_t new_size);
+void mm_block_clear   (struct mm_block *mb);
+void mm_block_swap    (struct mm_block *lmb, struct mm_block *rmb);
+void mm_block_zero    (struct mm_block *mb);
 
 int mm_block_concat   (struct mm_block *mb, const void *data, size_t len);
 int mm_block_concat2  (struct mm_block *mb, const struct mm_block *cmb);
