@@ -61,58 +61,6 @@ void copy_element( size_t *new_place,
     *new_place = *element;
 }
 
-//bool bin_search( std::vector<int> &data,
-//                int val, size_t &pos )
-//{
-//    size_t right  = data.size( );
-//    size_t left   = 0;
-//    size_t middle = 0;
-//    int cmp       = -1;
-//    while( right > left ) {
-//        middle  = left + ((right - left) >> 1);
-//        cmp     = cmp_data( val, data[middle] );
-//        if( cmp == 0 ) {
-//            break;
-//        } else if( cmp < 0 ) {
-//            right = middle;
-//        } else {
-//            if( left == middle ) {
-//                middle = left + 1;
-//                break;
-//            } else {
-//                left  = middle;
-//            }
-//        }
-//    }
-//    pos = middle;
-//    return (cmp == 0);
-//}
-
-
-//bool bin_search( std::vector<int> &data,
-//                int val, size_t &pos )
-//{
-//    size_t right  =  data.size( );
-//    size_t left   =  0;
-//    size_t middle =  0;
-//    int cmp       = -1;
-//    while( (right != left) && (cmp != 0) ) {
-//        middle = left + ((right - left) >> 1);
-//        cmp    = cmp_data( val, data[middle] );
-//        if( cmp != 0 ) {
-//            if( cmp < 0 ) {
-//                right = middle;
-//            } else if( left == middle ) {
-//                middle = left + 1;
-//                right  = left;
-//            } else {
-//                left  = middle;
-//            }
-//        }
-//    }
-//    pos = middle;
-//    return (cmp == 0);
-//}
 
 int cmp( int *l, int *r )
 {
@@ -121,10 +69,20 @@ int cmp( int *l, int *r )
     return *l < *r ? -1 : *r < *l;
 }
 
-
 int main( )
 {
 
+    struct mm_block *mmb = mm_block_new( 0 );
+
+    mm_block_concat( mmb, "0123456789\0", 11 );
+
+    printf( "block len = %u %s\n", mm_block_size( mmb ), mm_block_data( mmb ) );
+
+    mm_block_delete( mmb, 1, 10 );
+
+    printf( "block len = %u %s\n", mm_block_size( mmb ), mm_block_data( mmb ) );
+
+    return 0;
     struct mm_array *bin = MM_ARRAY_CREATE( int );
 
     srand( time(NULL) );
@@ -149,7 +107,10 @@ int main( )
     i = 4;
     i = mm_array_bin_search( bin, &i, cmp );
 
-    printf( "found: %d\n", i );
+
+    int j = 10;
+
+    printf( "found: %d %d\n", i, j );
 
     return 0;
 //    goto AATREE;

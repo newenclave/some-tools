@@ -30,11 +30,12 @@ int mm_block_concat   (struct mm_block *mb, const void *data, size_t len);
 int mm_block_concat2  (struct mm_block *mb, const struct mm_block *cmb);
 
 int    mm_block_push_back( struct mm_block *mb, char c);
-
 void  *mm_block_create_back( struct mm_block *mb, size_t count );
 void  *mm_block_create_front( struct mm_block *mb, size_t count );
 void  *mm_block_create_insertion( struct mm_block *mb,
                                   size_t position, size_t count );
 
+void *mm_block_delete( struct mm_block *mb, size_t position, size_t count );
+void  mm_block_reduce( struct mm_block *mb, size_t count );
 
 #endif // MM_BLOCK_20131026_H
