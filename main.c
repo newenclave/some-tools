@@ -86,11 +86,12 @@ int main( )
     }
 
     mm_array_reduce( arr, 10 );
-    mm_array_delete( arr, 10, 10 );
+    mm_array_erase( arr, 10, 10 );
 
     mm_array_free( arr );
 
     return 0;
+
     struct mm_array *bin = MM_ARRAY_CREATE( int );
 
     srand( time(NULL) );

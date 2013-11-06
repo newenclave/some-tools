@@ -308,7 +308,7 @@ int mm_array_bin_insert( struct mm_array *mar, void *element,
 }
 
 
-void *mm_array_delete2( struct mm_array *mar, size_t position, size_t count,
+void *mm_array_erase2( struct mm_array *mar, size_t position, size_t count,
                          mm_array_element_free free_call)
 {
     mm_array_free_interval( mar, position, count, free_call );
@@ -317,9 +317,9 @@ void *mm_array_delete2( struct mm_array *mar, size_t position, size_t count,
                             MM_ELEMENTS_SIZE(mar, count));
 }
 
-void *mm_array_delete( struct mm_array *mar, size_t position, size_t count )
+void *mm_array_erase( struct mm_array *mar, size_t position, size_t count )
 {
-    return mm_array_delete2( mar, position, count, mar->free_ );
+    return mm_array_erase2( mar, position, count, mar->free_ );
 }
 
 void mm_array_reduce2( struct mm_array *mar, size_t count,
@@ -332,5 +332,16 @@ void mm_array_reduce2( struct mm_array *mar, size_t count,
 void mm_array_reduce( struct mm_array *mar, size_t count )
 {
     mm_array_reduce2( mar, count, mar->free_ );
+}
+
+void mm_array_reduce_from2( struct mm_array *mar, size_t position,
+                              mm_array_element_free free_call)
+{
+    mm_array_reduce2( mar, mm_array_size( mar )-position, free_call );
+}
+
+void mm_array_reduce_from ( struct mm_array *mar, size_t position )
+{
+    mm_array_reduce_from2( mar, position, mar->free_ );
 }
 
