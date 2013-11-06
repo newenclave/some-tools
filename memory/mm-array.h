@@ -17,13 +17,10 @@ struct mm_array *mm_array_new2( size_t count, size_t element_size );
 struct mm_array *mm_array_new3( size_t count, size_t element_size,
                                      mm_array_element_free free_call);
 
-void                  mm_array_free( struct mm_array *mar );
-void                  mm_array_free2( struct mm_array *mar,
-                                      mm_array_element_free free_call );
-
-void                  mm_array_set_free( struct mm_array *mar,
-                                         mm_array_element_free free_call );
-
+void   mm_array_free( struct mm_array *mar );
+void   mm_array_free2( struct mm_array *mar, mm_array_element_free free_call );
+void   mm_array_set_free( struct mm_array *mar,
+                          mm_array_element_free free_call );
 
 void  *mm_array_at( struct mm_array *mar, size_t element_index );
 void  *mm_array_end( struct mm_array *mar );
