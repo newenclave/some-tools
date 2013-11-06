@@ -110,6 +110,8 @@ unsigned long unpack_size( const char *data, size_t len )
     return res;
 }
 
+struct three_chars { char c1; char c2; char c3; char c4; };
+
 int main( )
 {
 
@@ -135,6 +137,9 @@ int main( )
         char test[3] = { '1', '2', '3' };
         mm_array_push_back( bin, test );
     }
+
+    printf( "top char = %u\n",
+            MM_ARRAY_CAST_BEGIN( struct three_chars, bin ).c4 );
 
     mm_array_free2( bin, fake_freeing3 );
 

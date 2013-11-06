@@ -23,9 +23,9 @@ void   mm_array_free2( struct mm_array *mar, mm_array_element_free free_call );
 void   mm_array_set_free( struct mm_array *mar,
                           mm_array_element_free free_call );
 
-void  *mm_array_at( struct mm_array *mar, size_t element_index );
-void  *mm_array_end( struct mm_array *mar );
 void  *mm_array_begin( struct mm_array *mar );
+void  *mm_array_end( struct mm_array *mar );
+void  *mm_array_at( struct mm_array *mar, size_t element_index );
 
 size_t mm_array_size( struct mm_array *mar );
 size_t mm_array_element_size( struct mm_array *mar );
@@ -94,5 +94,23 @@ void   mm_array_reduce_from2( struct mm_array *mar, size_t position,
             mm_array_new2(count, sizeof(type_name))
 #define MM_ARRAY_CREATE3( count, type_name, free_call ) \
             mm_array_new3(count, sizeof(type_name), free_call)
+
+#define MM_ARRAY_CAST_PTR_BEGIN( type_name, mar ) \
+        ((type_name *)mm_array_begin( mar ))
+
+#define MM_ARRAY_CAST_BEGIN( type_name, mar ) \
+        (*MM_ARRAY_CAST_PTR_BEGIN(type_name, mar))
+
+#define MM_ARRAY_CAST_PTR_END( type_name, mar ) \
+        ((type_name *)mm_array_end( mar ))
+
+#define MM_ARRAY_CAST_END( type_name, mar ) \
+        (*MM_ARRAY_CAST_PTR_END( type_name, mar ))
+
+#define MM_ARRAY_CAST_PTR_AT( type_name, mar, index ) \
+        ((type_name *)mm_array_at( mar, (index) ))
+
+#define MM_ARRAY_CAST_AT( type_name, mar, index ) \
+        (*MM_ARRAY_CAST_PTR_AT( type_name, mar, index ))
 
 #endif // MM_ARRAY_20132910_H
