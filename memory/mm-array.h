@@ -72,6 +72,13 @@ int    mm_array_bin_insert2( struct mm_array *mar, void *element,
                              mm_array_compare cmp_call,
                              mm_array_element_copy copy_call);
 
+void  *mm_array_delete( struct mm_array *mar, size_t position, size_t count );
+void  *mm_array_delete2( struct mm_array *mar, size_t position, size_t count,
+                         mm_array_element_free free_call);
+void   mm_array_reduce( struct mm_array *mar, size_t count );
+void   mm_array_reduce2( struct mm_array *mar, size_t count,
+                         mm_array_element_free free_call);
+
 #define MM_ARRAY_IS_END( mar, ptr ) ((ptr) == mm_array_end(mar))
 #define MM_ARRAY_IS_BEGIN( mar, ptr ) ((ptr) == mm_array_begin(mar))
 

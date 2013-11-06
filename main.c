@@ -48,6 +48,11 @@ void fake_freeing( size_t *elem )
     printf( "free element: %p\n", elem );
 }
 
+void fake_freeing2( size_t *elem )
+{
+    printf( "free element: %u %p\n", *elem, elem );
+}
+
 void fake_pop( size_t *elem )
 {
     printf( "pop element: %u %p\n", *elem, elem );
@@ -71,15 +76,19 @@ int cmp( int *l, int *r )
 
 int main( )
 {
-    struct mm_block *mmb = mm_block_new( 0 );
 
-    mm_block_concat( mmb, "0123456789\0", 11 );
+    struct mm_array *arr = mm_array_new3( 0, sizeof(size_t), fake_freeing2 );
 
-    printf( "block len = %u %s\n", mm_block_size( mmb ), mm_block_data( mmb ) );
+    size_t j0;
 
-    mm_block_delete( mmb, 1, 9 );
+    for( j0=0; j0<100; ++j0 ) {
+        mm_array_push_back( arr, &j0 );
+    }
 
-    printf( "block len = %u %s\n", mm_block_size( mmb ), mm_block_data( mmb ) );
+    mm_array_reduce( arr, 10 );
+    mm_array_delete( arr, 10, 10 );
+
+    mm_array_free( arr );
 
     return 0;
     struct mm_array *bin = MM_ARRAY_CREATE( int );
