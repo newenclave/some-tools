@@ -32,12 +32,13 @@ struct mm_array *mm_array_new3( size_t count, size_t element_size,
 
     if( new_data ) {
         new_data->mmblock_ = mm_block_new( count * element_size );
-        if( NULL == new_data->mmblock_ ) {
+        if( new_data->mmblock_ ) {
+            new_data->element_size_ = element_size;
+            new_data->free_         = free_call;
+        } else {
             free( new_data );
-            return NULL;
+            new_data = NULL;
         }
-        new_data->element_size_ = element_size;
-        new_data->free_         = free_call;
     }
     return new_data;
 }
