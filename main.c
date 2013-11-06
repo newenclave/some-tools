@@ -71,14 +71,13 @@ int cmp( int *l, int *r )
 
 int main( )
 {
-
     struct mm_block *mmb = mm_block_new( 0 );
 
     mm_block_concat( mmb, "0123456789\0", 11 );
 
     printf( "block len = %u %s\n", mm_block_size( mmb ), mm_block_data( mmb ) );
 
-    mm_block_delete( mmb, 1, 10 );
+    mm_block_delete( mmb, 1, 9 );
 
     printf( "block len = %u %s\n", mm_block_size( mmb ), mm_block_data( mmb ) );
 
