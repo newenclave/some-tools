@@ -8,10 +8,6 @@ struct mm_block {
     char    *data_;
     size_t   capacity_;
     size_t   used_;
-#ifdef MM_BLOCK_USE_CUSTOM_ALLOC
-    mm_general_alloc alloc_;
-    mm_general_free  free_;
-#endif
 };
 
 typedef struct mm_block mm_block_data_type;

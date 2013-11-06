@@ -5,11 +5,6 @@
 
 struct mm_block;
 
-#ifdef MM_BLOCK_USE_CUSTOM_ALLOC
-void * (* mm_general_alloc)(size_t size);
-void   (* mm_general_free) (void *ptr);
-#endif
-
 struct mm_block *mm_block_new( size_t init_size );
 struct mm_block *mm_block_new_reserved( size_t reserve_size );
 struct mm_block *mm_block_new_copy( const struct mm_block *oth );

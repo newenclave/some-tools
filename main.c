@@ -97,8 +97,25 @@ struct mm_block *pack_size( unsigned long size )
     return block;
 }
 
+unsigned long unpack_size( const char *data, size_t len )
+{
+    unsigned long res = 0;
+    unsigned shift    = 0;
+    char next = 0;
+    while( next = (*data++) & 0x80 && len-- ) {
+        res |= next;
+        shift += 7;
+        res <<= shift;
+    }
+    res |= next;
+    return res;
+}
+
 int main( )
 {
+
+    struct mm_block *pack = pack_size( 400 );
+    unsigned long unpacked = unpack_size( mm_block_begin( pack ), mm_block_size( pack ) );
 
     struct mm_array *bin = mm_array_new( 3 );
 
