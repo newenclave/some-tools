@@ -88,7 +88,7 @@ struct mm_block *pack_size( unsigned long size )
             mm_block_push_back( block, (char)(size & 0x7F) );
         } else {
             while( size  ) {
-                char next = (char)(size & 0x7F);
+                char next = (unsigned char)(size & 0x7F);
                 next |= (( size >>= 7 ) ? 0x80 : 0x00 );
                 mm_block_push_back( block, next );
             }
@@ -99,23 +99,31 @@ struct mm_block *pack_size( unsigned long size )
 
 unsigned long unpack_size( const char *data, size_t len )
 {
-    unsigned long res = 0;
-    unsigned shift    = 0;
-    char next = 0;
-    while( next = (*data++) & 0x80 && len-- ) {
-        res |= next;
+    unsigned long res  = 0;
+    unsigned shift     = 0;
+    unsigned long next = 0;
+    if( len ) do {
+        next = *(unsigned char*)(data++);
+        res |= ((next & 0x7F) << shift);
         shift += 7;
-        res <<= shift;
-    }
-    res |= next;
+    } while ( next & 0x80 && --len );
     return res;
 }
 
 int main( )
 {
 
-    struct mm_block *pack = pack_size( 400 );
-    unsigned long unpacked = unpack_size( mm_block_begin( pack ), mm_block_size( pack ) );
+    struct mm_block *pack = pack_size( 86942 );
+    size_t packed = mm_block_size( pack );
+    unsigned long unpacked = unpack_size( mm_block_begin( pack ), packed );
+
+    int count = 0;
+    int enf = mm_block_size( pack );
+    for( ;count!=enf; ++count ) {
+        unsigned char  x = *(unsigned char *)mm_block_at( pack, count );
+        printf( " %u %x", x, x );
+    }
+    printf( " %u unpacked = %u %p\n", sizeof(long), unpacked, unpacked );
 
     struct mm_array *bin = mm_array_new( 3 );
 
