@@ -53,6 +53,12 @@ void fake_freeing2( size_t *elem )
     printf( "free element: %u %p\n", *elem, elem );
 }
 
+void fake_freeing3( char *elem )
+{
+    printf( "free element: %c %c %c %p\n",
+            elem[0], elem[1], elem[2], elem );
+}
+
 void fake_pop( size_t *elem )
 {
     printf( "pop element: %u %p\n", *elem, elem );
@@ -74,52 +80,38 @@ int cmp( int *l, int *r )
     return *l < *r ? -1 : *r < *l;
 }
 
+struct mm_block *pack_size( unsigned long size )
+{
+    struct mm_block *block = mm_block_new_reserved(sizeof( size ));
+    if( block ) {
+        if( size <= 0x7F ) {
+            mm_block_push_back( block, (char)(size & 0x7F) );
+        } else {
+            while( size  ) {
+                char next = (char)(size & 0x7F);
+                next |= (( size >>= 7 ) ? 0x80 : 0x00 );
+                mm_block_push_back( block, next );
+            }
+        }
+    }
+    return block;
+}
+
 int main( )
 {
 
-    struct mm_array *arr = mm_array_new3( 0, sizeof(size_t), fake_freeing2 );
-
-    size_t j0;
-
-    for( j0=0; j0<100; ++j0 ) {
-        mm_array_push_back( arr, &j0 );
-    }
-
-    mm_array_reduce( arr, 10 );
-    mm_array_erase( arr, 10, 10 );
-
-    mm_array_free( arr );
-
-    return 0;
-
-    struct mm_array *bin = MM_ARRAY_CREATE( int );
+    struct mm_array *bin = mm_array_new( 3 );
 
     srand( time(NULL) );
 
     int i;
     for( i=10; i>0; i-- ) {
         printf( "insert\n" );
-        mm_array_bin_insert( bin, &i, cmp );
+        char test[3] = { '1', '2', '3' };
+        mm_array_push_back( bin, test );
     }
 
-    for( i=0; i<10; i++ ) {
-        int r = rand( ) % 100;
-        printf( "insert %d %d %u\n", i, r, mm_array_size( bin ) );
-        mm_array_bin_insert( bin, &r, cmp );
-    }
-
-    for( i=0; i<mm_array_size( bin ); ++i  ) {
-        int *data = mm_array_at( bin, i );
-        printf( " %u ", *data );
-    }
-
-    i = 4;
-    i = mm_array_bin_search( bin, &i, cmp );
-
-
-    int j = 10;
-
-    printf( "found: %d %d\n", i, j );
+    mm_array_free2( bin, fake_freeing3 );
 
     return 0;
 //    goto AATREE;

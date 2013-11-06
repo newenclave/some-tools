@@ -226,7 +226,7 @@ unsigned bp_get_tail_size( struct bit_pack_data *bpd )
 size_t bp_copy_data( struct bit_pack_data *bpd, void *to, size_t maximum )
 {
     size_t data_size = mm_block_size( bpd->data_ );
-    void *data = mm_block_data( bpd->data_ );
+    void *data = mm_block_begin( bpd->data_ );
 
     if( (maximum == 0) || (data_size == 0) ) {
 

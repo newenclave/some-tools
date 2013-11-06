@@ -10,7 +10,7 @@ struct mm_array {
 };
 
 #define MM_ARRAY_AT_LOCAL( arr, index )                 \
-    (((char *)mm_block_data((arr)->mmblock_)) + ((index)*(arr)->element_size_))
+    ((char *)mm_block_at((arr)->mmblock_, (index)*(arr)->element_size_))
 
 #define MM_ELEMENTS_SIZE( arr, count )                  \
         ((arr)->element_size_ * count)

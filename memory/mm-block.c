@@ -154,9 +154,19 @@ size_t mm_block_available(struct mm_block *mb)
     return MM_BLOCK_AVAILABLE_LOCAL( mb );
 }
 
-void*  mm_block_data(struct mm_block *mb)
+void *mm_block_begin( struct mm_block *mb )
 {
     return mb->data_;
+}
+
+void *mm_block_end( struct mm_block *mb )
+{
+    return mb->data_ + mb->used_;
+}
+
+void *mm_block_at( struct mm_block *mb, size_t position )
+{
+    return mb->data_ + position;
 }
 
 int mm_block_clear(struct mm_block *mb)

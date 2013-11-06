@@ -18,7 +18,10 @@ void   mm_block_free(struct mm_block *mb);
 size_t mm_block_size      (struct mm_block *mb);
 size_t mm_block_capacity  (struct mm_block *mb);
 size_t mm_block_available (struct mm_block *mb);
-void  *mm_block_data      (struct mm_block *mb);
+
+void  *mm_block_begin     (struct mm_block *mb);
+void  *mm_block_end       (struct mm_block *mb);
+void  *mm_block_at        (struct mm_block *mb, size_t posision);
 
 int mm_block_resize  (struct mm_block *mb, size_t new_size);
 int mm_block_resize2 (struct mm_block *mb, size_t new_size, int c);
