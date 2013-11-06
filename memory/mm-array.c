@@ -54,6 +54,20 @@ struct mm_array *mm_array_new( size_t element_size )
     return mm_array_new3( 0, element_size, NULL );
 }
 
+void mm_array_swap( struct mm_array *mar, struct mm_array *other )
+{
+    mm_array_element_free tmp   = mar->free_;
+    size_t                esize = mar->element_size_;
+
+    mar->free_         = other->free_;
+    mar->element_size_ = other->element_size_;
+
+    other->free_         = tmp;
+    other->element_size_ = esize;
+
+    mm_block_swap( mar->mmblock_, other->mmblock_ );
+}
+
 void mm_array_free_interval( struct mm_array *mar,
                              size_t position, size_t count,
                              mm_array_element_free free_call )
