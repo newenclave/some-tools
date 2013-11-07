@@ -143,22 +143,22 @@ int main( )
 
     mm_array_free2( bin, fake_freeing3 );
 
-    return 0;
+//    return 0;
 //    goto AATREE;
-//    struct cnt_deque *cnd = cnt_deque_new2( sizeof(size_t), fake_freeing );
+    struct cnt_deque *cnd = cnt_deque_new2( sizeof(size_t), fake_freeing );
 
-//    size_t ci;
-//    for(ci=0; ci<100; ci++) {
-//        cnt_deque_push_front2( cnd, &ci, copy_element );
-//    }
-//    for(ci=0; ci<100; ci++) {
-//        cnt_deque_push_back2( cnd, &ci, copy_element );
-//    }
-//    while ( cnt_deque_size(cnd) ) {
-//        cnt_deque_pop_back2( cnd, fake_pop );
-//        if( cnt_deque_size(cnd) == 57 ) break;
-//    }
-//    cnt_deque_free( cnd );
+    size_t ci;
+    for(ci=0; ci<100; ci++) {
+        cnt_deque_push_front2( cnd, &ci, copy_element );
+    }
+    for(ci=0; ci<100; ci++) {
+        cnt_deque_push_back2( cnd, &ci, copy_element );
+    }
+    while ( cnt_deque_size(cnd) ) {
+        cnt_deque_pop_back2( cnd, fake_pop );
+        if( cnt_deque_size(cnd) == 57 ) break;
+    }
+    cnt_deque_free( cnd );
 //    //goto AATREE;
 
 //    //return 0;

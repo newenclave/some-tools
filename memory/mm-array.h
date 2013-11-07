@@ -90,27 +90,29 @@ void   mm_array_reduce_from2( struct mm_array *mar, size_t position,
 #define MM_ARRAY_IS_BEGIN( mar, ptr ) ((ptr) == mm_array_begin(mar))
 
 #define MM_ARRAY_CREATE( type_name ) mm_array_new( sizeof(type_name) )
-#define MM_ARRAY_CREATE2( count, type_name ) \
+
+#define MM_ARRAY_CREATE2( count, type_name )            \
             mm_array_new2(count, sizeof(type_name))
+
 #define MM_ARRAY_CREATE3( count, type_name, free_call ) \
             mm_array_new3(count, sizeof(type_name), free_call)
 
-#define MM_ARRAY_CAST_PTR_BEGIN( type_name, mar ) \
+#define MM_ARRAY_CAST_PTR_BEGIN( type_name, mar )       \
         ((type_name *)mm_array_begin( mar ))
 
-#define MM_ARRAY_CAST_BEGIN( type_name, mar ) \
+#define MM_ARRAY_CAST_BEGIN( type_name, mar )           \
         (*MM_ARRAY_CAST_PTR_BEGIN(type_name, mar))
 
-#define MM_ARRAY_CAST_PTR_END( type_name, mar ) \
+#define MM_ARRAY_CAST_PTR_END( type_name, mar )         \
         ((type_name *)mm_array_end( mar ))
 
-#define MM_ARRAY_CAST_END( type_name, mar ) \
+#define MM_ARRAY_CAST_END( type_name, mar )             \
         (*MM_ARRAY_CAST_PTR_END( type_name, mar ))
 
-#define MM_ARRAY_CAST_PTR_AT( type_name, mar, index ) \
+#define MM_ARRAY_CAST_PTR_AT( type_name, mar, index )   \
         ((type_name *)mm_array_at( mar, (index) ))
 
-#define MM_ARRAY_CAST_AT( type_name, mar, index ) \
+#define MM_ARRAY_CAST_AT( type_name, mar, index )       \
         (*MM_ARRAY_CAST_PTR_AT( type_name, mar, index ))
 
 #endif // MM_ARRAY_20132910_H
