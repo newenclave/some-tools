@@ -191,7 +191,7 @@ void *cnt_deque_back( struct cnt_deque *cnd )
     return ptr;
 }
 
-int cnt_deque_create_side( struct cnt_deque *cnd, int dir )
+int cnt_deque_new_side( struct cnt_deque *cnd, int dir )
 {
     struct cnt_deque_unit *new_unit   = NULL;
     struct cnt_deque_side *side       = &cnd->sides_[ dir];
@@ -230,7 +230,7 @@ void *cnt_deque_create_front( struct cnt_deque *cnd )
     void *new_front_ptr = NULL;
     int res = 1;
     if( CNT_DEQUE_IS_TOP( cnd ) ) {
-        res = cnt_deque_create_side( cnd, SIDE_FRONT );
+        res = cnt_deque_new_side( cnd, SIDE_FRONT );
     }
     if( res ) {
         struct cnt_deque_side *side = &cnd->sides_[SIDE_FRONT];
@@ -317,7 +317,7 @@ void *cnt_deque_create_back( struct cnt_deque *cnd)
     void *new_back = NULL;
     int res = 1;
     if( CNT_DEQUE_IS_BOTTOM( cnd ) ) {
-        res = cnt_deque_create_side( cnd, SIDE_BACK );
+        res = cnt_deque_new_side( cnd, SIDE_BACK );
     }
     if( res ) {
         struct cnt_deque_side *side = &cnd->sides_[SIDE_BACK];
