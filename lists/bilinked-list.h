@@ -13,22 +13,22 @@ enum bilinked_list_direction  {
 };
 
 #define BILINKED_LIST_INSERT( src, new_l, forward )                           \
-    (new_l)->links_[forward!=0] = (src)->links_[forward!=0],                  \
-    (src)  ->links_[forward!=0] = (new_l),                                    \
-    (new_l)->links_[forward==0] = (src)
+    ((new_l)->links_[forward!=0] = (src)->links_[forward!=0],                 \
+     (src)  ->links_[forward!=0] = (new_l),                                   \
+     (new_l)->links_[forward==0] = (src))
 
 #define BILINKED_LIST_INSERT_BY_FIELD( src, new_l, list_field, forward )      \
     BILINKED_LIST_INSERT( &(src)->list_field, &(new_l)->list_field, forward )
 
 #define BILINKED_LIST_REMOVE( src )                                           \
-    (src)->links_[0] ?                                                        \
-    (src)->links_[0]->links_[1] = (src)->links_[1] : (NULL),                  \
-    (src)->links_[1] ?                                                        \
-    (src)->links_[1]->links_[0] = (src)->links_[0] : (NULL)
+    ((src)->links_[0] ?                                                       \
+     (src)->links_[0]->links_[1] = (src)->links_[1] : (NULL),                 \
+     (src)->links_[1] ?                                                       \
+     (src)->links_[1]->links_[0] = (src)->links_[0] : (NULL))
 
 
 #define BILINKED_LIST_REMOVE_BY_FIELD( src, list_field )                      \
-    BILINKED_LIST_REMOVE( &(src)->list_field )
+    BILINKED_LIST_REMOVE(&(src)->list_field)
 
 
 #define BILINKED_LIST_STEP( l, forward ) ((l)->links_[forward!=0])

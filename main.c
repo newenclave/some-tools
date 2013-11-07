@@ -147,7 +147,7 @@ int main( )
 //    goto AATREE;
 deque_test:
     (void)(0);
-    struct cnt_deque *cnd = cnt_deque_new_reserved2( sizeof(size_t), 128, fake_freeing2 );
+    struct cnt_deque *cnd = cnt_deque_new2( sizeof(size_t), fake_freeing2 );
 
     size_t ci;
     for(ci=0; ci<100; ci++) {

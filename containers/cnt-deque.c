@@ -193,13 +193,12 @@ void *cnt_deque_back( struct cnt_deque *cnd )
 
 int cnt_deque_new_side( struct cnt_deque *cnd, int dir )
 {
-    struct cnt_deque_unit *new_unit   = NULL;
     struct cnt_deque_side *side       = &cnd->sides_[ dir];
     struct cnt_deque_side *other_side = &cnd->sides_[!dir];
 
-    new_unit = FIELD_ENTRY(
-                    BILINKED_LIST_STEP( &side->unit_->list_, dir ),
-                    struct cnt_deque_unit, list_);
+    struct cnt_deque_unit *new_unit   =
+            FIELD_ENTRY( BILINKED_LIST_STEP( &side->unit_->list_, dir ),
+                         struct cnt_deque_unit, list_);
 
     if( !new_unit ) {
         struct bilinked_list_head *other_list =
