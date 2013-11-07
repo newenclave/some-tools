@@ -270,7 +270,7 @@ void *mm_block_create_front( struct mm_block *mb, size_t count )
 
 void *mm_block_delete( struct mm_block *mb, size_t position, size_t count )
 {
-    void *tail_begin = mb->data_ +  position;
+    void  *tail_begin = mb->data_ +  position;
     size_t tail_len  = mb->used_ - (position + count);
     void *res = memmove( tail_begin, tail_begin + count, tail_len );
     mb->used_ -= count;

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 struct cnt_deque;
+struct cnt_deque_iterator;
 
 typedef void  (* cnt_deque_element_free)( void *element );
 typedef void *(* cnt_deque_element_copy)( void *new_place,

@@ -22,9 +22,7 @@ struct cnt_deque_side {
 };
 
 struct cnt_deque {
-    //struct cnt_deque_unit  *units_[2];
     struct cnt_deque_side   sides_[2];
-    //void                   *sides_[2];
     size_t                  element_size_;
     size_t                  count_;
     cnt_deque_element_free  free_;
@@ -84,6 +82,8 @@ struct cnt_deque_unit *cnt_deque_unit_create( struct cnt_deque* cnd,
     if( new_unit ) {
         new_unit->length_ = elements * cnd->element_size_;
         new_unit->array_ = (char *)malloc( new_unit->length_ );
+        printf( "create unit %u bytes %u elements\n",
+                new_unit->length_, elements );
         if( !new_unit->array_ ) {
             free( new_unit );
             new_unit = NULL;
@@ -193,27 +193,36 @@ void *cnt_deque_back( struct cnt_deque *cnd )
 
 int cnt_deque_create_side( struct cnt_deque *cnd, int dir )
 {
-    struct cnt_deque_unit *new_side = NULL;
-    struct cnt_deque_side *side     = &cnd->sides_[dir];
+    struct cnt_deque_unit *new_unit   = NULL;
+    struct cnt_deque_side *side       = &cnd->sides_[ dir];
+    struct cnt_deque_side *other_side = &cnd->sides_[!dir];
 
-    new_side = FIELD_ENTRY(
+    new_unit = FIELD_ENTRY(
                     BILINKED_LIST_STEP( &side->unit_->list_, dir ),
-                        struct cnt_deque_unit, list_);
+                    struct cnt_deque_unit, list_);
 
-    if( !new_side ) {
-        const size_t old_size = side->unit_->length_ / cnd->element_size_;
-        const size_t new_size = CNT_DEQUE_DEF_INC(old_size);
-        new_side = cnt_deque_unit_create( cnd, new_size );
+    if( !new_unit ) {
+        struct bilinked_list_head *other_list =
+                BILINKED_LIST_STEP( &other_side->unit_->list_, !dir );
+        if( other_list ) {
+            new_unit = FIELD_ENTRY( other_list, struct cnt_deque_unit, list_ );
+            BILINKED_LIST_REMOVE( other_list );
+            other_list->links_[0] = other_list->links_[1] = NULL;
+        } else {
+            const size_t old_size = side->unit_->length_ / cnd->element_size_;
+            const size_t new_size = CNT_DEQUE_DEF_INC(old_size);
+            new_unit = cnt_deque_unit_create( cnd, new_size );
+        }
     }
 
-    if( new_side ) {
+    if( new_unit ) {
         BILINKED_LIST_INSERT( &side->unit_->list_,
-                              &new_side->list_, dir );
-        side->unit_ = new_side;
-        side->ptr_  = CNT_DEQUE_BLOCK_SIDE( new_side, dir );
+                              &new_unit->list_, dir );
+        side->unit_ = new_unit;
+        side->ptr_  = CNT_DEQUE_BLOCK_SIDE( new_unit, dir );
     }
 
-    return new_side != NULL;
+    return new_unit != NULL;
 }
 
 void *cnt_deque_create_front( struct cnt_deque *cnd )

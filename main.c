@@ -50,7 +50,7 @@ void fake_freeing( size_t *elem )
 
 void fake_freeing2( size_t *elem )
 {
-    printf( "free element: %u %p\n", *elem, elem );
+    //printf( "free element: %u %p\n", *elem, elem );
 }
 
 void fake_freeing3( char *elem )
@@ -147,7 +147,7 @@ int main( )
 //    goto AATREE;
 deque_test:
     (void)(0);
-    struct cnt_deque *cnd = cnt_deque_new2( sizeof(size_t), fake_freeing2 );
+    struct cnt_deque *cnd = cnt_deque_new_reserved2( sizeof(size_t), 128, fake_freeing2 );
 
     size_t ci;
     for(ci=0; ci<100; ci++) {
@@ -159,6 +159,12 @@ deque_test:
     }
 
     printf( "------\n" );
+
+    for( ci=0; ci<100000000; ++ci ) {
+        size_t *top = cnt_deque_front( cnd );
+        cnt_deque_push_back( cnd, top );
+        cnt_deque_pop_front( cnd );
+    }
 
     for(ci=0; ci<157; ci++) {
         cnt_deque_pop_front( cnd );
