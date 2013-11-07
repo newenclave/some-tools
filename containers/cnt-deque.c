@@ -360,7 +360,7 @@ size_t cnt_deque_size ( struct cnt_deque *cnd )
 
 int cnt_deque_unit_free( struct cnt_deque *cnd,
                          struct cnt_deque_unit  *unit,
-                         void *begin, void *end,
+                         void *begin, const void *end,
                          cnt_deque_element_free free_call )
 {
     if( unit ) {
@@ -384,7 +384,7 @@ void cnt_deque_list_free( struct cnt_deque *cnd,
 
     if( free_call ) {
         void *begin = NULL;
-        void *end   = cnd->sides_[SIDE_BACK];
+        const void *end   = cnd->sides_[SIDE_BACK];
         while( head ) {
             unit = FIELD_ENTRY( head, struct cnt_deque_unit, list_ );
             begin = begin ? unit->array_

@@ -150,15 +150,19 @@ deque_test:
     struct cnt_deque *cnd = cnt_deque_new2( sizeof(size_t), fake_freeing2 );
 
     size_t ci;
-    for(ci=0; ci<10; ci++) {
+    for(ci=0; ci<100; ci++) {
         cnt_deque_push_back2( cnd, &ci, copy_element );
+    }
+
+    for(ci=0; ci<100; ci++) {
+        cnt_deque_push_front2( cnd, &ci, copy_element );
     }
 
     printf( "------\n" );
 
-//    for(ci=0; ci<100; ci++) {
-//        cnt_deque_pop_front( cnd );
-//    }
+    for(ci=0; ci<100; ci++) {
+        cnt_deque_pop_front( cnd );
+    }
 
     printf( "------\n" );
     cnt_deque_free( cnd );
