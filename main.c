@@ -158,10 +158,12 @@ deque_test:
         cnt_deque_push_front2( cnd, &ci, copy_element );
     }
 
+    printf( "size is %u \n", cnt_deque_size( cnd ) );
 
     while( !cnt_deque_empty( cnd ) ) {
         cnt_deque_pop_back( cnd );
     }
+    printf( "size is %u \n", cnt_deque_size( cnd ) );
     printf( "------\n" );
 
     //return 0;
@@ -223,49 +225,49 @@ deque_test:
 
 
 //    printf( "" );
-    struct aa_tree *aat = aa_tree_new( );
-    aa_tree_set_free( aat, fake_freeing );
+//    struct aa_tree *aat = aa_tree_new( );
+//    aa_tree_set_free( aat, fake_freeing );
 
-    size_t k;
+//    size_t k;
 
-    size_t max_count = 100;
+//    size_t max_count = 100;
 
-    for( k=0; k<max_count; k++ ) {
-        int res =  aa_tree_insert( aat, (void *)k );
-        printf( "first insert: %u, %d\n", k, res );
-    }
+//    for( k=0; k<max_count; k++ ) {
+//        int res =  aa_tree_insert( aat, (void *)k );
+//        printf( "first insert: %u, %d\n", k, res );
+//    }
 
-    for( k=10; k<max_count-60; k++ ) {
-        int res = aa_tree_delete( aat, (void *)(k) );
-        printf( "free res: %u, %d\n", k, res );
-    }
-
-
-    for( k=0; k<max_count; k++ ) {
-        int res =  aa_tree_insert( aat, (void *)k );
-        printf( "second insert: %u, %d\n", k, res );
-    }
-
-    for( k=0; k<max_count; k++  ) {
-        if( !aa_tree_find( aat, (void *)k  ) )
-            printf( "%u is not found\n", k );
-    }
+//    for( k=10; k<max_count-60; k++ ) {
+//        int res = aa_tree_delete( aat, (void *)(k) );
+//        printf( "free res: %u, %d\n", k, res );
+//    }
 
 
+//    for( k=0; k<max_count; k++ ) {
+//        int res =  aa_tree_insert( aat, (void *)k );
+//        printf( "second insert: %u, %d\n", k, res );
+//    }
 
-    printf("aatree top level: %u, size: %u\n",
-           aa_tree_top_level( aat ), aa_tree_size( aat ));
+//    for( k=0; k<max_count; k++  ) {
+//        if( !aa_tree_find( aat, (void *)k  ) )
+//            printf( "%u is not found\n", k );
+//    }
 
-    struct aa_tree_iterator *iter = aa_tree_reverse_iterator_new( aat );
 
-    if( iter ) while ( !aa_tree_iterator_end( iter ) ) {
-        printf( "iterator data: %u\n", aa_tree_iterator_get( iter ) );
-        aa_tree_iterator_next( iter );
-    }
 
-    aa_tree_iterator_free( iter );
-    aa_tree_set_free( aat, aa_tree_fake_del );
-    aa_tree_free( aat );
+//    printf("aatree top level: %u, size: %u\n",
+//           aa_tree_top_level( aat ), aa_tree_size( aat ));
+
+//    struct aa_tree_iterator *iter = aa_tree_reverse_iterator_new( aat );
+
+//    if( iter ) while ( !aa_tree_iterator_end( iter ) ) {
+//        printf( "iterator data: %u\n", aa_tree_iterator_get( iter ) );
+//        aa_tree_iterator_next( iter );
+//    }
+
+//    aa_tree_iterator_free( iter );
+//    aa_tree_set_free( aat, aa_tree_fake_del );
+//    aa_tree_free( aat );
 ////    //for( k=0; k<14; ++k )
 ////    aa_tree_insert( aat, "dfghdgh" );
 ////    aa_tree_insert( aat, "abct" );
