@@ -114,7 +114,7 @@ struct three_chars { char c1; char c2; char c3; char c4; };
 
 int main( )
 {
-
+    goto deque_test;
     struct mm_block *pack = pack_size( 86942 );
     size_t packed = mm_block_size( pack );
     unsigned long unpacked = unpack_size( mm_block_begin( pack ), packed );
@@ -145,20 +145,30 @@ int main( )
 
 //    return 0;
 //    goto AATREE;
-    struct cnt_deque *cnd = cnt_deque_new2( sizeof(size_t), fake_freeing );
+deque_test:
+    (void)(0);
+    struct cnt_deque *cnd = cnt_deque_new2( sizeof(size_t), fake_freeing2 );
 
     size_t ci;
-    for(ci=0; ci<100; ci++) {
-        cnt_deque_push_front2( cnd, &ci, copy_element );
-    }
-    for(ci=0; ci<100; ci++) {
+    for(ci=0; ci<10; ci++) {
         cnt_deque_push_back2( cnd, &ci, copy_element );
     }
-    while ( cnt_deque_size(cnd) ) {
-        cnt_deque_pop_back2( cnd, fake_pop );
-        if( cnt_deque_size(cnd) == 57 ) break;
-    }
+
+    printf( "------\n" );
+
+//    for(ci=0; ci<100; ci++) {
+//        cnt_deque_pop_front( cnd );
+//    }
+
+    printf( "------\n" );
     cnt_deque_free( cnd );
+//    for(ci=0; ci<100; ci++) {
+//        cnt_deque_push_back2( cnd, &ci, copy_element );
+//    }
+//    while ( cnt_deque_size(cnd) ) {
+//        cnt_deque_pop_back2( cnd, fake_pop );
+//        if( cnt_deque_size(cnd) == 57 ) break;
+//    }
 //    //goto AATREE;
 
 //    //return 0;
@@ -327,5 +337,5 @@ int main( )
 //    bit_pack_free( bpd );
 //    bit_unpack_free( bup );
 
-//    return 0;
+    return 0;
 }
