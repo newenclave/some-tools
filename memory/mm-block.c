@@ -183,8 +183,6 @@ void mm_block_swap(struct mm_block *lmb, struct mm_block *rmb)
     rmb->data_       = tmp_data;
     rmb->used_       = tmp_used;
     rmb->capacity_   = tmp_capa;
-
-    return 1;
 }
 
 void mm_block_zero(struct mm_block *mb)

@@ -164,11 +164,12 @@ deque_test:
         cnt_deque_pop_front( cnd );
     }
 
+    for(ci=0; ci<100; ci++) {
+        cnt_deque_push_back2( cnd, &ci, copy_element );
+    }
+
     printf( "------\n" );
     cnt_deque_free( cnd );
-//    for(ci=0; ci<100; ci++) {
-//        cnt_deque_push_back2( cnd, &ci, copy_element );
-//    }
 //    while ( cnt_deque_size(cnd) ) {
 //        cnt_deque_pop_back2( cnd, fake_pop );
 //        if( cnt_deque_size(cnd) == 57 ) break;
