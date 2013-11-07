@@ -59,7 +59,7 @@ struct cnt_deque_iterator
 #define CNT_DEQUE_BLOCK_IS_END( unit, ptr ) \
         (CNT_DEQUE_BLOCK_END( unit ) == (ptr))
 
-#define CNT_DEQUE_BLOCK_IS_SIDE( unit, ptr, side )      \
+#define CNT_DEQUE_BLOCK_IS_SIDE( unit, ptr, side )        \
         ((side) ? CNT_DEQUE_BLOCK_IS_BEGIN( unit, ptr )   \
                 : CNT_DEQUE_BLOCK_IS_END( unit, ptr ) )
 
@@ -82,8 +82,6 @@ struct cnt_deque_unit *cnt_deque_unit_create( struct cnt_deque* cnd,
     if( new_unit ) {
         new_unit->length_ = elements * cnd->element_size_;
         new_unit->array_ = (char *)malloc( new_unit->length_ );
-        printf( "create unit %u bytes %u elements\n",
-                new_unit->length_, elements );
         if( !new_unit->array_ ) {
             free( new_unit );
             new_unit = NULL;
@@ -113,7 +111,7 @@ void cnt_deque_init_unit_position( struct cnt_deque *cnd, size_t reserve,
     }
 }
 
-struct cnt_deque* cnt_deque_new_all( size_t element_size,
+struct cnt_deque *cnt_deque_new_all( size_t element_size,
                                      size_t init_reserve,
                                      cnt_deque_element_free free_call,
                                      enum cnt_deque_start_point position)
@@ -139,7 +137,7 @@ struct cnt_deque* cnt_deque_new_all( size_t element_size,
     return new_deq;
 }
 
-struct cnt_deque* cnt_deque_new_reserved2( size_t element_size,
+struct cnt_deque *cnt_deque_new_reserved2( size_t element_size,
                                            size_t init_reserve,
                                            cnt_deque_element_free free_call)
 {
@@ -147,7 +145,7 @@ struct cnt_deque* cnt_deque_new_reserved2( size_t element_size,
                               free_call, DEQUE_START_MIDDLE );
 }
 
-struct cnt_deque* cnt_deque_new_reserved( size_t element_size,
+struct cnt_deque *cnt_deque_new_reserved( size_t element_size,
                                            size_t init_reserve)
 {
     return cnt_deque_new_all( element_size, init_reserve,
@@ -161,13 +159,13 @@ struct cnt_deque *cnt_deque_new_reserved_pos ( size_t element_size,
     return cnt_deque_new_all( element_size, init_reserve, NULL, position );
 }
 
-struct cnt_deque* cnt_deque_new2( size_t element_size,
+struct cnt_deque *cnt_deque_new2( size_t element_size,
                                   cnt_deque_element_free free_call )
 {
     return cnt_deque_new_all( element_size, 8, free_call, DEQUE_START_MIDDLE );
 }
 
-struct cnt_deque* cnt_deque_new( size_t element_size )
+struct cnt_deque *cnt_deque_new( size_t element_size )
 {
     return cnt_deque_new_all( element_size, 8, NULL, DEQUE_START_MIDDLE );
 }
@@ -193,7 +191,7 @@ void *cnt_deque_back( struct cnt_deque *cnd )
 
 int cnt_deque_new_side( struct cnt_deque *cnd, int dir )
 {
-    struct cnt_deque_side *side       = &cnd->sides_[ dir];
+    struct cnt_deque_side *side       = &cnd->sides_[dir];
     struct cnt_deque_unit *new_unit   =
             FIELD_ENTRY( BILINKED_LIST_STEP( &side->unit_->list_, dir ),
                          struct cnt_deque_unit, list_);
@@ -355,7 +353,7 @@ int cnt_deque_unit_free( struct cnt_deque *cnd,
                          void *begin, const void *end,
                          cnt_deque_element_free free_call )
 {
-    void *block_end = ((char *)unit->array_) + unit->length_;
+    const void *block_end = CNT_DEQUE_BLOCK_END( unit );
     size_t element_size = cnd->element_size_;
     while( begin != end && begin != block_end ) {
         free_call( begin );
