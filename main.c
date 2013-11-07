@@ -160,7 +160,7 @@ deque_test:
 
     printf( "------\n" );
 
-    for(ci=0; ci<100; ci++) {
+    for(ci=0; ci<157; ci++) {
         cnt_deque_pop_front( cnd );
     }
 

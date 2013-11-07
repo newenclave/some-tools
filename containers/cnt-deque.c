@@ -66,25 +66,7 @@ struct cnt_deque_iterator
         ((cnd)->sides_[SIDE_BACK] == ((cnd)->units_[SIDE_BACK]->array_ \
                         + (cnd)->units_[SIDE_BACK]->length_))
 
-#define CNT_DEQUE_EMPTY_LOCAL( cnd ) \
-    ((cnd)->sides_[SIDE_FRONT] == (cnd)->sides_[SIDE_BACK])
-
-#define CNT_DEQUE_DEF_INC(size) (size + (size >> 1))
-
-#define CNT_DEQUE_PREF_TOP_SIZE( cnd )                              \
-    cnt_deque_calc_pref_size((cnd)->units_[SIDE_FRONT]->length_,    \
-                             (cnd)->element_size_)
-
-#define CNT_DEQUE_PREF_BOT_SIZE( cnd )                              \
-    cnt_deque_calc_pref_size((cnd)->units_[SIDE_BACK]->length_, \
-                             (cnd)->element_size_)
-
-size_t cnt_deque_calc_pref_size( size_t old_size, size_t element_size )
-{
-    size_t new_count = CNT_DEQUE_DEF_INC(old_size / element_size);
-    return new_count;
-}
-
+#define CNT_DEQUE_DEF_INC(size) ((size) + ((size) >> 1))
 
 struct cnt_deque_unit *cnt_deque_unit_create( struct cnt_deque* cnd,
                                               size_t elements )
@@ -211,9 +193,9 @@ int cnt_deque_create_side( struct cnt_deque *cnd, int side )
                         struct cnt_deque_unit, list_);
 
     if( !new_side ) {
-        new_side = cnt_deque_unit_create( cnd,
-                cnt_deque_calc_pref_size( cnd->units_[side]->length_,
-                                          cnd->element_size_ ) );
+        const size_t old_size = cnd->units_[side]->length_ / cnd->element_size_;
+        const size_t new_size = CNT_DEQUE_DEF_INC(old_size);
+        new_side = cnt_deque_unit_create( cnd, new_size );
     }
 
     if( new_side ) {
@@ -286,7 +268,6 @@ void cnt_deque_pop_side( struct cnt_deque *cnd, int side,
         cnd->units_[side] =
                 FIELD_ENTRY(next_unit, struct cnt_deque_unit, list_);
         new_side = CNT_DEQUE_BLOCK_SIDE(cnd->units_[side], !side);
-
     }
 
     cnd->sides_[side] = new_side;
@@ -350,7 +331,9 @@ int cnt_deque_push_back ( struct cnt_deque *cnd, void *element )
 
 int cnt_deque_empty( struct cnt_deque *cnd )
 {
-    return CNT_DEQUE_EMPTY_LOCAL(cnd);
+    //return CNT_DEQUE_EMPTY_LOCAL(cnd);
+    return cnd->sides_[SIDE_FRONT] == cnd->sides_[SIDE_BACK];
+
 }
 
 size_t cnt_deque_size ( struct cnt_deque *cnd )
@@ -383,15 +366,15 @@ void cnt_deque_list_free( struct cnt_deque *cnd,
     struct bilinked_list_head *head = &cnd->units_[SIDE_FRONT]->list_;
 
     if( free_call ) {
-        void *begin = NULL;
-        const void *end   = cnd->sides_[SIDE_BACK];
+        void *begin     = NULL;
+        const void *end = cnd->sides_[SIDE_BACK];
         while( head ) {
             unit = FIELD_ENTRY( head, struct cnt_deque_unit, list_ );
             begin = begin ? unit->array_
                           : cnd->sides_[SIDE_FRONT];
             head = BILINKED_LIST_NEXT( head );
             if(!cnt_deque_unit_free( cnd, unit, begin, end, free_call )) {
-                break;
+                head = NULL;
             }
         }
     }
