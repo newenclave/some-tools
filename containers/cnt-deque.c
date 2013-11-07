@@ -63,13 +63,13 @@ struct cnt_deque_iterator
         ((side) ? CNT_DEQUE_BLOCK_IS_BEGIN( unit, ptr )   \
                 : CNT_DEQUE_BLOCK_IS_END( unit, ptr ) )
 
-#define CNT_DEQUE_IS_TOP( cnd )            \
-        ((cnd)->sides_[SIDE_FRONT].ptr_ == \
+#define CNT_DEQUE_IS_TOP( cnd )                     \
+        ((cnd)->sides_[SIDE_FRONT].ptr_ ==          \
          (cnd)->sides_[SIDE_FRONT].unit_->array_ )
 
-#define CNT_DEQUE_IS_BOTTOM( cnd )                \
-        ((cnd)->sides_[SIDE_BACK].ptr_ ==         \
-        ((cnd)->sides_[SIDE_BACK].unit_->array_ + \
+#define CNT_DEQUE_IS_BOTTOM( cnd )                  \
+        ((cnd)->sides_[SIDE_BACK].ptr_ ==           \
+        ((cnd)->sides_[SIDE_BACK].unit_->array_ +   \
          (cnd)->sides_[SIDE_BACK].unit_->length_))
 
 #define CNT_DEQUE_DEF_INC(size) ((size) + ((size) >> 1))
@@ -322,7 +322,6 @@ void *cnt_deque_create_back( struct cnt_deque *cnd)
     }
     return new_back;
 }
-
 
 int cnt_deque_push_back2( struct cnt_deque *cnd, void *element,
                           cnt_deque_element_copy copy_call )
