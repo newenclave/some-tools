@@ -4,7 +4,7 @@
 #include "mm-block.h"
 
 struct mm_array {
-    struct mm_block  *mmblock_;
+    struct mm_block       *mmblock_;
     mm_array_element_free  free_;
     size_t                 element_size_;
 };
