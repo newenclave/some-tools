@@ -86,6 +86,13 @@ int main( )
 {
     char data[] = { 0xFF, 0xFF, 0xFF };
     size_t result = 0;
+    size_t avail = sizeof( data ) / sizeof( data[0] );
+
+    char *p = data;
+
+    int pack = b128_pack_shift( 10, &p, &avail );
+
+    printf( "pack success %u %u %u\n", pack, data[0], avail );
 
     int unpack = b128_unpack2( data, 3, &result );
 

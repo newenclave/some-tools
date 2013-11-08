@@ -4,12 +4,12 @@
 
 int b128_unpack_shift( void **data, size_t *lenght, size_t *result )
 {
-    size_t   tmp    = 0;
-    int      ret    = 0;
-    unsigned shift  = 0;
-    size_t   next   = 0xFF;
-    char    *p      = (char*)*data;
-    size_t   len    = *lenght;
+    size_t   tmp     = 0;
+    int      ret     = 0;
+    unsigned shift   = 0;
+    size_t   next    = 0xFF;
+    unsigned char *p = (unsigned char*)*data;
+    size_t   len     = *lenght;
 
     if( len ) do {
         next = *p++;
@@ -41,12 +41,16 @@ int b128_unpack( struct mm_block *container, size_t *result )
 
 int b128_pack_shift( size_t number, void **container, size_t *avail )
 {
-    int   result = 0;
-    char   *data =(char *)container;
-    size_t tmp = *avail;
+    int   result        = 0;
+    unsigned char *data = (unsigned char *)*container;
+    size_t tmp          = *avail;
+
     if( tmp ) {
         if( number <= 0x7F ) {
-            *data = (char)(number & 0x7F);
+            *data = (unsigned char)(number & 0x7F);
+            result = 1;
+            data++;
+            tmp--;
         } else {
             char next;
             while( number && tmp-- ) {
@@ -74,7 +78,7 @@ int b128_pack_append( size_t number, struct mm_block *container )
         result = mm_block_push_back( container, (char)(number & 0x7F));
     } else {
         size_t old_size = mm_block_size( container );
-        char next;
+        unsigned char next;
         result = 1;
         while( number && result ) {
             next = (unsigned char)(number & 0x7F);
