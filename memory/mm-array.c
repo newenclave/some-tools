@@ -60,9 +60,9 @@ void mm_array_swap( struct mm_array *mar, struct mm_array *other )
     size_t                esize = mar->element_size_;
     struct mm_block      *block = mar->mmblock_;
 
-    mar->free_         = other->free_;
-    mar->element_size_ = other->element_size_;
-    mar->mmblock_      = other->mmblock_;
+    mar->free_           = other->free_;
+    mar->element_size_   = other->element_size_;
+    mar->mmblock_        = other->mmblock_;
 
     other->free_         = tfree;
     other->element_size_ = esize;

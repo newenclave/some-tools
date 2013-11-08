@@ -131,7 +131,7 @@ struct cnt_deque *cnt_deque_new_all( size_t element_size,
                                        init_reserve ? init_reserve : 8);
         if( unit ) {
             new_deq->sides_[SIDE_FRONT].unit_ =
-                    new_deq->sides_[SIDE_BACK].unit_ = unit;
+                new_deq->sides_[SIDE_BACK].unit_ = unit;
             cnt_deque_init_unit_position( new_deq, init_reserve, position );
         } else {
             free(new_deq);
