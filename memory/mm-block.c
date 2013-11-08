@@ -69,8 +69,6 @@ mm_block_data_type *mm_block_new( size_t init_size )
 
     if( new_block ) {
         new_block->used_ = init_size;
-        if( init_size )
-            memset(new_block->data_, 0, init_size);
     }
 
     return new_block;
@@ -96,6 +94,11 @@ void mm_block_free(mm_block_data_type *mb)
     }
 }
 
+static void *mm_block_memset (void *data, int c, size_t len )
+{
+    return memset( data, c, len );
+}
+
 int mm_block_reserve(struct mm_block *mb, size_t new_size)
 {
     if( new_size <= mb->capacity_ ) return 1;
@@ -112,23 +115,25 @@ int mm_block_reserve(struct mm_block *mb, size_t new_size)
     return 1;
 }
 
+int mm_block_resize(struct mm_block *mb, size_t new_size)
+{
+    int result = 0;
+    if( result = mm_block_reserve( mb, new_size ) )
+        mb->used_ = new_size;
+
+    return result;
+}
+
+
 int mm_block_resize2(struct mm_block *mb, size_t new_size, int c)
 {
     size_t old_used = mb->used_;
+    int result = 0;
 
-    if( 0 == mm_block_reserve( mb, new_size ) )
-        return 0;
+    if( result = mm_block_resize(mb, new_size) && old_used < new_size)
+        mm_block_memset( &mb->data_[old_used], c, new_size - old_used );
 
-    mb->used_ = new_size;
-    if( old_used < new_size ) {
-        memset( &mb->data_[old_used], c, new_size - old_used );
-    }
-    return 1;
-}
-
-int mm_block_resize(struct mm_block *mb, size_t new_size)
-{
-    return mm_block_resize2( mb, new_size, 0 );
+    return result;
 }
 
 size_t mm_block_size(mm_block_data_type *mb)
@@ -183,7 +188,7 @@ void mm_block_swap(struct mm_block *lmb, struct mm_block *rmb)
 
 void mm_block_zero(struct mm_block *mb)
 {
-    memset( mb->data_, 0, mb->used_ );
+    mm_block_memset( mb->data_, 0, mb->used_ );
 }
 
 int mm_block_concat(struct mm_block *lmb, const void *data, size_t len)
@@ -204,7 +209,7 @@ int mm_block_push_back(struct mm_block *mb, char c)
     size_t old_capa = mb->capacity_;
     if( mb->used_ >= old_capa ) {
         size_t new_capa = MM_BLOCK_DEF_INC( old_capa );
-        if( 0 == mm_block_reserve( mb, new_capa ) )
+        if( !mm_block_reserve( mb, new_capa ) )
             return 0;
     }
     mb->data_[mb->used_++] = c;
