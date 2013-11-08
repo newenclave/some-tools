@@ -87,7 +87,7 @@ int main( )
 
     struct mm_block *container = mm_block_new_reserved( 16 );
     srand( time(NULL) );
-    int c = 0;
+    size_t c = 0;
 
     for( c=0; c<50; ++c ) {
         size_t r = rand( ) % 50000;
@@ -105,9 +105,10 @@ int main( )
         size_t r = 0;
         char *bb = b;
         int res = b128_unpack_shift( &b, &cs, &r );
-        printf( "%u=%u(%u) ", r, res, (b-bb) );
+        printf( "%u=%u ", r, res, (b-bb) );
     }
     printf( "\nlen: %u\n\n\n", cs );
 
+    mm_block_free( container );
     return 0;
 }
