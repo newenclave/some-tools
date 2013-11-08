@@ -28,6 +28,7 @@ static const size_t void_ptr_size_mask =   sizeof(void *) - 1;
       : MM_BLOCK_FIX_SIZE( new_size )
 
 
+static
 size_t mm_block_calc_prefer_size( size_t old_capa, size_t desired_size )
 {
     size_t new_capa = MM_BLOCK_FIX_SIZE(MM_BLOCK_DEF_INC(old_capa));
@@ -206,7 +207,7 @@ int mm_block_concat2(struct mm_block *lmb, const struct mm_block *rmb)
 int mm_block_push_back(struct mm_block *mb, char c)
 {
     size_t old_capa = mb->capacity_;
-    if( ( mb->used_ ) >= old_capa ) {
+    if( mb->used_ >= old_capa ) {
         size_t new_capa = MM_BLOCK_DEF_INC( old_capa );
         if( 0 == mm_block_reserve( mb, new_capa ) )
             return 0;

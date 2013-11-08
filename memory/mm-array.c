@@ -230,9 +230,9 @@ size_t mm_array_available (struct mm_array *mar)
     return (mm_block_available( mar->mmblock_ ) / mar->element_size_);
 }
 
-void *mm_array_memcopy( void *new_place, void *element, size_t element_size )
+static void *mm_array_memcopy( void *dst, void *src, size_t size )
 {
-    return memcpy( new_place, element, element_size );
+    return memcpy( dst, src, size );
 }
 
 void  *mm_array_create_insertion( struct mm_array *mar,
