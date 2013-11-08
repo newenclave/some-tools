@@ -56,7 +56,7 @@ struct mm_array *mm_array_new( size_t element_size )
 
 void mm_array_swap( struct mm_array *mar, struct mm_array *other )
 {
-    mm_array_element_free tmp   = mar->free_;
+    mm_array_element_free tfree = mar->free_;
     size_t                esize = mar->element_size_;
     struct mm_block      *block = mar->mmblock_;
 
@@ -64,7 +64,7 @@ void mm_array_swap( struct mm_array *mar, struct mm_array *other )
     mar->element_size_ = other->element_size_;
     mar->mmblock_      = other->mmblock_;
 
-    other->free_         = tmp;
+    other->free_         = tfree;
     other->element_size_ = esize;
     other->mmblock_      = block;
 
