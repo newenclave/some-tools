@@ -84,19 +84,30 @@ int cmp( int *l, int *r )
 
 int main( )
 {
-    char data[] = { 0xFF, 0xFF, 0xFF };
-    size_t result = 0;
-    size_t avail = sizeof( data ) / sizeof( data[0] );
 
-    char *p = data;
+    struct mm_block *container = mm_block_new_reserved( 16 );
+    srand( time(NULL) );
+    int c = 0;
 
-    int pack = b128_pack_shift( 10, &p, &avail );
+    for( c=0; c<50; ++c ) {
+        size_t r = rand( ) % 50000;
+        int res = b128_pack_append( r, container );
+        printf( "%u=%u ", r, res );
+    }
 
-    printf( "pack success %u %u %u\n", pack, data[0], avail );
+    size_t cs = mm_block_size(container);
+    printf( "\nlen: %u\n\n\n", cs );
 
-    int unpack = b128_unpack2( data, 3, &result );
+    char *b = mm_block_begin( container );
+    const char *e = mm_block_end( container );
 
-    printf( "unpack success %u %u\n", unpack, result );
+    while( b != e ) {
+        size_t r = 0;
+        char *bb = b;
+        int res = b128_unpack_shift( &b, &cs, &r );
+        printf( "%u=%u(%u) ", r, res, (b-bb) );
+    }
+    printf( "\nlen: %u\n\n\n", cs );
 
     return 0;
 }

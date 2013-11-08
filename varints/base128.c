@@ -15,7 +15,7 @@ int b128_unpack_shift( void **data, size_t *lenght, size_t *result )
         next = *p++;
         tmp |= ((next & 0x7F) << shift);
         shift += 7;
-    } while ( (next & 0x80) && --len );
+    } while ( --len && (next & 0x80) );
 
     ret = ((next & 0x80) == 0);
 

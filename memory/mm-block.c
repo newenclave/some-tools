@@ -98,17 +98,12 @@ void mm_block_free(mm_block_data_type *mb)
 
 int mm_block_reserve(struct mm_block *mb, size_t new_size)
 {
-    static int i=0;
-
     if( new_size <= mb->capacity_ ) return 1;
 
     new_size = mm_block_calc_prefer_size( mb->capacity_, new_size );
 
-    printf("reallock %d %d\n", i++, new_size);
-
     char *new_data = (char *)realloc(mb->data_, new_size);
     if( NULL == new_data ) {
-        printf( "reserve fail\n");
         return 0;
     } else {
         mb->data_     = new_data;
