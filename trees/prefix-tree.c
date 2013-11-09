@@ -48,7 +48,7 @@ static int pt_key_compare_8( const void *lptr, const void *rptr)
     const struct pt_key_info *l = (const struct pt_key_info *)lptr;
     const struct pt_key_info *r = (const struct pt_key_info *)rptr;
 
-    return l->key_.k8_ < r->key_.k8_ ? -1 : r->key_.k8_ < l->key_.k8_;
+    return (l->key_.k8_ < r->key_.k8_) ? -1 : (r->key_.k8_ < l->key_.k8_);
 }
 
 static void pt_key_set_8( struct pt_key_info *e, const void *k )
@@ -108,8 +108,8 @@ struct prefix_tree *prefix_tree_new2( prefix_tree_data_free free_call )
             (struct prefix_tree *)malloc(sizeof(struct prefix_tree));
     if( new_tree ) {
         if( (new_tree->root_keys_ = pt_new_keys( )) ) {
-            new_tree->ktools_ = &s_pt_key_tools[0];
-            new_tree->free_   = free_call;
+            new_tree->ktools_     = &s_pt_key_tools[0];
+            new_tree->free_       = free_call;
         } else {
             free( new_tree );
             new_tree = NULL;
@@ -199,21 +199,25 @@ int prefix_tree_insert( struct prefix_tree *pt,
 {
     struct mm_array *key_map = pt->root_keys_;
     int result = 1;
-    const size_t esize = pt->ktools_->element_size_;
+    const struct pt_key_tools_type *tools = pt->ktools_;
+
+    const size_t esize = tools->element_size_;
     const char *next = (const char *)key;
+    struct pt_key_info tmp;
 
     while( length-- && result ) {
 
-        struct pt_key_info *element = pt_key_get( pt->ktools_, key_map, next );
+        tools->set_( &tmp, next );
 
+        struct pt_key_info *element =
+            (struct pt_key_info *)mm_array_bin_find(key_map,
+                                                    &tmp, tools->cmp_);
         if( !element ) {
-            struct pt_key_info tmp;
-            pt->ktools_->set_( &tmp, next );
             tmp.flags_      = length ? 0 : PT_FLAG_FINAL;
             tmp.data_       = length ? NULL : data;
             tmp.next_keys_  = NULL;
             tmp.parent_     = pt;
-            element = mm_array_bin_insert( key_map, &tmp, pt->ktools_->cmp_ );
+            element = mm_array_bin_insert( key_map, &tmp, tools->cmp_ );
             result = (element != NULL);
         } else {
             if( 0 == length && !(element->flags_ & PT_FLAG_FINAL)) {
