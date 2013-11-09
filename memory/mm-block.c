@@ -51,6 +51,11 @@ static void mm_block_free_ptr(void *ptr)
     free(ptr);
 }
 
+void *mm_block_memcpy(void *dest, const void *src, size_t n)
+{
+    return memcpy( dest, src, n );
+}
+
 static size_t mm_block_calc_prefer_size( size_t old_capa, size_t desired_size )
 {
     size_t new_capa = MM_BLOCK_FIX_SIZE(MM_BLOCK_DEF_INC(old_capa));
@@ -107,7 +112,7 @@ struct mm_block *mm_block_new_copy( const struct mm_block *oth )
     size_t new_size = oth->used_;
     struct mm_block *new_block = mm_block_new2(new_size);
     if( new_block && (new_size > 0)) {
-        memcpy( new_block->data_, oth->data_, new_size );
+        mm_block_memcpy( new_block->data_, oth->data_, new_size );
     }
     return new_block;
 }
@@ -140,10 +145,8 @@ int mm_block_reserve(struct mm_block *mb, size_t new_size)
 
 int mm_block_resize(struct mm_block *mb, size_t new_size)
 {
-    int result = 0;
-    if( result = mm_block_reserve( mb, new_size ) )
-        mb->used_ = new_size;
-
+    int result = mm_block_reserve( mb, new_size );
+    if( result ) mb->used_ = new_size;
     return result;
 }
 
@@ -151,9 +154,10 @@ int mm_block_resize(struct mm_block *mb, size_t new_size)
 int mm_block_resize2(struct mm_block *mb, size_t new_size, int c)
 {
     size_t old_used = mb->used_;
-    int result = 0;
 
-    if( result = mm_block_resize(mb, new_size) && old_used < new_size)
+    int result = mm_block_resize(mb, new_size);
+
+    if( result && (old_used < new_size) )
         mm_block_memset( &mb->data_[old_used], c, new_size - old_used );
 
     return result;
@@ -218,7 +222,7 @@ int mm_block_concat(struct mm_block *lmb, const void *data, size_t len)
 {
     size_t old_used = lmb->used_;
     if( 0 == mm_block_resize2(lmb, old_used + len, 0) ) return 0;
-    memcpy( &lmb->data_[old_used], data, len );
+    mm_block_memcpy( &lmb->data_[old_used], data, len );
     return 1;
 }
 
@@ -268,11 +272,11 @@ void *mm_block_create_insertion( struct mm_block *mb,
             new_block->used_ = mb->used_+count;
             size_t new_tail_shift  = position + count;
             if( position ) {
-                memcpy( new_block->data_, mb->data_, position );
+                mm_block_memcpy( new_block->data_, mb->data_, position );
             }
-            memcpy( new_block->data_ + new_tail_shift,
-                           mb->data_ + position,
-                           mb->used_ - position);
+            mm_block_memcpy( new_block->data_ + new_tail_shift,
+                             mb->data_ + position,
+                             mb->used_ - position);
             mm_block_swap( mb, new_block );
             mm_block_free( new_block );
             block = mb->data_ + position;
