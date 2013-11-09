@@ -28,8 +28,27 @@ static const size_t void_ptr_size_mask =   sizeof(void *) - 1;
       : MM_BLOCK_FIX_SIZE( new_size )
 
 
-static
-size_t mm_block_calc_prefer_size( size_t old_capa, size_t desired_size )
+static void *mm_block_memset (void *data, int c, size_t len )
+{
+    return memset( data, c, len );
+}
+
+static void *mm_block_realloc(void *ptr, size_t size)
+{
+    return realloc(ptr, size);
+}
+
+static void *mm_block_malloc(size_t size)
+{
+    return malloc(size);
+}
+
+static void mm_block_free_ptr(void *ptr)
+{
+    free(ptr);
+}
+
+static size_t mm_block_calc_prefer_size( size_t old_capa, size_t desired_size )
 {
     size_t new_capa = MM_BLOCK_FIX_SIZE(MM_BLOCK_DEF_INC(old_capa));
     desired_size = MM_BLOCK_FIX_SIZE(desired_size);
@@ -42,15 +61,15 @@ size_t mm_block_calc_prefer_size( size_t old_capa, size_t desired_size )
 struct mm_block *mm_block_new_reserved( size_t reserve_size )
 {
     mm_block_data_type *new_block =
-            (mm_block_data_type *)malloc(sizeof(mm_block_data_type));
+            (mm_block_data_type *)mm_block_malloc(sizeof(mm_block_data_type));
 
     size_t new_size = MM_BLOCK_FIX_SIZE0(reserve_size);
 
     new_block->data_ = NULL;
     if( new_size ) {
-        new_block->data_ = (char *)malloc(new_size);
+        new_block->data_ = (char *)mm_block_malloc(new_size);
         if( NULL == new_block->data_ ) {
-            free(new_block);
+            mm_block_free_ptr(new_block);
             return NULL;
         }
     }
@@ -89,14 +108,9 @@ struct mm_block *mm_block_new_copy( const struct mm_block *oth )
 void mm_block_free(mm_block_data_type *mb)
 {
     if( NULL != mb ) {
-        free(mb->data_);
-        free(mb);
+        mm_block_free_ptr(mb->data_);
+        mm_block_free_ptr(mb);
     }
-}
-
-static void *mm_block_memset (void *data, int c, size_t len )
-{
-    return memset( data, c, len );
 }
 
 int mm_block_reserve(struct mm_block *mb, size_t new_size)
@@ -105,7 +119,7 @@ int mm_block_reserve(struct mm_block *mb, size_t new_size)
 
     new_size = mm_block_calc_prefer_size( mb->capacity_, new_size );
 
-    char *new_data = (char *)realloc(mb->data_, new_size);
+    char *new_data = (char *)mm_block_realloc(mb->data_, new_size);
     if( NULL == new_data ) {
         return 0;
     } else {

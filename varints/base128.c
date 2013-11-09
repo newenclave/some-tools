@@ -39,11 +39,11 @@ int b128_unpack( struct mm_block *container, size_t *result )
                         mm_block_size (container), result);
 }
 
-int b128_pack_shift( size_t number, void **container, size_t *avail )
+int b128_pack_shift( size_t number, void **container, size_t *available )
 {
     int   result        = 0;
     unsigned char *data = (unsigned char *)*container;
-    size_t tmp          = *avail;
+    size_t tmp          = *available;
 
     if( tmp ) {
         if( number <= 0x7F ) {
@@ -61,7 +61,7 @@ int b128_pack_shift( size_t number, void **container, size_t *avail )
             result = (number == 0);
         }
         *container = data;
-        *avail     = tmp;
+        *available = tmp;
     }
     return result;
 }

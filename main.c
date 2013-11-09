@@ -81,7 +81,6 @@ int cmp( int *l, int *r )
     return *l < *r ? -1 : *r < *l;
 }
 
-
 int main( )
 {
 
@@ -89,10 +88,10 @@ int main( )
     srand( time(NULL) );
     size_t c = 0;
 
-    for( c=0; c<50; ++c ) {
+    for( c=0; c<500000000; ++c ) {
         size_t r = rand( ) % 50000;
         int res = b128_pack_append( r, container );
-        printf( "%u=%u ", r, res );
+        //printf( "%u=%u ", r, res );
     }
 
     size_t cs = mm_block_size(container);
@@ -105,7 +104,7 @@ int main( )
         size_t r = 0;
         void *bb = b;
         int res = b128_unpack_shift( &b, &cs, &r );
-        printf( "%u=%u ", r, res, (b-bb) );
+        //printf( "%u=%u ", r, res, (b-bb) );
     }
     printf( "\nlen: %u\n\n\n", cs );
 
