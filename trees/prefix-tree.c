@@ -75,19 +75,24 @@ static struct pt_key_info *pt_key_get( const struct pt_key_tools_type *tools,
     return res;
 }
 
+static void pt_free_keys(struct mm_array *keys, prefix_tree_data_free free_call)
+{
+    if( free_call ) {
+        size_t count = mm_array_size( keys );
+        struct pt_key_info *next;
+        while( count-- ) {
+            next = (struct pt_key_info *)mm_array_at(keys, count);
+            if( next->data_ && (next->flags_ & PT_FLAG_FINAL))
+                free_call( next->data_ );
+        }
+    }
+}
+
 static void pt_free_key_pair( void *ptr )
 {
     struct pt_key_info *kp = (struct pt_key_info *)(ptr);
     if( kp->next_keys_ ) {
-        if( kp->parent_->free_ ) {
-            size_t count = mm_array_size( kp->next_keys_ );
-            struct pt_key_info *next;
-            while( count-- ) {
-                next = (struct pt_key_info *)mm_array_at(kp->next_keys_, count);
-                if( next->data_ && (next->flags_ & PT_FLAG_FINAL))
-                    kp->parent_->free_( next->data_ );
-            }
-        }
+        pt_free_keys( kp->next_keys_, kp->parent_->free_ );
         mm_array_free(kp->next_keys_);
     }
 }
@@ -133,6 +138,7 @@ void prefix_tree_set_free( struct prefix_tree *pt,
 void prefix_tree_free( struct prefix_tree *pt )
 {
     if( pt ) {
+        pt_free_keys( pt->root_keys_, pt->free_ );
         mm_array_free( pt->root_keys_ );
         free(pt);
     }
