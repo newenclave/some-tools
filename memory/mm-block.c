@@ -35,6 +35,8 @@ static void *mm_block_memset (void *data, int c, size_t len )
 
 static void *mm_block_realloc(void *ptr, size_t size)
 {
+//    static size_t i = 0;
+//    printf( "%u realloc %p %u\n", i++, ptr, size );
     return realloc(ptr, size);
 }
 
@@ -45,6 +47,7 @@ static void *mm_block_malloc(size_t size)
 
 static void mm_block_free_ptr(void *ptr)
 {
+    //printf( "free %p\n", ptr );
     free(ptr);
 }
 

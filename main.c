@@ -88,7 +88,7 @@ int main( )
     srand( time(NULL) );
     size_t c = 0;
 
-    for( c=0; c<500000000; ++c ) {
+    for( c=0; c<500; ++c ) {
         size_t r = rand( ) % 50000;
         int res = b128_pack_append( r, container );
         //printf( "%u=%u ", r, res );
