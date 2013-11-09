@@ -163,12 +163,12 @@ int main( )
                 mm_block_concat( tmp_str, old_p, p-old_p );
                 mm_block_concat( tmp_str, cs_stop, strlen(cs_stop) );
            } else {
-                mm_block_push_back( tmp_str, *p );
+                mm_block_push_back( tmp_str, *p++ );
                 len--;
-                p++;
             }
         }
     }
+
     mm_block_push_back( tmp_str, 0 );
     mm_block_reduce( tmp_str, 1 );
 
