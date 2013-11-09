@@ -11,9 +11,9 @@ union pt_key_type {
 };
 
 struct pt_key_pair {
-    struct prefix_tree *parent_;
     union pt_key_type   key_;
-    unsigned            flags_;
+    unsigned short      flags_;
+    struct prefix_tree *parent_;
     void               *data_;
     struct mm_array    *next_keys_;
 };
@@ -134,7 +134,7 @@ void prefix_tree_free2( struct prefix_tree *pt,
 
 static struct pt_key_pair *prefix_tree_next_8( const struct prefix_tree *pt,
                                                char **stream, size_t *length,
-                                               int greedly )
+                                               int greedy )
 
 {
     char *p         = *stream;
@@ -157,7 +157,7 @@ static struct pt_key_pair *prefix_tree_next_8( const struct prefix_tree *pt,
             result   = element;
             len_last = len;
             p_last   = p;
-            if( !greedly ) break;
+            if( !greedy ) break;
         }
 
         key_map = element ? element->next_keys_ : NULL;
