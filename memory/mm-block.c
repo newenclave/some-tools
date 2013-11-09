@@ -51,7 +51,7 @@ static void mm_block_free_ptr(void *ptr)
     free(ptr);
 }
 
-void *mm_block_memcpy(void *dest, const void *src, size_t n)
+static void *mm_block_memcpy(void *dest, const void *src, size_t n)
 {
     return memcpy( dest, src, n );
 }
