@@ -98,12 +98,12 @@ int main( )
     size_t cs = mm_block_size(container);
     printf( "\nlen: %u\n\n\n", cs );
 
-    char *b = mm_block_begin( container );
+    void *b = mm_block_begin( container );
     const char *e = mm_block_end( container );
 
     while( b != e ) {
         size_t r = 0;
-        char *bb = b;
+        void *bb = b;
         int res = b128_unpack_shift( &b, &cs, &r );
         printf( "%u=%u ", r, res, (b-bb) );
     }

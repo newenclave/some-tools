@@ -314,26 +314,24 @@ void cnt_deque_pop_side( struct cnt_deque *cnd, int dir,
     --cnd->count_;
 }
 
-int cnt_deque_pop_front2( struct cnt_deque *cnd,
-                          cnt_deque_element_free free_call)
+void cnt_deque_pop_front2( struct cnt_deque *cnd,
+                           cnt_deque_element_free free_call)
 {
     cnt_deque_pop_side( cnd, SIDE_FRONT, free_call );
-    return 1;
 }
 
-int cnt_deque_pop_front ( struct cnt_deque *cnd )
+void cnt_deque_pop_front ( struct cnt_deque *cnd )
 {
-    return cnt_deque_pop_front2( cnd, cnd->free_ );
+    cnt_deque_pop_front2( cnd, cnd->free_ );
 }
 
-int cnt_deque_pop_back2 ( struct cnt_deque *cnd,
+void cnt_deque_pop_back2 ( struct cnt_deque *cnd,
                           cnt_deque_element_free free_call )
 {
     cnt_deque_pop_side( cnd, SIDE_BACK, free_call );
-    return 1;
 }
 
-int cnt_deque_pop_back ( struct cnt_deque *cnd )
+void cnt_deque_pop_back ( struct cnt_deque *cnd )
 {
     return cnt_deque_pop_back2( cnd, cnd->free_ );
 }

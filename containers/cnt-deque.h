@@ -43,16 +43,16 @@ size_t  cnt_deque_size ( struct cnt_deque *cnd );
 void   *cnt_deque_front( struct cnt_deque *cnd );
 void   *cnt_deque_back ( struct cnt_deque *cnd );
 
-int     cnt_deque_pop_front ( struct cnt_deque *cnd );
-int     cnt_deque_pop_front2( struct cnt_deque *cnd,
+void    cnt_deque_pop_front ( struct cnt_deque *cnd );
+void    cnt_deque_pop_front2( struct cnt_deque *cnd,
                               cnt_deque_element_free free_call);
 void   *cnt_deque_create_front( struct cnt_deque *cnd);
 int     cnt_deque_push_front( struct cnt_deque *cnd, void *element );
 int     cnt_deque_push_front2(struct cnt_deque *cnd, void *element,
                               cnt_deque_element_copy copy_call);
 
-int     cnt_deque_pop_back  ( struct cnt_deque *cnd );
-int     cnt_deque_pop_back2 ( struct cnt_deque *cnd,
+void    cnt_deque_pop_back  ( struct cnt_deque *cnd );
+void    cnt_deque_pop_back2 ( struct cnt_deque *cnd,
                               cnt_deque_element_free free_call );
 
 void   *cnt_deque_create_back( struct cnt_deque *cnd);

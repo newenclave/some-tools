@@ -36,7 +36,7 @@ int b128_unpack2( void *data, size_t lenght, size_t *result )
 int b128_unpack( struct mm_block *container, size_t *result )
 {
     return b128_unpack2(mm_block_begin(container),
-                        mm_block_size( container ), result);
+                        mm_block_size (container), result);
 }
 
 int b128_pack_shift( size_t number, void **container, size_t *avail )
