@@ -21,6 +21,6 @@ int   prefix_tree_insert( struct prefix_tree *pt,
                           char *key, size_t length, void *data );
 
 void *prefix_tree_get_next( const struct prefix_tree *pt,
-                            char **stream, size_t *length );
+                            const char **stream, size_t *length );
 
 #endif // PREFIXTREE_20131109_H

@@ -57,8 +57,8 @@ void fake_freeing2( size_t *elem )
 
 void fake_freeing3( char *elem )
 {
-    printf( "free element: %c %c %c %p\n",
-            elem[0], elem[1], elem[2], elem );
+//    printf( "free element: %c %c %c %p\n",
+//            elem[0], elem[1], elem[2], elem );
 }
 
 void fake_pop( size_t *elem )
@@ -82,34 +82,92 @@ int cmp( int *l, int *r )
     return *l < *r ? -1 : *r < *l;
 }
 
+static const char * cp_black           = "\x1b[30;1m";
+static const char * cp_red             = "\x1b[31;1m";
+static const char * cp_green           = "\x1b[32;1m";
+static const char * cp_yellow          = "\x1b[33;1m";
+static const char * cp_blue            = "\x1b[34;1m";
+static const char * cp_purple          = "\x1b[35;1m";
+static const char * cp_vaaleansininen  = "\x1b[36;1m"; // :) light_blue
+static const char * cp_white           = "\x1b[37;1m";
+
+// color suffix
+static const char * cs_stop            = "\x1b[0m";
+
+#define COLOR( str ) str, strlen(str)
+
+void fill_table( struct prefix_tree *trie )
+{
+    prefix_tree_insert( trie, COLOR( "black" ), cp_black );
+    prefix_tree_insert( trie, COLOR( "черный"), cp_black );
+    prefix_tree_insert( trie, COLOR( "чёрный"), cp_black );
+    prefix_tree_insert( trie, COLOR( "musta"), cp_black );
+    prefix_tree_insert( trie, COLOR( "bla"), cp_black );
+
+    prefix_tree_insert( trie, COLOR( "red"), cp_red );
+    prefix_tree_insert( trie, COLOR( "красный"), cp_red );
+    prefix_tree_insert( trie, COLOR( "puna"), cp_red );
+
+    prefix_tree_insert( trie, COLOR( "green"), cp_green );
+    prefix_tree_insert( trie, COLOR( "зелёный"), cp_green );
+    prefix_tree_insert( trie, COLOR( "зеленый"), cp_green );
+    prefix_tree_insert( trie, COLOR( "vihreä"), cp_green );
+
+    prefix_tree_insert( trie, COLOR( "yellow"), cp_yellow );
+    prefix_tree_insert( trie, COLOR( "желтый"), cp_yellow );
+    prefix_tree_insert( trie, COLOR( "жёлтый"), cp_yellow );
+    prefix_tree_insert( trie, COLOR( "keltainen"), cp_yellow );
+
+    prefix_tree_insert( trie, COLOR( "blue"), cp_blue );
+    prefix_tree_insert( trie, COLOR( "синий"), cp_blue );
+    prefix_tree_insert( trie, COLOR( "sininen"), cp_blue );
+
+    prefix_tree_insert( trie, COLOR( "lightblue"), cp_vaaleansininen );
+    prefix_tree_insert( trie, COLOR( "голубой"), cp_vaaleansininen );
+    prefix_tree_insert( trie, COLOR( "vaaleansininen"), cp_vaaleansininen );
+
+//    prefix_tree_insert( trie, "purple"),     5);
+//    prefix_tree_insert( trie, "пурпурный"),  5);
+//    prefix_tree_insert( trie, "violetti"),   5);
+
+//    prefix_tree_insert( trie, "lightblue"),      6);
+//    prefix_tree_insert( trie, "голубой"),        6);
+//    prefix_tree_insert( trie, "vaaleansininen"), 6);
+
+//    prefix_tree_insert( trie, "white"),       7);
+//    prefix_tree_insert( trie, "белый"),       7);
+//    prefix_tree_insert( trie, "valkoinen"),   7);
+
+}
+
 int main( )
 {
-    struct prefix_tree *trie = prefix_tree_new2( fake_freeing2 );
+    struct prefix_tree *trie = prefix_tree_new2( fake_freeing3 );
+    fill_table( trie );
 
-    char test[] = "1234567890";
+    size_t c = 0;
 
-    size_t val  = 100;
-    size_t val2 = 200;
-    size_t val3 = 300;
+    const char *data = "красный\nжёлтый\nзелёный\nblack\nlightblue\nblue\nvioletti\nwhite\nbla\nblablabla\n";
+    size_t tmp_len = strlen(data);
 
-    printf( "val2 %p\n", &val2 );
-
-    int res; //=
-
-    res = prefix_tree_insert( trie, "12", 2, &val3 );
-    res = prefix_tree_insert( trie, "12", 2, &val3 );
-    res = prefix_tree_insert( trie, "12345", 5, &val );
-    res = prefix_tree_insert( trie, "67890", 5, &val2 );
-
-    char *p     = test;
-    size_t len  = strlen( test );
-    size_t *data = prefix_tree_get_next( trie, &p, &len );
-
-    printf( "data: %p %u %s\n", data, (data?*data:0), p );
-
-    data = prefix_tree_get_next( trie, &p, &len );
-
-    printf( "data2: %p %u %s\n", data, (data?*data:0), p );
+    for( c=0; c<1000000; ++c ) {
+        const char *p = data;
+        size_t len = tmp_len;
+        while ( len ) {
+            char *old_p = p;
+            char *data = prefix_tree_get_next( trie, &p, &len );
+            if( data ) {
+//                printf( data );
+//                while( old_p != p )
+//                    printf( "%c", *old_p++ );
+//                printf( cs_stop );
+            } else {
+//                printf( "%c", *p );
+                len--;
+                p++;
+            }
+        }
+    }
 
     prefix_tree_free( trie );
 

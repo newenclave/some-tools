@@ -133,14 +133,15 @@ void prefix_tree_free2( struct prefix_tree *pt,
 }
 
 static struct pt_key_pair *prefix_tree_next_8( const struct prefix_tree *pt,
-                                               char **stream, size_t *length,
+                                               const char **stream,
+                                               size_t *length,
                                                int greedy )
 
 {
-    char *p         = *stream;
-    char *p_last    = p;
-    size_t len      = *length;
-    size_t len_last = len;
+    const char *p         = *stream;
+    const char *p_last    = p;
+    size_t len            = *length;
+    size_t len_last       = len;
 
     struct mm_array    *key_map  = pt->root_keys_;
     struct pt_key_pair *element  = NULL;
@@ -172,7 +173,7 @@ static struct pt_key_pair *prefix_tree_next_8( const struct prefix_tree *pt,
 }
 
 void *prefix_tree_get_next( const struct prefix_tree *pt,
-                            char **stream, size_t *length )
+                            const char **stream, size_t *length )
 {
     struct pt_key_pair * res = prefix_tree_next_8( pt, stream, length, 1 );
     return res ? res->data_ : NULL;
