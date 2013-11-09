@@ -87,10 +87,25 @@ int main( )
 
     struct prefix_tree *trie = prefix_tree_new( );
 
-    size_t val = 100;
+    char test[] = "1234567890";
+
+    size_t val  = 100;
+    size_t val2 = 200;
+
+    printf( "val2 %p\n", &val2 );
 
     int res = prefix_tree_insert_8( trie, "12345", 5, &val );
-    res = prefix_tree_insert_8( trie, "1235", 4, &val );
+        res = prefix_tree_insert_8( trie, "67890", 5, &val2 );
+
+    char *p     = test;
+    size_t len  = strlen( test );
+    size_t *data = prefix_tree_get_next_8( trie, &p, &len );
+
+    printf( "data: %u\n", *data );
+
+    data = prefix_tree_get_next_8( trie, &p, &len );
+
+    printf( "data2: %p %u\n", data, *data );
 
     prefix_tree_free( trie );
 

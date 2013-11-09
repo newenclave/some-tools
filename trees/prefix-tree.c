@@ -20,13 +20,17 @@ struct prefix_tree {
     struct mm_array *root_keys_;
 };
 
-static void pt_free_key_pair( struct pt_key_pair *kp )
+static void pt_free_key_pair( void *ptr )
 {
+    struct pt_key_pair *kp = (struct pt_key_pair *)(ptr);
     mm_array_free(kp->next_keys_);
 }
 
-static int pt_key_compare_8( struct pt_key_pair *l, struct pt_key_pair *r)
+static int pt_key_compare_8( const void *lptr, const void *rptr)
 {
+    const struct pt_key_pair *l = (const struct pt_key_pair *)lptr;
+    const struct pt_key_pair *r = (const struct pt_key_pair *)rptr;
+
     return l->key_.k8_ < r->key_.k8_ ? -1 : r->key_.k8_ < l->key_.k8_;
 }
 
@@ -55,6 +59,7 @@ struct prefix_tree *prefix_tree_new( )
 void prefix_tree_free( struct prefix_tree *pt )
 {
     if( pt ) {
+        mm_array_free( pt->root_keys_ );
         free(pt);
     }
 }
@@ -70,14 +75,48 @@ static struct pt_key_pair *pt_get_element_8( struct mm_array *key_map, char c )
     return res;
 }
 
+void *prefix_tree_get_next_8( const struct prefix_tree *pt,
+                          char **stream, size_t *length )
+{
+    char *p       = *stream;
+    char next     = 0;
+    size_t len    = *length;
+    void * result = NULL;
+    struct mm_array *key_map = pt->root_keys_;
+
+    while( key_map && !result && len-- ) {
+        next = *p++;
+        struct pt_key_pair *element = pt_get_element_8( key_map, next );
+        if( element ) {
+            if( element->flags_ & PT_FLAG_FINAL ) {
+                result = element->value_;
+            } else {
+                key_map = element->next_keys_;
+            }
+        } else {
+            key_map = NULL;
+        }
+    }
+
+    if( result ) {
+        *stream = p;
+        *length = len;
+    }
+
+    return result;
+
+}
 
 int prefix_tree_insert_8( struct prefix_tree *pt,
                           char *key, size_t length, void *value )
 {
     struct mm_array *key_map = pt->root_keys_;
     int result = 1;
+    char next  = 0;
+
     while( length-- && result ) {
-        char next = *key++;
+
+        next = *key++;
         struct pt_key_pair *element = pt_get_element_8( key_map, next );
 
         if( !element ) {

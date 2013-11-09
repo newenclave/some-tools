@@ -11,4 +11,7 @@ void   prefix_tree_free( struct prefix_tree *pt );
 int   prefix_tree_insert_8( struct prefix_tree *pt,
                             char *key, size_t length, void *value );
 
+void *prefix_tree_get_next_8( const struct prefix_tree *pt,
+                              char **stream, size_t *length );
+
 #endif // PREFIXTREE_20131109_H
