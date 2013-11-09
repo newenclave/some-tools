@@ -12,7 +12,8 @@ SOURCES += \
     memory/mm-array.c \
     containers/cnt-deque.c \
     lists/bilinked-list.c \
-    varints/base128.c
+    varints/base128.c \
+    trees/prefix-tree.c
 
 HEADERS += \
     bitpacker/bitpack.h \
@@ -23,6 +24,7 @@ HEADERS += \
     memory/mm-array.h \
     containers/cnt-deque.h \
     lists/bilinked-list.h \
-    varints/base128.h
+    varints/base128.h \
+    trees/prefix-tree.h
 
 
