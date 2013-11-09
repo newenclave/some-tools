@@ -24,14 +24,15 @@ struct mm_array {
 #define MM_ELEMENT_PREV( ptr, element_size )    \
     (((char *)ptr) - (element_size))
 
-struct mm_array *mm_array_new3( size_t count, size_t element_size,
-                                     mm_array_element_free free_call)
+
+struct mm_array *mm_array_new_reserved2( size_t element_size, size_t count,
+                                         mm_array_element_free free_call)
 {
     struct mm_array *new_data =
         (struct mm_array *)malloc(sizeof( struct mm_array ) );
 
     if( new_data ) {
-        new_data->mmblock_ = mm_block_new2( count * element_size );
+        new_data->mmblock_ = mm_block_new_reserved( count * element_size );
         if( new_data->mmblock_ ) {
             new_data->element_size_ = element_size;
             new_data->free_         = free_call;
@@ -41,17 +42,34 @@ struct mm_array *mm_array_new3( size_t count, size_t element_size,
         }
     }
     return new_data;
+
+}
+
+struct mm_array *mm_array_new_reserved( size_t element_size, size_t count )
+{
+    return mm_array_new_reserved2( element_size, count, NULL );
+}
+
+struct mm_array *mm_array_new3( size_t element_size, size_t count,
+                                     mm_array_element_free free_call)
+{
+    struct mm_array *new_data =
+        mm_array_new_reserved2( element_size, count, free_call );
+    if( new_data ) {
+        mm_block_resize( new_data->mmblock_, element_size * count );
+    }
+    return new_data;
 }
 
 
-struct mm_array *mm_array_new2( size_t count, size_t element_size )
+struct mm_array *mm_array_new2( size_t element_size, size_t count )
 {
-    return mm_array_new3( count, element_size, NULL );
+    return mm_array_new3( element_size, count, NULL );
 }
 
 struct mm_array *mm_array_new( size_t element_size )
 {
-    return mm_array_new3( 0, element_size, NULL );
+    return mm_array_new3( element_size, 0, NULL );
 }
 
 void mm_array_swap( struct mm_array *mar, struct mm_array *other )

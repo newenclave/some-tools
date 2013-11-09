@@ -172,7 +172,7 @@ void fill_table( struct prefix_tree *trie )
 int main( )
 {
     struct prefix_tree *trie = prefix_tree_new2( prefix_info_free );
-    //fill_table( trie );
+    fill_table( trie );
     prefix_tree_insert_string( trie, "1234", info(cp_black) );
 
     struct mm_block *tmp_str = mm_block_new();

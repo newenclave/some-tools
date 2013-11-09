@@ -82,7 +82,7 @@ static void pt_free_keys(struct mm_array *keys, prefix_tree_data_free free_call)
         struct pt_key_info *next;
         while( count-- ) {
             next = (struct pt_key_info *)mm_array_at(keys, count);
-            if( next->data_ && (next->flags_ & PT_FLAG_FINAL))
+            if( next->data_ )
                 free_call( next->data_ );
         }
     }
@@ -99,7 +99,8 @@ static void pt_free_key_pair( void *ptr )
 
 static struct mm_array *pt_new_keys(  )
 {
-    struct mm_array *new_keys = mm_array_new(sizeof(struct pt_key_info));
+    struct mm_array *new_keys =
+            mm_array_new_reserved(sizeof(struct pt_key_info), 1);
     if( new_keys ) {
         mm_array_set_free( new_keys, pt_free_key_pair );
     }

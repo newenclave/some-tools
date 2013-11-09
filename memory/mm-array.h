@@ -17,6 +17,11 @@ struct mm_array *mm_array_new2( size_t count, size_t element_size );
 struct mm_array *mm_array_new3( size_t count, size_t element_size,
                                      mm_array_element_free free_call);
 
+struct mm_array *mm_array_new_reserved( size_t element_size, size_t count );
+struct mm_array *mm_array_new_reserved2( size_t element_size, size_t count,
+                                         mm_array_element_free free_call);
+
+
 void   mm_array_swap( struct mm_array *mar, struct mm_array *other );
 void   mm_array_free( struct mm_array *mar );
 void   mm_array_free2( struct mm_array *mar, mm_array_element_free free_call );
@@ -91,11 +96,11 @@ void   mm_array_reduce_from2( struct mm_array *mar, size_t position,
 
 #define MM_ARRAY_CREATE( type_name ) mm_array_new( sizeof(type_name) )
 
-#define MM_ARRAY_CREATE2( count, type_name )            \
-            mm_array_new2(count, sizeof(type_name))
+#define MM_ARRAY_CREATE2( type_name, count )            \
+            mm_array_new2(sizeof(type_name), count)
 
-#define MM_ARRAY_CREATE3( count, type_name, free_call ) \
-            mm_array_new3(count, sizeof(type_name), free_call)
+#define MM_ARRAY_CREATE3( type_name, count, free_call ) \
+            mm_array_new3(sizeof(type_name), count, free_call)
 
 #define MM_ARRAY_CAST_PTR_BEGIN( type_name, mar )       \
         ((type_name *)mm_array_begin( mar ))
