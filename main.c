@@ -91,21 +91,25 @@ int main( )
 
     size_t val  = 100;
     size_t val2 = 200;
+    size_t val3 = 300;
 
     printf( "val2 %p\n", &val2 );
 
-    int res = prefix_tree_insert_8( trie, "12345", 5, &val );
-        res = prefix_tree_insert_8( trie, "67890", 5, &val2 );
+    int res; //=
+
+    res = prefix_tree_insert_8( trie, "12345", 5, &val );
+    res = prefix_tree_insert_8( trie, "67890", 5, &val2 );
+    res = prefix_tree_insert_8( trie, "12", 2, &val3 );
 
     char *p     = test;
     size_t len  = strlen( test );
     size_t *data = prefix_tree_get_next_8( trie, &p, &len );
 
-    printf( "data: %u\n", *data );
+    printf( "data: %p %u %s\n", data, (data?*data:0), p );
 
     data = prefix_tree_get_next_8( trie, &p, &len );
 
-    printf( "data2: %p %u\n", data, *data );
+    printf( "data2: %p %u %s\n", data, (data?*data:0), p );
 
     prefix_tree_free( trie );
 

@@ -75,21 +75,30 @@ static struct pt_key_pair *pt_get_element_8( struct mm_array *key_map, char c )
     return res;
 }
 
-void *prefix_tree_get_next_8( const struct prefix_tree *pt,
-                          char **stream, size_t *length )
-{
-    char *p       = *stream;
-    char next     = 0;
-    size_t len    = *length;
-    void * result = NULL;
-    struct mm_array *key_map = pt->root_keys_;
 
-    while( key_map && !result && len-- ) {
+struct pt_key_pair *prefix_tree_next_8( const struct prefix_tree *pt,
+                                   char **stream, size_t *length, int greedly )
+
+{
+    char *p         = *stream;
+    char *p_last    = p;
+    char next       = 0;
+    size_t len      = *length;
+    size_t last_len = len;
+
+    struct pt_key_pair *result   = NULL;
+    struct mm_array    *key_map  = pt->root_keys_;
+
+    while( key_map && len-- ) {
         next = *p++;
         struct pt_key_pair *element = pt_get_element_8( key_map, next );
         if( element ) {
             if( element->flags_ & PT_FLAG_FINAL ) {
-                result = element->value_;
+                result   = element;
+                last_len = len;
+                p_last   = p;
+                if( !greedly )
+                    key_map = NULL;
             } else {
                 key_map = element->next_keys_;
             }
@@ -99,12 +108,18 @@ void *prefix_tree_get_next_8( const struct prefix_tree *pt,
     }
 
     if( result ) {
-        *stream = p;
-        *length = len;
+        *stream = p_last;
+        *length = last_len;
     }
 
     return result;
+}
 
+void *prefix_tree_get_next_8( const struct prefix_tree *pt,
+                          char **stream, size_t *length )
+{
+    struct pt_key_pair * res = prefix_tree_next_8( pt, stream, length, 1 );
+    return res ? res->value_ : NULL;
 }
 
 int prefix_tree_insert_8( struct prefix_tree *pt,
@@ -129,13 +144,22 @@ int prefix_tree_insert_8( struct prefix_tree *pt,
             result = (element != NULL);
         }
 
-        if( element && length ) {
-            if( !element->next_keys_ ) {
-                element->next_keys_ = pt_new_keys( );
+        if( element ) {
+            if( length ) {
+                if( !element->next_keys_ ) {
+                    element->next_keys_ = pt_new_keys( );
+                }
+                key_map = element->next_keys_;
+                result = (key_map != NULL);
+            } else {
+                if( !(element->flags_ & PT_FLAG_FINAL) ) {
+                    element->value_  = value;
+                    element->flags_ |= PT_FLAG_FINAL;
+                    result = 1;
+                }
             }
-            key_map = element->next_keys_;
-            result = (key_map != NULL);
         }
+
     }
 
     return result;
