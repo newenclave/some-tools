@@ -144,25 +144,28 @@ int main( )
 {
     struct prefix_tree *trie = prefix_tree_new2( fake_freeing3 );
     fill_table( trie );
+//    prefix_tree_insert( trie, COLOR( "black" ), cp_black );
+//    prefix_tree_insert( trie, COLOR( "bla"), cp_black );
+//    prefix_tree_insert( trie, COLOR( "blue"), cp_blue );
 
     size_t c = 0;
 
-    const char *data = "красный\nжёлтый\nзелёный\nblack\nlightblue\nblue\nvioletti\nwhite\nbla\nblablabla\n";
+    const char *data = "black\nyellow\tred wings\n";
     size_t tmp_len = strlen(data);
 
-    for( c=0; c<1000000; ++c ) {
+    for( c=0; c<1; ++c ) {
         const char *p = data;
         size_t len = tmp_len;
         while ( len ) {
             char *old_p = p;
             char *data = prefix_tree_get_next( trie, &p, &len );
             if( data ) {
-//                printf( data );
-//                while( old_p != p )
-//                    printf( "%c", *old_p++ );
-//                printf( cs_stop );
+                printf( data );
+                while( old_p != p )
+                    printf( "%c", *old_p++ );
+                printf( cs_stop );
             } else {
-//                printf( "%c", *p );
+                printf( "%c", *p );
                 len--;
                 p++;
             }
