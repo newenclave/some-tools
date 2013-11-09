@@ -85,7 +85,7 @@ struct mm_block *mm_block_new_reserved( size_t reserve_size )
 
 /// mm_block_new
 /// creating new memory block
-mm_block_data_type *mm_block_new( size_t init_size )
+mm_block_data_type *mm_block_new2( size_t init_size )
 {
     mm_block_data_type *new_block = mm_block_new_reserved( init_size );
 
@@ -96,10 +96,16 @@ mm_block_data_type *mm_block_new( size_t init_size )
     return new_block;
 }
 
+mm_block_data_type *mm_block_new( )
+{
+    return mm_block_new2( 0 );
+}
+
+
 struct mm_block *mm_block_new_copy( const struct mm_block *oth )
 {
     size_t new_size = oth->used_;
-    struct mm_block *new_block = mm_block_new(new_size);
+    struct mm_block *new_block = mm_block_new2(new_size);
     if( new_block && (new_size > 0)) {
         memcpy( new_block->data_, oth->data_, new_size );
     }

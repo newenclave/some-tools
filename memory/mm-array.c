@@ -31,7 +31,7 @@ struct mm_array *mm_array_new3( size_t count, size_t element_size,
         (struct mm_array *)malloc(sizeof( struct mm_array ) );
 
     if( new_data ) {
-        new_data->mmblock_ = mm_block_new( count * element_size );
+        new_data->mmblock_ = mm_block_new2( count * element_size );
         if( new_data->mmblock_ ) {
             new_data->element_size_ = element_size;
             new_data->free_         = free_call;

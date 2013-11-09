@@ -43,7 +43,6 @@ struct prefix_tree {
     const struct pt_key_tools_type  *ktools_;
 };
 
-
 static int pt_key_compare_8( const void *lptr, const void *rptr)
 {
     const struct pt_key_info *l = (const struct pt_key_info *)lptr;
@@ -240,6 +239,6 @@ int prefix_tree_insert_string( struct prefix_tree *pt,
                           const char *key_string, void *data )
 {
     return prefix_tree_insert( pt,
-                               key_string, pt->ktools_->len_(key_string), data);
+                key_string, pt->ktools_->len_(key_string), data);
 }
 

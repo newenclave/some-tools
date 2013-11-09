@@ -100,43 +100,44 @@ void fill_table( struct prefix_tree *trie )
 {
     prefix_tree_insert_string( trie, "black", cp_black );
     prefix_tree_insert_string( trie, "черный", cp_black );
-    prefix_tree_insert( trie, COLOR( "чёрный"), cp_black );
-    prefix_tree_insert( trie, COLOR( "musta"), cp_black );
-    prefix_tree_insert( trie, COLOR( "bla"), cp_black );
+    prefix_tree_insert_string( trie, "чёрный", cp_black );
+    prefix_tree_insert_string( trie, "musta", cp_black );
+    prefix_tree_insert_string( trie, "bla", cp_black );
 
-    prefix_tree_insert( trie, COLOR( "red"), cp_red );
-    prefix_tree_insert( trie, COLOR( "красный"), cp_red );
-    prefix_tree_insert( trie, COLOR( "puna"), cp_red );
+    prefix_tree_insert_string( trie, "red", cp_red );
+    prefix_tree_insert_string( trie, "красный", cp_red );
+    prefix_tree_insert_string( trie, "puna", cp_red );
 
-    prefix_tree_insert( trie, COLOR( "green"), cp_green );
-    prefix_tree_insert( trie, COLOR( "зелёный"), cp_green );
-    prefix_tree_insert( trie, COLOR( "зеленый"), cp_green );
-    prefix_tree_insert( trie, COLOR( "vihreä"), cp_green );
+    prefix_tree_insert_string( trie, "green", cp_green );
+    prefix_tree_insert_string( trie, "зелёный", cp_green );
+    prefix_tree_insert_string( trie, "зеленый", cp_green );
+    prefix_tree_insert_string( trie, "vihreä", cp_green );
 
-    prefix_tree_insert( trie, COLOR( "yellow"), cp_yellow );
-    prefix_tree_insert( trie, COLOR( "желтый"), cp_yellow );
-    prefix_tree_insert( trie, COLOR( "жёлтый"), cp_yellow );
-    prefix_tree_insert( trie, COLOR( "keltainen"), cp_yellow );
+    prefix_tree_insert_string( trie, "yellow", cp_yellow );
+    prefix_tree_insert_string( trie, "желтый", cp_yellow );
+    prefix_tree_insert_string( trie, "жёлтый", cp_yellow );
+    prefix_tree_insert_string( trie, "Желтый", cp_yellow );
+    prefix_tree_insert_string( trie, "Жёлтый", cp_yellow );
+    prefix_tree_insert_string( trie, "keltainen", cp_yellow );
 
-    prefix_tree_insert( trie, COLOR( "blue"), cp_blue );
-    prefix_tree_insert( trie, COLOR( "синий"), cp_blue );
-    prefix_tree_insert( trie, COLOR( "sininen"), cp_blue );
+    prefix_tree_insert_string( trie, "blue", cp_blue );
+    prefix_tree_insert_string( trie, "синий", cp_blue );
+    prefix_tree_insert_string( trie, "Синий", cp_blue );
+    prefix_tree_insert_string( trie, "sininen", cp_blue );
 
-    prefix_tree_insert( trie, COLOR( "lightblue"), cp_vaaleansininen );
-    prefix_tree_insert( trie, COLOR( "голубой"), cp_vaaleansininen );
-    prefix_tree_insert( trie, COLOR( "vaaleansininen"), cp_vaaleansininen );
+    prefix_tree_insert_string( trie, "lightblue", cp_vaaleansininen );
+    prefix_tree_insert_string( trie, "голубой", cp_vaaleansininen );
+    prefix_tree_insert_string( trie, "vaaleansininen", cp_vaaleansininen );
 
-//    prefix_tree_insert( trie, "purple"),     5);
-//    prefix_tree_insert( trie, "пурпурный"),  5);
-//    prefix_tree_insert( trie, "violetti"),   5);
+    prefix_tree_insert_string( trie, "purple",     cp_purple);
+    prefix_tree_insert_string( trie, "пурпурный",  cp_purple);
+    prefix_tree_insert_string( trie, "violetti",   cp_purple);
+    prefix_tree_insert_string( trie, "фиолет",   cp_purple);
+    prefix_tree_insert_string( trie, "Фиолет",   cp_purple);
 
-//    prefix_tree_insert( trie, "lightblue"),      6);
-//    prefix_tree_insert( trie, "голубой"),        6);
-//    prefix_tree_insert( trie, "vaaleansininen"), 6);
-
-//    prefix_tree_insert( trie, "white"),       7);
-//    prefix_tree_insert( trie, "белый"),       7);
-//    prefix_tree_insert( trie, "valkoinen"),   7);
+    prefix_tree_insert_string( trie, "white",       cp_white);
+    prefix_tree_insert_string( trie, "белый",       cp_white);
+    prefix_tree_insert_string( trie, "valkoinen",   cp_white);
 
 }
 
@@ -144,13 +145,11 @@ int main( )
 {
     struct prefix_tree *trie = prefix_tree_new2( fake_freeing3 );
     fill_table( trie );
-//    prefix_tree_insert( trie, COLOR( "black" ), cp_black );
-//    prefix_tree_insert( trie, COLOR( "bla"), cp_black );
-//    prefix_tree_insert( trie, COLOR( "blue"), cp_blue );
+    struct mm_block *tmp_str = mm_block_new();
 
     size_t c = 0;
 
-    const char *data = "black\nyellow\tred wings\n";
+    const char *data = "black\nyellow\tred wings\nred-one\nvioletti";
     size_t tmp_len = strlen(data);
 
     for( c=0; c<1; ++c ) {
@@ -160,18 +159,22 @@ int main( )
             char *old_p = p;
             char *data = prefix_tree_get_next( trie, &p, &len );
             if( data ) {
-                printf( data );
-                while( old_p != p )
-                    printf( "%c", *old_p++ );
-                printf( cs_stop );
-            } else {
-                printf( "%c", *p );
+                mm_block_concat( tmp_str, data, strlen(data) );
+                mm_block_concat( tmp_str, old_p, p-old_p );
+                mm_block_concat( tmp_str, cs_stop, strlen(cs_stop) );
+           } else {
+                mm_block_push_back( tmp_str, *p );
                 len--;
                 p++;
             }
         }
     }
+    mm_block_push_back( tmp_str, 0 );
+    mm_block_reduce( tmp_str, 1 );
 
+    printf( "%s\n", mm_block_begin( tmp_str ) );
+
+    mm_block_free( tmp_str );
     prefix_tree_free( trie );
 
     return 0;

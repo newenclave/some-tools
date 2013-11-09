@@ -138,7 +138,7 @@ bit_pack_data_type *bit_pack_new( )
 
     if( NULL == new_data ) return NULL;
 
-    new_data->data_ = mm_block_new(0);
+    new_data->data_ = mm_block_new( );
 
     if( NULL == new_data->data_ ) {
         free( new_data );
@@ -169,7 +169,7 @@ int bp_add_bits(struct bit_pack_data *bpd, size_t value, unsigned bit_count)
     tmp_ti.filling_ = bpd->ti_.filling_;
 
     if( mm_block_available( bpd->data_ ) <= (bit_count / CHAR_BIT)) {
-        tmp_data = mm_block_new(0);
+        tmp_data = mm_block_new( );
         if( NULL == tmp_data ) {
             return 0;
         }

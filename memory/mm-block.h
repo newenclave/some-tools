@@ -5,7 +5,8 @@
 
 struct mm_block;
 
-struct mm_block *mm_block_new( size_t init_size );
+struct mm_block *mm_block_new( );
+struct mm_block *mm_block_new2( size_t init_size );
 struct mm_block *mm_block_new_reserved( size_t reserve_size );
 struct mm_block *mm_block_new_copy( const struct mm_block *oth );
 void   mm_block_free(struct mm_block *mb);
