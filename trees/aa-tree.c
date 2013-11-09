@@ -156,7 +156,7 @@ void *aa_tree_node_find( struct aa_tree_node *top, void *data,
         if( 0 == cmp_res ) {
             res = top->data_.ptr_;
         } else {
-            res = aa_tree_node_find( top->links_[ cmp_res > 0 ], data, cmp );
+            res = aa_tree_node_find( top->links_[cmp_res > 0], data, cmp );
         }
     }
     return res;
@@ -372,7 +372,7 @@ void aa_tree_free2( struct aa_tree *aat, aa_tree_data_free free_fun)
 
 void aa_tree_free( struct aa_tree *aat )
 {
-    if( aat ) aa_tree_free2(aat, aat->free_ );
+    if( aat ) aa_tree_free2( aat, aat->free_ );
 }
 
 int aa_tree_walk_ordered( struct aa_tree_node *t, int order,
@@ -552,7 +552,7 @@ void aa_tree_non_rec_node_walk_test( struct aa_tree *aat )
                 break;
             root = (struct aa_tree_node *)(*((void **)cnt_deque_front( deq )));
             cnt_deque_pop_front( deq );
-            printf( "walk value %u\n", root->data_.number_ );
+            //printf( "walk value %u\n", root->data_.number_ );
             root = root->links_[1];
         }
     }

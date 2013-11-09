@@ -67,10 +67,10 @@ static void pt_free_key_pair( void *ptr )
     struct pt_key_pair *kp = (struct pt_key_pair *)(ptr);
     if( kp->next_keys_ ) {
         if( kp->parent_->free_ ) {
-            size_t elements = mm_array_size( kp->next_keys_ );
-            while( elements-- ) {
-                struct pt_key_pair *next =
-                        (struct pt_key_pair *)mm_array_at(kp->next_keys_, elements);
+            size_t count = mm_array_size( kp->next_keys_ );
+            struct pt_key_pair *next;
+            while( count-- ) {
+                next = (struct pt_key_pair *)mm_array_at(kp->next_keys_, count);
                 if( next->data_ && (next->flags_ & PT_FLAG_FINAL))
                     kp->parent_->free_( next->data_ );
             }
@@ -88,19 +88,24 @@ static struct mm_array *pt_new_keys(  )
     return new_keys;
 }
 
-struct prefix_tree *prefix_tree_new( )
+struct prefix_tree *prefix_tree_new2( prefix_tree_data_free free_call )
 {
     struct prefix_tree *new_tree =
             (struct prefix_tree *)malloc(sizeof(struct prefix_tree));
     if( new_tree ) {
-        if( new_tree->root_keys_ = pt_new_keys( ) ) {
-            new_tree->free_ = NULL;
+        if( (new_tree->root_keys_ = pt_new_keys( )) ) {
+            new_tree->free_ = free_call;
         } else {
             free( new_tree );
             new_tree = NULL;
         }
     }
     return new_tree;
+}
+
+struct prefix_tree *prefix_tree_new( )
+{
+    return prefix_tree_new2( NULL );
 }
 
 void prefix_tree_set_free( struct prefix_tree *pt,
@@ -127,9 +132,9 @@ void prefix_tree_free2( struct prefix_tree *pt,
     }
 }
 
-struct pt_key_pair *prefix_tree_next_8( const struct prefix_tree *pt,
-                                        char **stream, size_t *length,
-                                        int greedly )
+static struct pt_key_pair *prefix_tree_next_8( const struct prefix_tree *pt,
+                                               char **stream, size_t *length,
+                                               int greedly )
 
 {
     char *p         = *stream;
@@ -196,7 +201,7 @@ int prefix_tree_insert( struct prefix_tree *pt,
             result = (element != NULL);
         } else {
             if( 0 == length && !(element->flags_ & PT_FLAG_FINAL)) {
-                element->data_  = data;
+                element->data_   = data;
                 element->flags_ |= PT_FLAG_FINAL;
                 result = 1;
             }

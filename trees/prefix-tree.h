@@ -8,6 +8,8 @@ struct prefix_tree;
 typedef void (* prefix_tree_data_free)( void *data );
 
 struct prefix_tree *prefix_tree_new( );
+struct prefix_tree *prefix_tree_new2( prefix_tree_data_free free_call );
+
 void   prefix_tree_free( struct prefix_tree *pt );
 void   prefix_tree_free2( struct prefix_tree *pt,
                           prefix_tree_data_free free_call);

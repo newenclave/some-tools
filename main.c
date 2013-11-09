@@ -84,8 +84,7 @@ int cmp( int *l, int *r )
 
 int main( )
 {
-
-    struct prefix_tree *trie = prefix_tree_new( );
+    struct prefix_tree *trie = prefix_tree_new2( fake_freeing2 );
 
     char test[] = "1234567890";
 
@@ -97,6 +96,7 @@ int main( )
 
     int res; //=
 
+    res = prefix_tree_insert( trie, "12", 2, &val3 );
     res = prefix_tree_insert( trie, "12", 2, &val3 );
     res = prefix_tree_insert( trie, "12345", 5, &val );
     res = prefix_tree_insert( trie, "67890", 5, &val2 );
@@ -111,7 +111,7 @@ int main( )
 
     printf( "data2: %p %u %s\n", data, (data?*data:0), p );
 
-    prefix_tree_free2( trie, fake_freeing2 );
+    prefix_tree_free( trie );
 
     return 0;
 }
