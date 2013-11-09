@@ -82,34 +82,33 @@ struct pt_key_pair *prefix_tree_next_8( const struct prefix_tree *pt,
 {
     char *p         = *stream;
     char *p_last    = p;
-    char next       = 0;
     size_t len      = *length;
-    size_t last_len = len;
+    size_t len_last = len;
 
-    struct pt_key_pair *result   = NULL;
     struct mm_array    *key_map  = pt->root_keys_;
+    struct pt_key_pair *element  = NULL;
+    struct pt_key_pair *result   = NULL;
+
+    char next = 0;
 
     while( key_map && len-- ) {
+
         next = *p++;
-        struct pt_key_pair *element = pt_get_element_8( key_map, next );
-        if( element ) {
-            if( element->flags_ & PT_FLAG_FINAL ) {
-                result   = element;
-                last_len = len;
-                p_last   = p;
-                if( !greedly )
-                    key_map = NULL;
-            } else {
-                key_map = element->next_keys_;
-            }
-        } else {
-            key_map = NULL;
+        element = pt_get_element_8( key_map, next );
+
+        if( element && (element->flags_ & PT_FLAG_FINAL) ) {
+            result   = element;
+            len_last = len;
+            p_last   = p;
+            if( !greedly ) break;
         }
+
+        key_map = element ? element->next_keys_ : NULL;
     }
 
     if( result ) {
         *stream = p_last;
-        *length = last_len;
+        *length = len_last;
     }
 
     return result;

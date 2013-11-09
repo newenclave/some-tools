@@ -97,9 +97,9 @@ int main( )
 
     int res; //=
 
+    res = prefix_tree_insert_8( trie, "12", 2, &val3 );
     res = prefix_tree_insert_8( trie, "12345", 5, &val );
     res = prefix_tree_insert_8( trie, "67890", 5, &val2 );
-    res = prefix_tree_insert_8( trie, "12", 2, &val3 );
 
     char *p     = test;
     size_t len  = strlen( test );
