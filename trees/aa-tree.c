@@ -372,7 +372,7 @@ void aa_tree_free2( struct aa_tree *aat, aa_tree_data_free free_fun)
 
 void aa_tree_free( struct aa_tree *aat )
 {
-    aa_tree_free2(aat, aat->free_ );
+    if( aat ) aa_tree_free2(aat, aat->free_ );
 }
 
 int aa_tree_walk_ordered( struct aa_tree_node *t, int order,

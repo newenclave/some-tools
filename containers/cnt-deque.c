@@ -421,6 +421,6 @@ void cnt_deque_free2( struct cnt_deque *cnd, cnt_deque_element_free free_call )
 
 void cnt_deque_free( struct cnt_deque *cnd )
 {
-    cnt_deque_free2( cnd, cnd->free_ );
+    if( cnd ) cnt_deque_free2( cnd, cnd->free_ );
 }
 

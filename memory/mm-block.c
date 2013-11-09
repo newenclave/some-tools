@@ -110,7 +110,7 @@ struct mm_block *mm_block_new_copy( const struct mm_block *oth )
 /// free memory
 void mm_block_free(mm_block_data_type *mb)
 {
-    if( NULL != mb ) {
+    if( mb ) {
         mm_block_free_ptr(mb->data_);
         mm_block_free_ptr(mb);
     }

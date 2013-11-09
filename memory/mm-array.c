@@ -87,7 +87,7 @@ void mm_array_free_interval( struct mm_array *mar,
 void mm_array_free2( struct mm_array *mar,
                      mm_array_element_free free_call )
 {
-    if( NULL != mar ) {
+    if( mar ) {
         mm_array_free_interval( mar, 0, mm_array_size(mar), free_call );
         mm_block_free( mar->mmblock_ );
         free( mar );
@@ -96,7 +96,7 @@ void mm_array_free2( struct mm_array *mar,
 
 void mm_array_free( struct mm_array *mar )
 {
-    mm_array_free2(mar, mar->free_);
+    if( mar ) mm_array_free2(mar, mar->free_);
 }
 
 void mm_array_set_free( struct mm_array *mar,

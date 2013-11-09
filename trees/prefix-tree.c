@@ -142,24 +142,20 @@ int prefix_tree_insert_8( struct prefix_tree *pt,
             tmp.next_keys_ = NULL;
             element = mm_array_bin_insert( key_map, &tmp, pt_key_compare_8 );
             result = (element != NULL);
-        }
-
-        if( element ) {
-            if( length ) {
-                if( !element->next_keys_ ) {
-                    element->next_keys_ = pt_new_keys( );
-                }
-                key_map = element->next_keys_;
-                result = (key_map != NULL);
-            } else {
-                if( !(element->flags_ & PT_FLAG_FINAL) ) {
-                    element->value_  = value;
-                    element->flags_ |= PT_FLAG_FINAL;
-                    result = 1;
-                }
+        } else {
+            if( 0 == length && !(element->flags_ & PT_FLAG_FINAL)) {
+                element->value_  = value;
+                element->flags_ |= PT_FLAG_FINAL;
+                result = 1;
             }
         }
-
+        if( element && length ) {
+            if( !element->next_keys_ ) {
+                element->next_keys_ = pt_new_keys( );
+            }
+            key_map = element->next_keys_;
+            result = (key_map != NULL);
+        }
     }
 
     return result;

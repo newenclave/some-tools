@@ -153,7 +153,7 @@ bit_pack_data_type *bit_pack_new( )
 
 void bit_pack_free( bit_pack_data_type *bpd )
 {
-    if( NULL != bpd ) {
+    if( bpd ) {
         mm_block_free(bpd->data_);
         free( bpd );
     }
