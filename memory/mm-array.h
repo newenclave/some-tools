@@ -64,12 +64,12 @@ int    mm_array_resize2( struct mm_array *mar, size_t new_count,
 int    mm_array_reserve   ( struct mm_array *mar, size_t count );
 size_t mm_array_available ( struct mm_array *mar);
 
-int    mm_array_bin_search( struct mm_array *mar, void *element,
-                            mm_array_compare cmp_call);
+void  *mm_array_bin_find( struct mm_array *mar, void *element,
+                          mm_array_compare cmp_call);
 
-int    mm_array_bin_insert( struct mm_array *mar, void *element,
+void  *mm_array_bin_insert( struct mm_array *mar, void *element,
                             mm_array_compare cmp_call);
-int    mm_array_bin_insert2( struct mm_array *mar, void *element,
+void  *mm_array_bin_insert2( struct mm_array *mar, void *element,
                              mm_array_compare cmp_call,
                              mm_array_element_copy copy_call);
 

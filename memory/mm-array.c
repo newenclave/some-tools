@@ -300,25 +300,29 @@ int mm_array_bin_lower_bound( struct mm_array *mar,
 }
 
 
-int mm_array_bin_search( struct mm_array *mar, void *element,
-                         mm_array_compare cmp_call )
+void  *mm_array_bin_find( struct mm_array *mar, void *element,
+                          mm_array_compare cmp_call)
 {
     size_t pos = 0;
     int res = mm_array_bin_lower_bound( mar, element, cmp_call, &pos );
-    return res;
+    return res ? MM_ARRAY_AT_LOCAL( mar, pos ) : NULL;
 }
 
-int mm_array_bin_insert2( struct mm_array *mar, void *element,
+void *mm_array_bin_insert2( struct mm_array *mar, void *element,
                              mm_array_compare cmp_call,
                              mm_array_element_copy copy_call)
 {
-    size_t pos = 0;
+    size_t   pos = 0;
+    void *result = NULL;
     mm_array_bin_lower_bound( mar, element, cmp_call, &pos );
-    return mm_array_insert3(mar, element, pos, 1, copy_call);
+    if( mm_array_insert3(mar, element, pos, 1, copy_call) )
+        result = MM_ARRAY_AT_LOCAL( mar, pos );
+
+    return result;
 }
 
 
-int mm_array_bin_insert( struct mm_array *mar, void *element,
+void  *mm_array_bin_insert( struct mm_array *mar, void *element,
                          mm_array_compare cmp_call)
 {
     return mm_array_bin_insert2( mar, element, cmp_call, mm_array_memcopy );

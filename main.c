@@ -9,6 +9,7 @@
 #include "lists/linked-list.h"
 #include "inc/struct-fields.h"
 #include "trees/aa-tree.h"
+#include "trees/prefix-tree.h"
 #include "containers/cnt-deque.h"
 #include "varints/base128.h"
 
@@ -84,30 +85,14 @@ int cmp( int *l, int *r )
 int main( )
 {
 
-    struct mm_block *container = mm_block_new_reserved( 16 );
-    srand( time(NULL) );
-    size_t c = 0;
+    struct prefix_tree *trie = prefix_tree_new( );
 
-    for( c=0; c<50000; ++c ) {
-        size_t r = rand( ) % 500;
-        int res = b128_pack_append( r, container );
-        printf( "%u=%u ", r, res );
-    }
+    size_t val = 100;
 
-    size_t cs = mm_block_size(container);
-    printf( "\nlen: %u\n\n\n", cs );
+    int res = prefix_tree_insert_8( trie, "12345", 5, &val );
+    res = prefix_tree_insert_8( trie, "1235", 4, &val );
 
-    void *b = mm_block_begin( container );
-    const char *e = mm_block_end( container );
+    prefix_tree_free( trie );
 
-    while( b != e ) {
-        size_t r = 0;
-        void *bb = b;
-        int res = b128_unpack_shift( &b, &cs, &r );
-        printf( "%u=%u ", r, (b-bb) );
-    }
-    printf( "\nlen: %u\n\n\n", cs );
-
-    mm_block_free( container );
     return 0;
 }
