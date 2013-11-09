@@ -20,6 +20,9 @@ void   prefix_tree_set_free( struct prefix_tree *pt,
 int   prefix_tree_insert( struct prefix_tree *pt,
                           const void *key, size_t length, void *data );
 
+int   prefix_tree_insert_string( struct prefix_tree *pt,
+                          const char *key_string, void *data );
+
 void *prefix_tree_get_next( const struct prefix_tree *pt,
                             const void **stream, size_t *length );
 

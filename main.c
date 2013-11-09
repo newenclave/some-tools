@@ -98,8 +98,8 @@ static const char * cs_stop            = "\x1b[0m";
 
 void fill_table( struct prefix_tree *trie )
 {
-    prefix_tree_insert( trie, COLOR( "black" ), cp_black );
-    prefix_tree_insert( trie, COLOR( "черный"), cp_black );
+    prefix_tree_insert_string( trie, "black", cp_black );
+    prefix_tree_insert_string( trie, "черный", cp_black );
     prefix_tree_insert( trie, COLOR( "чёрный"), cp_black );
     prefix_tree_insert( trie, COLOR( "musta"), cp_black );
     prefix_tree_insert( trie, COLOR( "bla"), cp_black );

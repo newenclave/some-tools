@@ -10,7 +10,7 @@ union pt_key_type {
     short k16_;
 };
 
-struct pt_key_pair {
+struct pt_key_info {
     union pt_key_type   key_;
     unsigned short      flags_;
     struct prefix_tree *parent_;
@@ -19,8 +19,8 @@ struct pt_key_pair {
 };
 
 typedef int (*pt_key_comparator)( const void *lptr, const void *rptr);
-typedef void (*pt_key_setter)( struct pt_key_pair *e, const void *k);
-typedef struct pt_key_pair *(*pt_element_getter)
+typedef void (*pt_key_setter)( struct pt_key_info *e, const void *k);
+typedef struct pt_key_info *(*pt_element_getter)
                             ( struct mm_array *key_map, const void *k);
 
 struct prefix_tree {
@@ -35,58 +35,46 @@ struct prefix_tree {
 
 static int pt_key_compare_8( const void *lptr, const void *rptr)
 {
-    const struct pt_key_pair *l = (const struct pt_key_pair *)lptr;
-    const struct pt_key_pair *r = (const struct pt_key_pair *)rptr;
+    const struct pt_key_info *l = (const struct pt_key_info *)lptr;
+    const struct pt_key_info *r = (const struct pt_key_info *)rptr;
 
     return l->key_.k8_ < r->key_.k8_ ? -1 : r->key_.k8_ < l->key_.k8_;
 }
 
-static void pt_key_set_8( struct pt_key_pair *e, const void *k )
+static void pt_key_set_8( struct pt_key_info *e, const void *k )
 {
     e->key_.k8_ = *((const char *)k);
 }
 
-static struct pt_key_pair *pt_get_element_8( struct mm_array *key_map,
+static size_t pt_key_lenght_8( const void *k )
+{
+    const char *p = (const char *)k;
+    size_t len = 0;
+    while( *p++ ) len++;
+    return len;
+}
+
+static struct pt_key_info *pt_get_element_8( struct mm_array *key_map,
                                              const void *k )
 {
-    struct pt_key_pair tmp;
+    struct pt_key_info tmp;
     char c = *((const char *)k);
     tmp.key_.k8_ = c;
-    struct pt_key_pair *res =
-            (struct pt_key_pair *)mm_array_bin_find( key_map, &tmp,
+    struct pt_key_info *res =
+            (struct pt_key_info *)mm_array_bin_find( key_map, &tmp,
                                                      pt_key_compare_8);
     return res;
 }
 
-/*
-static int pt_key_compare_16( const void *lptr, const void *rptr)
-{
-    const struct pt_key_pair *l = (const struct pt_key_pair *)lptr;
-    const struct pt_key_pair *r = (const struct pt_key_pair *)rptr;
-
-    return l->key_.k16_ < r->key_.k16_ ? -1 : r->key_.k16_ < l->key_.k16_;
-}
-
-static struct pt_key_pair *pt_get_element_16(struct mm_array *key_map, short c)
-{
-    struct pt_key_pair tmp;
-    tmp.key_.k16_ = c;
-    struct pt_key_pair *res =
-            (struct pt_key_pair *)mm_array_bin_find( key_map, &tmp,
-                                                     pt_key_compare_16);
-    return res;
-}
-*/
-
 static void pt_free_key_pair( void *ptr )
 {
-    struct pt_key_pair *kp = (struct pt_key_pair *)(ptr);
+    struct pt_key_info *kp = (struct pt_key_info *)(ptr);
     if( kp->next_keys_ ) {
         if( kp->parent_->free_ ) {
             size_t count = mm_array_size( kp->next_keys_ );
-            struct pt_key_pair *next;
+            struct pt_key_info *next;
             while( count-- ) {
-                next = (struct pt_key_pair *)mm_array_at(kp->next_keys_, count);
+                next = (struct pt_key_info *)mm_array_at(kp->next_keys_, count);
                 if( next->data_ && (next->flags_ & PT_FLAG_FINAL))
                     kp->parent_->free_( next->data_ );
             }
@@ -97,7 +85,7 @@ static void pt_free_key_pair( void *ptr )
 
 static struct mm_array *pt_new_keys(  )
 {
-    struct mm_array *new_keys = mm_array_new(sizeof(struct pt_key_pair));
+    struct mm_array *new_keys = mm_array_new(sizeof(struct pt_key_info));
     if( new_keys ) {
         mm_array_set_free( new_keys, pt_free_key_pair );
     }
@@ -157,7 +145,7 @@ void prefix_tree_free2( struct prefix_tree *pt,
     }
 }
 
-static struct pt_key_pair *prefix_tree_next( const struct prefix_tree *pt,
+static struct pt_key_info *prefix_tree_next( const struct prefix_tree *pt,
                                              const void **stream,
                                              size_t *available,
                                              int greedy )
@@ -169,8 +157,8 @@ static struct pt_key_pair *prefix_tree_next( const struct prefix_tree *pt,
     size_t len_last    = len;
 
     struct mm_array    *key_map  = pt->root_keys_;
-    struct pt_key_pair *element  = NULL;
-    struct pt_key_pair *result   = NULL;
+    struct pt_key_info *element  = NULL;
+    struct pt_key_info *result   = NULL;
 
     const size_t esize = pt->element_size_;
 
@@ -200,7 +188,7 @@ static struct pt_key_pair *prefix_tree_next( const struct prefix_tree *pt,
 void *prefix_tree_get_next( const struct prefix_tree *pt,
                             const void **stream, size_t *available )
 {
-    struct pt_key_pair * res = prefix_tree_next( pt, stream, available, 1 );
+    struct pt_key_info * res = prefix_tree_next( pt, stream, available, 1 );
     return res ? res->data_ : NULL;
 }
 
@@ -214,10 +202,10 @@ int prefix_tree_insert( struct prefix_tree *pt,
 
     while( length-- && result ) {
 
-        struct pt_key_pair *element = pt->get_( key_map, next );
+        struct pt_key_info *element = pt->get_( key_map, next );
 
         if( !element ) {
-            struct pt_key_pair tmp;
+            struct pt_key_info tmp;
             pt->set_( &tmp, next );
             tmp.flags_      = length ? 0 : PT_FLAG_FINAL;
             tmp.data_       = length ? NULL : data;
@@ -244,3 +232,12 @@ int prefix_tree_insert( struct prefix_tree *pt,
 
     return result;
 }
+
+int prefix_tree_insert_string( struct prefix_tree *pt,
+                          const char *key_string, void *data )
+{
+    return prefix_tree_insert( pt,
+                               key_string, pt_key_lenght_8(key_string),
+                               data);
+}
+
