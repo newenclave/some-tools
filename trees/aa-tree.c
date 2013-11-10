@@ -482,9 +482,8 @@ int aa_tree_iterator_next( struct aa_tree_iterator *iter )
     return aa_tree_iterator_shift( iter, root );
 }
 
-
-struct aa_tree_iterator *aa_tree_iterator_new_both( const struct aa_tree *aat,
-                                                    int forward)
+static struct aa_tree_iterator
+        *aa_tree_iterator_new_both( const struct aa_tree *aat, int forward)
 {
     struct aa_tree_iterator *new_iter =
             (struct aa_tree_iterator *)malloc( sizeof(struct aa_tree_iterator));
