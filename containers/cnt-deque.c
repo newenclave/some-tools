@@ -73,7 +73,7 @@ struct cnt_deque_iterator
         ((char *)(cnd)->sides_[SIDE_BACK].unit_->array_ +   \
          (cnd)->sides_[SIDE_BACK].unit_->length_))
 
-#define CNT_DEQUE_IS_SIDE( cnd, side )              \
+#define CNT_DEQUE_IS_BORDER( cnd, side )              \
     ((side) ? CNT_DEQUE_IS_BOTTOM( cnd )            \
             : CNT_DEQUE_IS_TOP( cnd ))
 
@@ -103,21 +103,22 @@ static void *cnt_deque_memcpy(void *dest, const void *src, size_t n)
 void cnt_deque_init_unit_position( struct cnt_deque *cnd, size_t reserve,
                                    enum cnt_deque_start_point position)
 {
-    void *ptr_new;
+    void *ptr_new = NULL;
     switch( position ) {
     case DEQUE_START_TOP:
         ptr_new = CNT_DEQUE_BLOCK_AT(cnd->sides_[SIDE_FRONT].unit_,
                                      cnd->element_size_, 1);
 
         break;
-    case DEQUE_START_MIDDLE:
-        ptr_new = CNT_DEQUE_BLOCK_AT( cnd->sides_[SIDE_FRONT].unit_,
-                                    cnd->element_size_,
-                                    reserve >> 1);
-        break;
     case DEQUE_START_BOTTOM:
         ptr_new = CNT_DEQUE_BLOCK_AT(cnd->sides_[SIDE_FRONT].unit_,
                                    cnd->element_size_, reserve - 1);
+        break;
+
+    default:
+        ptr_new = CNT_DEQUE_BLOCK_AT( cnd->sides_[SIDE_FRONT].unit_,
+                                    cnd->element_size_,
+                                    reserve >> 1);
         break;
     }
     cnd->sides_[SIDE_FRONT].ptr_ = cnd->sides_[SIDE_BACK].ptr_ =  ptr_new;
@@ -255,7 +256,7 @@ static void *cnt_deque_change_side( struct cnt_deque *cnd, int dir )
 
     void *new_ptr = NULL;
     int res = 1;
-    if( CNT_DEQUE_IS_SIDE( cnd, dir ) ) {
+    if( CNT_DEQUE_IS_BORDER( cnd, dir ) ) {
         res = cnt_deque_extend_side( cnd, dir );
     }
     if( res ) {
