@@ -8,7 +8,7 @@ struct cnt_deque_iterator;
 
 typedef void  (* cnt_deque_element_free)( void *element );
 typedef void *(* cnt_deque_element_copy)( void *new_place,
-                                          void *element,
+                                          const void *element,
                                           size_t element_size );
 
 enum cnt_deque_start_point {
@@ -59,5 +59,15 @@ void   *cnt_deque_create_back( struct cnt_deque *cnd);
 int     cnt_deque_push_back  ( struct cnt_deque *cnd, void *element );
 int     cnt_deque_push_back2 ( struct cnt_deque *cnd, void *element,
                               cnt_deque_element_copy copy_call);
+
+struct cnt_deque_iterator
+        *cnt_deque_iterator_new( struct cnt_deque *cnd );
+struct cnt_deque_iterator
+        *cnt_deque_reverse_iterator_new( struct cnt_deque *cnd );
+
+int    cnt_deque_iterator_next( struct cnt_deque_iterator *iter );
+int    cnt_deque_iterator_end( struct cnt_deque_iterator *iter );
+void  *cnt_deque_iterator_get( struct cnt_deque_iterator *iter );
+void   cnt_deque_iterator_free( struct cnt_deque_iterator *iter );
 
 #endif // CNT_DEQUE_20131111_H

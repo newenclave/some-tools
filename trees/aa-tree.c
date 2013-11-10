@@ -449,7 +449,7 @@ int aa_tree_iterator_end( struct aa_tree_iterator *iter )
     return iter->current_ == NULL;
 }
 
-static void *void_ptr_copy(void *new_place, void *element, size_t es )
+static void *void_ptr_copy(void *new_place, const void *element, size_t es )
 {
     (void)(es);
     *((void **)new_place) = *((void **)element);

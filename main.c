@@ -171,6 +171,24 @@ void fill_table( struct prefix_tree *trie )
 
 int main( )
 {
+    struct cnt_deque *deq = cnt_deque_new( sizeof(int) );
+
+    int i;
+    for( i=0; i<1000; ++i )
+        cnt_deque_push_back( deq, &i );
+
+    struct cnt_deque_iterator *iter = cnt_deque_reverse_iterator_new( deq );
+
+    while( !cnt_deque_iterator_end( iter ) ) {
+        int *c = cnt_deque_iterator_get( iter );
+        printf( "iterator = %u %p\n", *c, c );
+        cnt_deque_iterator_next( iter );
+    }
+
+    cnt_deque_iterator_free( iter );
+    cnt_deque_free( deq );
+
+    return 0;
     struct prefix_tree *trie = prefix_tree_new2( prefix_info_free );
     fill_table( trie );
     prefix_tree_insert_string( trie, "1234", info(cp_black) );
