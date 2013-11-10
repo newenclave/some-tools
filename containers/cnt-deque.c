@@ -137,11 +137,11 @@ struct cnt_deque *cnt_deque_new_all( size_t element_size,
         new_deq->free_         = free_call;
         struct cnt_deque_unit *unit =
                 cnt_deque_unit_create( new_deq,
-                                       init_reserve ? init_reserve : 8);
+                                       init_reserve ? init_reserve + 1: 8);
         if( unit ) {
             new_deq->sides_[SIDE_FRONT].unit_ =
                 new_deq->sides_[SIDE_BACK].unit_ = unit;
-            cnt_deque_init_unit_position( new_deq, init_reserve, position );
+            cnt_deque_init_unit_position( new_deq, init_reserve + 1, position );
         } else {
             free(new_deq);
             new_deq = NULL;
