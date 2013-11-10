@@ -5,7 +5,7 @@
 #include "mm-block.h"
 
 struct mm_block {
-    char    *data_;
+    void    *data_;
     size_t   capacity_;
     size_t   used_;
 };
@@ -15,6 +15,7 @@ typedef struct mm_block mm_block_data_type;
 static const size_t void_ptr_size      =   sizeof(void *);
 static const size_t void_ptr_size_mask =   sizeof(void *) - 1;
 
+#define MM_BLOCK_AT(ptr, pos) (((char *)ptr) + (pos))
 #define MM_BLOCK_DEF_INC(size) (size + (size >> 1))
 
 #define MM_BLOCK_AVAILABLE_LOCAL( mb ) ((mb)->capacity_ - (mb)->used_)
@@ -158,7 +159,7 @@ int mm_block_resize2(struct mm_block *mb, size_t new_size, int c)
     int result = mm_block_resize(mb, new_size);
 
     if( result && (old_used < new_size) )
-        mm_block_memset( &mb->data_[old_used], c, new_size - old_used );
+        mm_block_memset(MM_BLOCK_AT(mb->data_, old_used), c, new_size-old_used);
 
     return result;
 }
@@ -185,12 +186,12 @@ void *mm_block_begin( struct mm_block *mb )
 
 void *mm_block_end( struct mm_block *mb )
 {
-    return mb->data_ + mb->used_;
+    return MM_BLOCK_AT(mb->data_, mb->used_);
 }
 
 void *mm_block_at( struct mm_block *mb, size_t position )
 {
-    return mb->data_ + position;
+    return MM_BLOCK_AT(mb->data_, position);
 }
 
 void mm_block_clear(struct mm_block *mb)
@@ -222,7 +223,7 @@ int mm_block_concat(struct mm_block *lmb, const void *data, size_t len)
 {
     size_t old_used = lmb->used_;
     if( 0 == mm_block_resize2(lmb, old_used + len, 0) ) return 0;
-    mm_block_memcpy( &lmb->data_[old_used], data, len );
+    mm_block_memcpy( MM_BLOCK_AT(lmb->data_, old_used), data, len );
     return 1;
 }
 
@@ -239,7 +240,7 @@ int mm_block_push_back(struct mm_block *mb, char c)
         if( !mm_block_reserve( mb, new_capa ) )
             return 0;
     }
-    mb->data_[mb->used_++] = c;
+    *MM_BLOCK_AT(mb->data_, mb->used_++) = c;
     return 1;
 }
 
@@ -249,7 +250,7 @@ void *mm_block_create_back( struct mm_block *mb, size_t count )
     void *tail = NULL;
     int res = mm_block_resize( mb, old_size + count );
     if( 0 != res ) {
-        tail = ( mb->data_ + old_size );
+        tail = MM_BLOCK_AT(mb->data_, old_size);
     }
     return tail;
 }
@@ -274,16 +275,16 @@ void *mm_block_create_insertion( struct mm_block *mb,
             if( position ) {
                 mm_block_memcpy( new_block->data_, mb->data_, position );
             }
-            mm_block_memcpy( new_block->data_ + new_tail_shift,
-                             mb->data_ + position,
+            mm_block_memcpy( MM_BLOCK_AT(new_block->data_, new_tail_shift),
+                             MM_BLOCK_AT(mb->data_, position),
                              mb->used_ - position);
             mm_block_swap( mb, new_block );
             mm_block_free( new_block );
-            block = mb->data_ + position;
+            block = MM_BLOCK_AT(mb->data_, position);
         }
     } else {
-        char *from = mb->data_ + position;
-        memmove( from + count, from, mb->used_ - position);
+        void *from = MM_BLOCK_AT(mb->data_ , position);
+        memmove( MM_BLOCK_AT(from, count), from, mb->used_ - position);
         mb->used_ += count;
         block = from;
     }
@@ -298,9 +299,9 @@ void *mm_block_create_front( struct mm_block *mb, size_t count )
 
 void *mm_block_delete( struct mm_block *mb, size_t position, size_t count )
 {
-    void  *tail_begin = mb->data_ +  position;
+    void  *tail_begin = MM_BLOCK_AT(mb->data_,  position);
     size_t tail_len  = mb->used_ - (position + count);
-    void *res = memmove( tail_begin, tail_begin + count, tail_len );
+    void *res = memmove( tail_begin, MM_BLOCK_AT(tail_begin, count), tail_len );
     mb->used_ -= count;
     return res;
 }

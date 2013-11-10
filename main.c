@@ -103,7 +103,7 @@ void prefix_info_free( void *ptr )
 {
     static int i = 0;
     struct prefix_info* n = (struct prefix_info*)ptr;
-    printf( "free info: %i\n", n->inf );
+    printf( "free info: %i %i\n", n->inf, ++i );
     free( n );
 }
 
