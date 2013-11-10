@@ -44,8 +44,13 @@ size_t          aa_tree_walk   ( struct aa_tree *aat,
                                  aa_tree_walker wlker,
                                  enum aa_tree_directions direction );
 
-struct aa_tree_iterator *aa_tree_iterator_new( struct aa_tree *aat );
-struct aa_tree_iterator *aa_tree_reverse_iterator_new( struct aa_tree *aat );
+struct aa_tree_iterator
+        *aa_tree_iterator_new( const struct aa_tree *aat );
+struct aa_tree_iterator
+        *aa_tree_reverse_iterator_new(const struct aa_tree *aat);
+struct aa_tree_iterator
+        *aa_tree_iterator_clone( const struct aa_tree_iterator *iter );
+
 void                     aa_tree_iterator_free( struct aa_tree_iterator *iter );
 int                      aa_tree_iterator_end( struct aa_tree_iterator *iter );
 int                      aa_tree_iterator_next( struct aa_tree_iterator *iter );

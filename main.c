@@ -75,10 +75,15 @@ void copy_element( size_t *new_place,
 }
 
 
-int cmp( int *l, int *r )
+int cmp( int l, int r )
+{
+    return l < r ? -1 : r < l;
+}
+
+int cmp2( int *l, int *r )
 {
     static int i = 0;
-    printf( "chek %u\n", i++ );
+    printf( "chek %u %u %u \n", i++, *l, *r );
     return *l < *r ? -1 : *r < *l;
 }
 
@@ -169,24 +174,59 @@ void fill_table( struct prefix_tree *trie )
 
 }
 
+
+static void *void_ptr_copy(void *new_place, const void *element, size_t es )
+{
+    (void)(es);
+    *((size_t *)new_place) = *((size_t *)element);
+    return new_place;
+}
+
+
 int main( )
 {
-    struct cnt_deque *deq = cnt_deque_new( sizeof(int) );
 
-    int i;
-    for( i=0; i<1000; ++i )
-        cnt_deque_push_back( deq, &i );
+    struct cnt_deque *deq = cnt_deque_new_reserved_pos( sizeof(size_t),
+                                                    33, DEQUE_START_BOTTOM);
 
-    struct cnt_deque_iterator *iter = cnt_deque_reverse_iterator_new( deq );
-
-    while( !cnt_deque_iterator_end( iter ) ) {
-        int *c = cnt_deque_iterator_get( iter );
-        printf( "iterator = %u %p\n", *c, c );
-        cnt_deque_iterator_next( iter );
+    size_t ci = 0;
+    for( ;ci<100; ++ci ) {
+        printf( "next ci %u\n", ci );
+        cnt_deque_push_front2( deq, &ci, void_ptr_copy );
     }
 
-    cnt_deque_iterator_free( iter );
     cnt_deque_free( deq );
+    struct aa_tree *at = aa_tree_new2( cmp );
+
+    int cc = 0;
+
+    for( cc = 0; cc<100; ++cc ) {
+        aa_tree_insert( at, (void *)cc );
+    }
+
+    size_t tree_size = aa_tree_size( at );
+
+    struct aa_tree_iterator *ai = aa_tree_reverse_iterator_new( at );
+    struct aa_tree_iterator *ac;
+
+    while( !aa_tree_iterator_end( ai ) ) {
+        int r = (int)aa_tree_iterator_get( ai );
+        printf( "i = %u\n", r );
+        if( r == 14 )
+            ac = aa_tree_iterator_clone( ai );
+        aa_tree_iterator_next( ai );
+    }
+
+    printf( "------\n" );
+    while( !aa_tree_iterator_end( ac ) ) {
+        int r = (int)aa_tree_iterator_get( ac );
+        printf( "i = %u\n", r );
+        aa_tree_iterator_next( ac );
+    }
+
+    aa_tree_free( at );
+    aa_tree_iterator_free( ai );
+    aa_tree_iterator_free( ac );
 
     return 0;
     struct prefix_tree *trie = prefix_tree_new2( prefix_info_free );

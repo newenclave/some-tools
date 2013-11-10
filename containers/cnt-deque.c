@@ -30,7 +30,7 @@ struct cnt_deque {
 
 struct cnt_deque_iterator
 {
-    struct cnt_deque       *parent_;
+    const struct cnt_deque *parent_;
     struct cnt_deque_unit  *unit_;
     void                   *ptr_;
     short  next_;
@@ -46,9 +46,9 @@ struct cnt_deque_iterator
 
 #define CNT_DEQUE_BLOCK_BEGIN( unit ) ((unit)->array_)
 #define CNT_DEQUE_BLOCK_AT( unit, element_size, count ) \
-     ((unit)->array_ + ((element_size) * count))
+     ((char *)(unit)->array_ + ((element_size) * (count)))
 
-#define CNT_DEQUE_BLOCK_END( unit ) ((unit)->array_ + (unit)->length_)
+#define CNT_DEQUE_BLOCK_END( unit ) ((char *)(unit)->array_ + (unit)->length_)
 
 #define CNT_DEQUE_BLOCK_SIDE( unit, side )        \
         ((side) ? CNT_DEQUE_BLOCK_BEGIN(unit)     \
@@ -68,9 +68,9 @@ struct cnt_deque_iterator
         ((cnd)->sides_[SIDE_FRONT].ptr_ ==          \
          (cnd)->sides_[SIDE_FRONT].unit_->array_ )
 
-#define CNT_DEQUE_IS_BOTTOM( cnd )                  \
-        ((cnd)->sides_[SIDE_BACK].ptr_ ==           \
-        ((cnd)->sides_[SIDE_BACK].unit_->array_ +   \
+#define CNT_DEQUE_IS_BOTTOM( cnd )                          \
+        ((cnd)->sides_[SIDE_BACK].ptr_ ==                   \
+        ((char *)(cnd)->sides_[SIDE_BACK].unit_->array_ +   \
          (cnd)->sides_[SIDE_BACK].unit_->length_))
 
 #define CNT_DEQUE_IS_SIDE( cnd, side )              \
@@ -103,22 +103,24 @@ static void *cnt_deque_memcpy(void *dest, const void *src, size_t n)
 void cnt_deque_init_unit_position( struct cnt_deque *cnd, size_t reserve,
                                    enum cnt_deque_start_point position)
 {
+    void *ptr_new;
     switch( position ) {
     case DEQUE_START_TOP:
-        cnd->sides_[SIDE_FRONT].ptr_ = cnd->sides_[SIDE_BACK].ptr_ =
-                CNT_DEQUE_BLOCK_BEGIN( cnd->sides_[SIDE_FRONT].unit_ );
+        ptr_new = CNT_DEQUE_BLOCK_AT(cnd->sides_[SIDE_FRONT].unit_,
+                                     cnd->element_size_, 1);
+
         break;
     case DEQUE_START_MIDDLE:
-        cnd->sides_[SIDE_FRONT].ptr_ = cnd->sides_[SIDE_BACK].ptr_ =
-                CNT_DEQUE_BLOCK_AT( cnd->sides_[SIDE_FRONT].unit_,
+        ptr_new = CNT_DEQUE_BLOCK_AT( cnd->sides_[SIDE_FRONT].unit_,
                                     cnd->element_size_,
                                     reserve >> 1);
         break;
     case DEQUE_START_BOTTOM:
-        cnd->sides_[SIDE_FRONT].ptr_ = cnd->sides_[SIDE_BACK].ptr_ =
-                CNT_DEQUE_BLOCK_END( cnd->sides_[SIDE_FRONT].unit_ );
+        ptr_new = CNT_DEQUE_BLOCK_AT(cnd->sides_[SIDE_FRONT].unit_,
+                                   cnd->element_size_, reserve - 1);
         break;
     }
+    cnd->sides_[SIDE_FRONT].ptr_ = cnd->sides_[SIDE_BACK].ptr_ =  ptr_new;
 }
 
 struct cnt_deque *cnt_deque_new_all( size_t element_size,
@@ -269,7 +271,7 @@ void *cnt_deque_create_front( struct cnt_deque *cnd )
     return cnt_deque_change_side( cnd, SIDE_FRONT );
 }
 
-int cnt_deque_push_front2(struct cnt_deque *cnd, void *element,
+int cnt_deque_push_front2(struct cnt_deque *cnd, const void *element,
                           cnt_deque_element_copy copy_call)
 {
     void *new_front = cnt_deque_create_front( cnd );
@@ -279,7 +281,7 @@ int cnt_deque_push_front2(struct cnt_deque *cnd, void *element,
     return new_front != NULL;
 }
 
-int cnt_deque_push_front( struct cnt_deque *cnd, void *element )
+int cnt_deque_push_front( struct cnt_deque *cnd, const void *element )
 {
     return cnt_deque_push_front2( cnd, element, cnt_deque_memcpy );
 }
@@ -342,7 +344,7 @@ void *cnt_deque_create_back( struct cnt_deque *cnd)
     return cnt_deque_change_side( cnd, SIDE_BACK );
 }
 
-int cnt_deque_push_back2( struct cnt_deque *cnd, void *element,
+int cnt_deque_push_back2( struct cnt_deque *cnd, const void *element,
                           cnt_deque_element_copy copy_call )
 {
     void *new_back = cnt_deque_create_back( cnd );
@@ -351,7 +353,7 @@ int cnt_deque_push_back2( struct cnt_deque *cnd, void *element,
     return new_back != NULL;
 }
 
-int cnt_deque_push_back ( struct cnt_deque *cnd, void *element )
+int cnt_deque_push_back ( struct cnt_deque *cnd, const void *element )
 {
     return cnt_deque_push_back2( cnd, element, cnt_deque_memcpy );
 }
@@ -425,8 +427,8 @@ void cnt_deque_free( struct cnt_deque *cnd )
     if( cnd ) cnt_deque_free2( cnd, cnd->free_ );
 }
 
-static struct cnt_deque_iterator *cnt_deque_iterator_both(struct cnt_deque *cnd,
-                                                          short direction)
+static struct cnt_deque_iterator
+    *cnt_deque_iterator_both(const struct cnt_deque *cnd, short direction)
 {
     struct cnt_deque_iterator *iter =
          (struct cnt_deque_iterator *)malloc(sizeof(struct cnt_deque_iterator));
@@ -440,26 +442,41 @@ static struct cnt_deque_iterator *cnt_deque_iterator_both(struct cnt_deque *cnd,
     return iter;
 }
 
-struct cnt_deque_iterator *cnt_deque_reverse_iterator_new(struct cnt_deque *cd)
+struct cnt_deque_iterator
+        *cnt_deque_reverse_iterator_new(const  struct cnt_deque *cd)
 {
     return cnt_deque_iterator_both( cd, 0 );
 }
 
-struct cnt_deque_iterator *cnt_deque_iterator_new( struct cnt_deque *cnd )
+struct cnt_deque_iterator
+        *cnt_deque_iterator_new( const struct cnt_deque *cnd )
 {
     return cnt_deque_iterator_both( cnd, 1 );
 }
 
+struct cnt_deque_iterator
+        *cnt_deque_iterator_clone(const struct cnt_deque_iterator *src)
+{
+    struct cnt_deque_iterator *iter =
+         (struct cnt_deque_iterator *)malloc(sizeof(struct cnt_deque_iterator));
+    if( iter ) {
+       cnt_deque_memcpy( iter, src, sizeof(struct cnt_deque_iterator) );
+    }
+    return iter;
+}
+
 int cnt_deque_iterator_next( struct cnt_deque_iterator *iter )
 {
-    struct cnt_deque *parent = iter->parent_;
+    const struct cnt_deque *parent = iter->parent_;
     void *ptr = iter->next_ ? CNT_DEQUE_ELEMENT_NEXT(parent, iter->ptr_)
                             : CNT_DEQUE_ELEMENT_PREV(parent, iter->ptr_);
     if( CNT_DEQUE_BLOCK_IS_SIDE( iter->unit_, ptr, iter->side_ ) ) {
         struct bilinked_list_head *lh =
                 BILINKED_LIST_STEP( &iter->unit_->list_, iter->next_ );
-        iter->unit_ = FIELD_ENTRY( lh, struct cnt_deque_unit, list_ );
-        ptr = CNT_DEQUE_BLOCK_SIDE( iter->unit_, iter->next_ );
+        if( lh ) {
+            iter->unit_ = FIELD_ENTRY( lh, struct cnt_deque_unit, list_ );
+            ptr = CNT_DEQUE_BLOCK_SIDE( iter->unit_, iter->next_ );
+        }
     }
     iter->ptr_ = ptr;
     return 1;
