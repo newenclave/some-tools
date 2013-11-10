@@ -65,7 +65,7 @@ struct aa_tree *aa_tree_new( )
     return aa_tree_new3( aa_tree_data_compare_default, NULL );
 }
 
-struct aa_tree_node *skew( struct aa_tree_node *t )
+static struct aa_tree_node *skew( struct aa_tree_node *t )
 {
     aa_tree_node_ptr *left = &(t->links_[AA_LINK_LEFT]);
     struct aa_tree_node *l =   t->links_[AA_LINK_LEFT];
@@ -79,7 +79,7 @@ struct aa_tree_node *skew( struct aa_tree_node *t )
     return t;
 }
 
-void skew0( aa_tree_node_ptr *top )
+static void skew0( aa_tree_node_ptr *top )
 {
     struct aa_tree_node *t = *top;
     aa_tree_node_ptr *left = &(t->links_[AA_LINK_LEFT]);
@@ -97,7 +97,8 @@ void skew0( aa_tree_node_ptr *top )
     }
 }
 
-struct aa_tree_node * split( struct aa_tree_node *t )
+
+static struct aa_tree_node * split( struct aa_tree_node *t )
 {
     aa_tree_node_ptr    *right = &(t->links_[AA_LINK_RIGHT]);
     struct aa_tree_node *r     =   t->links_[AA_LINK_RIGHT];
@@ -117,7 +118,7 @@ struct aa_tree_node * split( struct aa_tree_node *t )
     return t;
 }
 
-void split0( aa_tree_node_ptr *top )
+static void split0( aa_tree_node_ptr *top )
 {
     struct aa_tree_node *t =      *top;
     aa_tree_node_ptr    *right = &(t->links_[AA_LINK_RIGHT]);
