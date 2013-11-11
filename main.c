@@ -205,7 +205,7 @@ int main( )
         struct test *t = ((struct test *)cnt_deque_back( dequ ));
         acc += t->j;
         cnt_deque_pop_back( dequ );
-        //printf( "pop %u\n", t->j );
+        printf( "pop %u\n", t->j );
     }
 
     struct test tt = { 0, 0 };
