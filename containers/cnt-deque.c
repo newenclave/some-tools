@@ -43,12 +43,8 @@ struct cnt_deque_iterator
 #define CNT_DEQUE_ELEMENT_PREV( ptr, element_size ) \
             (((char *)ptr) - (element_size))
 
-#define CNT_DEQUE_BLOCK_BEGIN( unit ) ((unit)->border_[SIDE_FRONT])
-
-#define CNT_DEQUE_BLOCK_AT( unit, element_size, count ) \
-    ((char *)(unit)->border_[SIDE_FRONT] + ((element_size) * (count)))
-
-#define CNT_DEQUE_BLOCK_END( unit ) ((unit)->border_[SIDE_BACK])
+#define CNT_DEQUE_ELEMENT_AT( ptr, element_size, position ) \
+            (((char *)ptr) + ((element_size) * (position)))
 
 #define CNT_DEQUE_BLOCK_SIDE( unit, side ) ((unit)->border_[!(side)])
 
@@ -106,8 +102,8 @@ void cnt_deque_init_unit_position( struct cnt_deque *cnd, size_t reserve,
     void *ptr_new = NULL;
     void *front = cnd->sides_[SIDE_FRONT].unit_->border_[SIDE_FRONT];
     void *back = cnd->sides_[SIDE_FRONT].unit_->border_[SIDE_BACK];
-
     size_t size = cnd->element_size_;
+
     switch( position ) {
     case DEQUE_START_TOP:
         ptr_new = CNT_DEQUE_ELEMENT_NEXT(front, size);
@@ -116,8 +112,7 @@ void cnt_deque_init_unit_position( struct cnt_deque *cnd, size_t reserve,
         ptr_new = CNT_DEQUE_ELEMENT_PREV(back, size);
         break;
     default:
-        ptr_new = CNT_DEQUE_BLOCK_AT(cnd->sides_[SIDE_FRONT].unit_,
-                                     cnd->element_size_, reserve >> 1);
+        ptr_new = CNT_DEQUE_ELEMENT_AT(front, size, reserve >> 1);
         break;
     }
     cnd->sides_[SIDE_FRONT].ptr_ = cnd->sides_[SIDE_BACK].ptr_ =  ptr_new;
@@ -387,7 +382,7 @@ static int cnt_deque_unit_free( struct cnt_deque *cnd,
                          void *begin, const void *end,
                          cnt_deque_element_free free_call )
 {
-    const void *block_end = CNT_DEQUE_BLOCK_END( unit );
+    const void *block_end = unit->border_[SIDE_BACK];
     size_t element_size = cnd->element_size_;
     while( begin != end && begin != block_end ) {
         free_call( begin );
