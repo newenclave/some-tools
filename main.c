@@ -228,7 +228,7 @@ int main( )
     aa_tree_iterator_free( ai );
     aa_tree_iterator_free( ac );
 
-    return 0;
+    //return 0;
     struct prefix_tree *trie = prefix_tree_new2( prefix_info_free );
     fill_table( trie );
     prefix_tree_insert_string( trie, "1234", info(cp_black) );

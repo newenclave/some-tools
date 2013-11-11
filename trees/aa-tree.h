@@ -51,9 +51,9 @@ struct aa_tree_iterator
 struct aa_tree_iterator
         *aa_tree_iterator_clone( const struct aa_tree_iterator *iter );
 
-void                     aa_tree_iterator_free( struct aa_tree_iterator *iter );
-int                      aa_tree_iterator_end( struct aa_tree_iterator *iter );
-int                      aa_tree_iterator_next( struct aa_tree_iterator *iter );
-void                    *aa_tree_iterator_get( struct aa_tree_iterator *iter );
+void    aa_tree_iterator_free( struct aa_tree_iterator *iter );
+int     aa_tree_iterator_end( struct aa_tree_iterator *iter );
+int     aa_tree_iterator_next( struct aa_tree_iterator *iter );
+void   *aa_tree_iterator_get( struct aa_tree_iterator *iter );
 
 #endif
