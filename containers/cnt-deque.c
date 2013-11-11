@@ -52,23 +52,8 @@ struct cnt_deque_iterator
 
 #define CNT_DEQUE_BLOCK_SIDE( unit, side ) ((unit)->border_[!side])
 
-#define CNT_DEQUE_BLOCK_IS_BEGIN( unit, ptr ) \
-        (CNT_DEQUE_BLOCK_BEGIN( unit ) == (ptr))
-
-#define CNT_DEQUE_BLOCK_IS_END( unit, ptr ) \
-        (CNT_DEQUE_BLOCK_END( unit ) == (ptr))
-
-#define CNT_DEQUE_BLOCK_IS_SIDE( unit, ptr, side )        \
-        ((side) ? CNT_DEQUE_BLOCK_IS_BEGIN( unit, ptr )   \
-                : CNT_DEQUE_BLOCK_IS_END( unit, ptr ) )
-
-#define CNT_DEQUE_IS_TOP( cnd )                     \
-        ((cnd)->sides_[SIDE_FRONT].ptr_ ==          \
-         (cnd)->sides_[SIDE_FRONT].unit_->border_[SIDE_FRONT] )
-
-#define CNT_DEQUE_IS_BOTTOM( cnd )                 \
-        ((cnd)->sides_[SIDE_BACK].ptr_ ==          \
-         (cnd)->sides_[SIDE_BACK].unit_->border_[SIDE_BACK] )
+#define CNT_DEQUE_BLOCK_IS_SIDE( unit, ptr, side )       \
+        CNT_DEQUE_BLOCK_SIDE(unit, side) == (ptr)
 
 #define CNT_DEQUE_IS_BORDER( cnd, side )            \
         ((cnd)->sides_[side].ptr_ ==                \

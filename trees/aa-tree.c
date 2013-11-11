@@ -19,7 +19,7 @@ struct aa_tree_node {
     union  node_data {
         void    *ptr_;
         char    *str_;
-        int      number_;
+        size_t   number_;
     }                       data_;
     size_t                  level_;
 };
