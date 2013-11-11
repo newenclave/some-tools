@@ -43,12 +43,12 @@ struct cnt_deque_iterator
 #define CNT_DEQUE_ELEMENT_PREV( ptr, element_size ) \
             (((char *)ptr) - (element_size))
 
-#define CNT_DEQUE_BLOCK_BEGIN( unit ) ((unit)->border_[0])
+#define CNT_DEQUE_BLOCK_BEGIN( unit ) ((unit)->border_[SIDE_FRONT])
 
 #define CNT_DEQUE_BLOCK_AT( unit, element_size, count ) \
-    ((char *)(unit)->border_[0] + ((element_size) * (count)))
+    ((char *)(unit)->border_[SIDE_FRONT] + ((element_size) * (count)))
 
-#define CNT_DEQUE_BLOCK_END( unit ) ((unit)->border_[1])
+#define CNT_DEQUE_BLOCK_END( unit ) ((unit)->border_[SIDE_BACK])
 
 #define CNT_DEQUE_BLOCK_SIDE( unit, side ) ((unit)->border_[!(side)])
 
@@ -89,8 +89,8 @@ struct cnt_deque_unit *cnt_deque_unit_create( struct cnt_deque* cnd,
     if( new_unit ) {
         size_t length = elements * cnd->element_size_;
         void *new_border = cnt_deque_malloc( length );
-        new_unit->border_[0] = new_border;
-        new_unit->border_[1] = ((char *)new_border) + length;
+        new_unit->border_[SIDE_FRONT] = new_border;
+        new_unit->border_[SIDE_BACK] = ((char *)new_border) + length;
         new_unit->list_.links_[0] = new_unit->list_.links_[1] = NULL;
         if( !new_border ) {
             cnt_deque_freemem( new_unit );
@@ -104,18 +104,17 @@ void cnt_deque_init_unit_position( struct cnt_deque *cnd, size_t reserve,
                                    enum cnt_deque_start_point position)
 {
     void *ptr_new = NULL;
+    void *front = cnd->sides_[SIDE_FRONT].unit_->border_[SIDE_FRONT];
+    void *back = cnd->sides_[SIDE_FRONT].unit_->border_[SIDE_BACK];
+
     size_t size = cnd->element_size_;
     switch( position ) {
     case DEQUE_START_TOP:
-        ptr_new =
-        CNT_DEQUE_ELEMENT_NEXT(cnd->sides_[SIDE_FRONT].unit_->border_[0], size);
-
+        ptr_new = CNT_DEQUE_ELEMENT_NEXT(front, size);
         break;
     case DEQUE_START_BOTTOM:
-        ptr_new =
-        CNT_DEQUE_ELEMENT_PREV(cnd->sides_[SIDE_FRONT].unit_->border_[1], size);
+        ptr_new = CNT_DEQUE_ELEMENT_PREV(back, size);
         break;
-
     default:
         ptr_new = CNT_DEQUE_BLOCK_AT(cnd->sides_[SIDE_FRONT].unit_,
                                      cnd->element_size_, reserve >> 1);
@@ -137,7 +136,7 @@ struct cnt_deque *cnt_deque_new_all( size_t element_size,
         new_deq->free_         = free_call;
         struct cnt_deque_unit *unit =
                 cnt_deque_unit_create( new_deq,
-                                       init_reserve ? init_reserve + 1: 8);
+                                       init_reserve ? init_reserve + 1: 4);
         if( unit ) {
             new_deq->sides_[SIDE_FRONT].unit_ =
                 new_deq->sides_[SIDE_BACK].unit_ = unit;
@@ -175,12 +174,12 @@ struct cnt_deque *cnt_deque_new_reserved_pos ( size_t element_size,
 struct cnt_deque *cnt_deque_new2( size_t element_size,
                                   cnt_deque_element_free free_call )
 {
-    return cnt_deque_new_all( element_size, 8, free_call, DEQUE_START_MIDDLE );
+    return cnt_deque_new_all( element_size, 4, free_call, DEQUE_START_MIDDLE );
 }
 
 struct cnt_deque *cnt_deque_new( size_t element_size )
 {
-    return cnt_deque_new_all( element_size, 8, NULL, DEQUE_START_MIDDLE );
+    return cnt_deque_new_all( element_size, 4, NULL, DEQUE_START_MIDDLE );
 }
 
 void  cnt_deque_set_free( struct cnt_deque *cnd,
@@ -218,8 +217,8 @@ static int cnt_deque_extend_side( struct cnt_deque *cnd, int dir )
             BILINKED_LIST_REMOVE( other_list );
             other_list->links_[0] = other_list->links_[1] = NULL;
         } else {
-            const size_t old_size = (side->unit_->border_[1]-
-                                     side->unit_->border_[0]) /
+            const size_t old_size = (side->unit_->border_[SIDE_BACK]-
+                                     side->unit_->border_[SIDE_FRONT]) /
                                                 cnd->element_size_;
             const size_t new_size = CNT_DEQUE_DEF_INC(old_size);
             new_unit = cnt_deque_unit_create( cnd, new_size );
@@ -322,7 +321,7 @@ static void cnt_deque_pop_side( struct cnt_deque *cnd, int dir,
             struct cnt_deque_unit *old_unit =
                     FIELD_ENTRY(old_list, struct cnt_deque_unit, list_);
             BILINKED_LIST_REMOVE( old_list );
-            cnt_deque_freemem( old_unit->border_[0] );
+            cnt_deque_freemem( old_unit->border_[SIDE_FRONT] );
             cnt_deque_freemem( old_unit );
         }
 
@@ -424,7 +423,7 @@ static void cnt_deque_list_free( struct cnt_deque *cnd,
     while( head ) {
         unit = FIELD_ENTRY( head, struct cnt_deque_unit, list_ );
         head = BILINKED_LIST_NEXT( head );
-        cnt_deque_freemem( unit->border_[0] );
+        cnt_deque_freemem( unit->border_[SIDE_FRONT] );
         cnt_deque_freemem( unit );
     }
 }
