@@ -198,14 +198,14 @@ int main( )
         struct test tt;
         tt.i = t;
         tt.j = t >> 1;
-        cnt_deque_push_front( dequ, &tt );
+        cnt_deque_push_back( dequ, &tt );
     }
 
     while( !cnt_deque_empty( dequ ) ) {
-        struct test *t = ((struct test *)cnt_deque_back( dequ ));
+        struct test *t = ((struct test *)cnt_deque_front( dequ ));
         acc += t->j;
-        cnt_deque_pop_back( dequ );
-        printf( "pop %u\n", t->j );
+        cnt_deque_pop_front( dequ );
+        //printf( "pop %u\n", t->j );
     }
 
     struct test tt = { 0, 0 };
