@@ -74,20 +74,21 @@ struct cnt_deque_iterator
         ((cnd)->sides_[side].ptr_ ==                \
          (cnd)->sides_[side].unit_->border_[side] )
 
+//#define CNT_DEQUE_DEF_INC(size) ((size))
 #define CNT_DEQUE_DEF_INC(size) ((size) + ((size) >> 1))
 
 
 static void *cnt_deque_malloc(size_t size)
 {
     void *ptr = malloc( size );
-    //printf( "alloc %p\n", ptr );
+//    printf( "alloc %p\n", ptr );
     return ptr;
 }
 
 static void cnt_deque_freemem(void *ptr)
 {
     free( ptr );
-    //printf( "free %p\n", ptr );
+//    printf( "free %p\n", ptr );
 }
 
 static void *cnt_deque_memcpy(void *dest, const void *src, size_t n)
@@ -238,10 +239,10 @@ static int cnt_deque_extend_side( struct cnt_deque *cnd, int dir )
             const size_t new_size = CNT_DEQUE_DEF_INC(old_size);
             new_unit = cnt_deque_unit_create( cnd, new_size );
         }
+        BILINKED_LIST_INSERT( &side->unit_->list_, &new_unit->list_, dir );
     }
 
     if( new_unit ) {
-        BILINKED_LIST_INSERT( &side->unit_->list_, &new_unit->list_, dir );
         side->unit_ = new_unit;
         side->ptr_  = CNT_DEQUE_BLOCK_SIDE( new_unit, dir );
     }
@@ -326,10 +327,21 @@ static void cnt_deque_pop_side( struct cnt_deque *cnd, int dir,
     if( CNT_DEQUE_BLOCK_IS_SIDE(side->unit_, new_side, dir)
             && new_side != cnd->sides_[!dir].ptr_ )
     {
+        struct bilinked_list_head  *old_list = &side->unit_->list_;
         struct bilinked_list_head  *next_unit =
                 BILINKED_LIST_STEP(&side->unit_->list_, !dir);
         side->unit_ = FIELD_ENTRY(next_unit, struct cnt_deque_unit, list_);
         new_side    = CNT_DEQUE_BLOCK_SIDE(side->unit_, !dir);
+
+        if( old_list->links_[dir] ) {
+            old_list = old_list->links_[dir];
+            struct cnt_deque_unit *old_unit =
+                    FIELD_ENTRY(old_list, struct cnt_deque_unit, list_);
+            BILINKED_LIST_REMOVE( old_list );
+            cnt_deque_freemem( old_unit->border_[0] );
+            cnt_deque_freemem( old_unit );
+        }
+
     }
 
     side->ptr_ = new_side;

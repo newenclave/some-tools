@@ -190,7 +190,7 @@ struct test {
 int main( )
 {
 
-    struct cnt_deque *dequ = cnt_deque_new_reserved( sizeof(struct test), 1000 );
+    struct cnt_deque *dequ = cnt_deque_new_reserved( sizeof(struct test), 32 );
 
     size_t t;
     size_t acc;
@@ -202,7 +202,8 @@ int main( )
     }
 
     while( !cnt_deque_empty( dequ ) ) {
-        acc += ((struct test *)cnt_deque_front( dequ ))->j;
+        struct test *t = ((struct test *)cnt_deque_front( dequ ));
+        acc += t->j;
         cnt_deque_pop_front( dequ );
     }
 
@@ -216,7 +217,7 @@ int main( )
     }
 
     cnt_deque_free( dequ );
-    printf( "%u\n", acc );
+    //printf( "%u\n", acc );
 
     return 0;
 
