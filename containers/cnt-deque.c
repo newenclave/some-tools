@@ -50,7 +50,7 @@ struct cnt_deque_iterator
 
 #define CNT_DEQUE_BLOCK_END( unit ) ((unit)->border_[1])
 
-#define CNT_DEQUE_BLOCK_SIDE( unit, side ) ((unit)->border_[!side])
+#define CNT_DEQUE_BLOCK_SIDE( unit, side ) ((unit)->border_[!(side)])
 
 #define CNT_DEQUE_BLOCK_IS_SIDE( unit, ptr, side )       \
         CNT_DEQUE_BLOCK_SIDE(unit, side) == (ptr)
@@ -318,8 +318,7 @@ static void cnt_deque_pop_side( struct cnt_deque *cnd, int dir,
         side->unit_ = FIELD_ENTRY(next_unit, struct cnt_deque_unit, list_);
         new_side    = CNT_DEQUE_BLOCK_SIDE(side->unit_, !dir);
 
-        if( old_list->links_[dir] ) {
-            old_list = old_list->links_[dir];
+        if( NULL != (old_list = old_list->links_[dir]) ) {
             struct cnt_deque_unit *old_unit =
                     FIELD_ENTRY(old_list, struct cnt_deque_unit, list_);
             BILINKED_LIST_REMOVE( old_list );
