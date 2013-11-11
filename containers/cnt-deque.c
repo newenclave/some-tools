@@ -90,6 +90,10 @@ static void cnt_deque_freemem(void *ptr)
     //printf( "free %p\n", ptr );
 }
 
+static void *cnt_deque_memcpy(void *dest, const void *src, size_t n)
+{
+    return memcpy(dest, src, n);
+}
 
 struct cnt_deque_unit *cnt_deque_unit_create( struct cnt_deque* cnd,
                                               size_t elements )
@@ -108,11 +112,6 @@ struct cnt_deque_unit *cnt_deque_unit_create( struct cnt_deque* cnd,
         }
     }
     return new_unit;
-}
-
-static void *cnt_deque_memcpy(void *dest, const void *src, size_t n)
-{
-    return memcpy(dest, src, n);
 }
 
 void cnt_deque_init_unit_position( struct cnt_deque *cnd, size_t reserve,
