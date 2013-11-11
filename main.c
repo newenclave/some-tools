@@ -190,21 +190,21 @@ struct test {
 int main( )
 {
 
-    struct cnt_deque *dequ = cnt_deque_new_reserved( sizeof(struct test), 32 );
+    struct cnt_deque *dequ = cnt_deque_new_reserved( sizeof(struct test), 1000 );
 
     size_t t;
     size_t acc;
-//    for( t=0; t<10000000; ++t ) {
-//        struct test tt;
-//        tt.i = t;
-//        tt.j = t >> 1;
-//        cnt_deque_push_back2( dequ, &tt, NULL );
-//    }
+    for( t=0; t<10000000; ++t ) {
+        struct test tt;
+        tt.i = t;
+        tt.j = t >> 1;
+        cnt_deque_push_back2( dequ, &tt, NULL );
+    }
 
-//    while( !cnt_deque_empty( dequ ) ) {
-//        acc += ((struct test *)cnt_deque_front( dequ ))->j;
-//        cnt_deque_pop_front( dequ );
-//    }
+    while( !cnt_deque_empty( dequ ) ) {
+        acc += ((struct test *)cnt_deque_front( dequ ))->j;
+        cnt_deque_pop_front( dequ );
+    }
 
     struct test tt = { 0, 0 };
 
