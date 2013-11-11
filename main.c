@@ -182,9 +182,45 @@ static void *void_ptr_copy(void *new_place, const void *element, size_t es )
     return new_place;
 }
 
+struct test {
+    size_t i;
+    size_t j;
+};
 
 int main( )
 {
+
+    struct cnt_deque *dequ = cnt_deque_new_reserved( sizeof(struct test), 32 );
+
+    size_t t;
+    size_t acc;
+    for( t=0; t<10000000; ++t ) {
+        struct test tt;
+        tt.i = t;
+        tt.j = t >> 1;
+        cnt_deque_push_back( dequ, &tt );
+    }
+
+    while( !cnt_deque_empty( dequ ) ) {
+        acc += ((struct test *)cnt_deque_front( dequ ))->j;
+        cnt_deque_pop_front( dequ );
+    }
+
+    struct test tt = { 0, 0 };
+
+    cnt_deque_push_back( dequ, &tt );
+    for( t=0; t<10000000; ++t ) {
+        struct test *f = (struct test *)cnt_deque_front( dequ );
+        cnt_deque_push_back( dequ, f );
+        cnt_deque_pop_front( dequ );
+    }
+
+    cnt_deque_free( dequ );
+    printf( "%u\n", acc );
+
+
+
+    return 0;
 
     struct cnt_deque *deq = cnt_deque_new_reserved_pos( sizeof(size_t),
                                                     33, DEQUE_START_BOTTOM);
