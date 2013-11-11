@@ -194,27 +194,27 @@ int main( )
 
     size_t t;
     size_t acc;
-    for( t=0; t<100; ++t ) {
+    for( t=0; t<10000000; ++t ) {
         struct test tt;
         tt.i = t;
         tt.j = t >> 1;
-        cnt_deque_push_back( dequ, &tt );
+        cnt_deque_push_front( dequ, &tt );
     }
 
     while( !cnt_deque_empty( dequ ) ) {
         struct test *t = ((struct test *)cnt_deque_back( dequ ));
         acc += t->j;
         cnt_deque_pop_back( dequ );
-        printf( "pop %u\n", t->i );
+        //printf( "pop %u\n", t->j );
     }
 
     struct test tt = { 0, 0 };
 
     cnt_deque_push_back( dequ, &tt );
-    for( t=0; t<100; ++t ) {
+    for( t=0; t<10000000; ++t ) {
         struct test *f = (struct test *)cnt_deque_front( dequ );
-        cnt_deque_push_front2( dequ, f, NULL );
-        cnt_deque_pop_back( dequ );
+        cnt_deque_push_back( dequ, f );
+        cnt_deque_pop_front( dequ );
     }
 
     cnt_deque_free( dequ );
