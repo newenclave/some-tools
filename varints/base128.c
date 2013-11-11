@@ -77,16 +77,17 @@ int b128_pack_append( size_t number, struct mm_block *container )
     if( number <= 0x7F ) {
         result = mm_block_push_back( container, (char)(number & 0x7F));
     } else {
-        size_t old_size = mm_block_size( container );
+        size_t added = 0;
         unsigned char next;
         result = 1;
         while( number && result ) {
             next = (unsigned char)(number & 0x7F);
             next |= (( number >>= 7 ) ? 0x80 : 0x00 );
             result = mm_block_push_back( container, next );
+            added += (result != 0);
         }
         if( !result )
-            mm_block_resize( container, old_size );
+            mm_block_reduce( container, added );
     }
     return result;
 }
