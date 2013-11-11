@@ -198,7 +198,7 @@ int main( )
         struct test tt;
         tt.i = t;
         tt.j = t >> 1;
-        cnt_deque_push_back( dequ, &tt );
+        cnt_deque_push_back2( dequ, &tt, NULL );
     }
 
     while( !cnt_deque_empty( dequ ) ) {
@@ -211,16 +211,14 @@ int main( )
     cnt_deque_push_back( dequ, &tt );
     for( t=0; t<10000000; ++t ) {
         struct test *f = (struct test *)cnt_deque_front( dequ );
-        cnt_deque_push_back( dequ, f );
+        cnt_deque_push_back2( dequ, f, NULL );
         cnt_deque_pop_front( dequ );
     }
 
     cnt_deque_free( dequ );
     printf( "%u\n", acc );
 
-
-
-    return 0;
+    //return 0;
 
     struct cnt_deque *deq = cnt_deque_new_reserved_pos( sizeof(size_t),
                                                     33, DEQUE_START_BOTTOM);
@@ -264,7 +262,7 @@ int main( )
     aa_tree_iterator_free( ai );
     aa_tree_iterator_free( ac );
 
-    //return 0;
+    return 0;
     struct prefix_tree *trie = prefix_tree_new2( prefix_info_free );
     fill_table( trie );
     prefix_tree_insert_string( trie, "1234", info(cp_black) );
