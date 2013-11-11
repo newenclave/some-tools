@@ -76,19 +76,34 @@ struct cnt_deque_iterator
 
 #define CNT_DEQUE_DEF_INC(size) ((size) + ((size) >> 1))
 
+
+static void *cnt_deque_malloc(size_t size)
+{
+    void *ptr = malloc( size );
+    //printf( "alloc %p\n", ptr );
+    return ptr;
+}
+
+static void cnt_deque_freemem(void *ptr)
+{
+    free( ptr );
+    //printf( "free %p\n", ptr );
+}
+
+
 struct cnt_deque_unit *cnt_deque_unit_create( struct cnt_deque* cnd,
                                               size_t elements )
 {
     struct cnt_deque_unit *new_unit =
-            (struct cnt_deque_unit *)malloc(sizeof(struct cnt_deque_unit) );
+      (struct cnt_deque_unit *)cnt_deque_malloc(sizeof(struct cnt_deque_unit));
     if( new_unit ) {
         size_t length = elements * cnd->element_size_;
-        void *new_border = malloc( length );
+        void *new_border = cnt_deque_malloc( length );
         new_unit->border_[0] = new_border;
         new_unit->border_[1] = ((char *)new_border) + length;
         new_unit->list_.links_[0] = new_unit->list_.links_[1] = NULL;
         if( !new_border ) {
-            free( new_unit );
+            cnt_deque_freemem( new_unit );
             new_unit = NULL;
         }
     }
@@ -112,13 +127,13 @@ void cnt_deque_init_unit_position( struct cnt_deque *cnd, size_t reserve,
 
         break;
     case DEQUE_START_BOTTOM:
-        ptr_new = CNT_DEQUE_BLOCK_AT(cnd->sides_[SIDE_FRONT].unit_,
-                                     cnd->element_size_, reserve - 1);
+        ptr_new =
+        CNT_DEQUE_ELEMENT_PREV(cnd->sides_[SIDE_FRONT].unit_->border_[1], size);
         break;
 
     default:
-        ptr_new =
-        CNT_DEQUE_ELEMENT_PREV(cnd->sides_[SIDE_FRONT].unit_->border_[0], size);
+        ptr_new = CNT_DEQUE_BLOCK_AT(cnd->sides_[SIDE_FRONT].unit_,
+                                     cnd->element_size_, reserve >> 1);
         break;
     }
     cnd->sides_[SIDE_FRONT].ptr_ = cnd->sides_[SIDE_BACK].ptr_ =  ptr_new;
@@ -130,7 +145,7 @@ struct cnt_deque *cnt_deque_new_all( size_t element_size,
                                      enum cnt_deque_start_point position)
 {
     struct cnt_deque *new_deq =
-            (struct cnt_deque *)malloc(sizeof(struct cnt_deque));
+            (struct cnt_deque *)cnt_deque_malloc(sizeof(struct cnt_deque));
     if( new_deq ) {
         memset( new_deq, 0, sizeof(struct cnt_deque) );
         new_deq->element_size_ = element_size;
@@ -143,7 +158,7 @@ struct cnt_deque *cnt_deque_new_all( size_t element_size,
                 new_deq->sides_[SIDE_BACK].unit_ = unit;
             cnt_deque_init_unit_position( new_deq, init_reserve + 1, position );
         } else {
-            free(new_deq);
+            cnt_deque_freemem(new_deq);
             new_deq = NULL;
         }
     }
@@ -414,8 +429,8 @@ static void cnt_deque_list_free( struct cnt_deque *cnd,
     while( head ) {
         unit = FIELD_ENTRY( head, struct cnt_deque_unit, list_ );
         head = BILINKED_LIST_NEXT( head );
-        free( unit->border_[0] );
-        free( unit );
+        cnt_deque_freemem( unit->border_[0] );
+        cnt_deque_freemem( unit );
     }
 }
 
@@ -423,7 +438,7 @@ void cnt_deque_free2( struct cnt_deque *cnd, cnt_deque_element_free free_call )
 {
     if( cnd ) {
         cnt_deque_list_free( cnd, free_call );
-        free(cnd);
+        cnt_deque_freemem(cnd);
     }
 }
 
@@ -435,8 +450,8 @@ void cnt_deque_free( struct cnt_deque *cnd )
 static struct cnt_deque_iterator
     *cnt_deque_iterator_both(const struct cnt_deque *cnd, short direction)
 {
-    struct cnt_deque_iterator *iter =
-         (struct cnt_deque_iterator *)malloc(sizeof(struct cnt_deque_iterator));
+    struct cnt_deque_iterator *iter = (struct cnt_deque_iterator *)
+            cnt_deque_malloc(sizeof(struct cnt_deque_iterator));
     if( iter ) {
         iter->parent_ = cnd;
         iter->side_   = !direction;
@@ -462,8 +477,8 @@ struct cnt_deque_iterator
 struct cnt_deque_iterator
         *cnt_deque_iterator_clone(const struct cnt_deque_iterator *src)
 {
-    struct cnt_deque_iterator *iter =
-         (struct cnt_deque_iterator *)malloc(sizeof(struct cnt_deque_iterator));
+    struct cnt_deque_iterator *iter = (struct cnt_deque_iterator *)
+            cnt_deque_malloc(sizeof(struct cnt_deque_iterator));
     if( iter ) {
        cnt_deque_memcpy( iter, src, sizeof(struct cnt_deque_iterator) );
     }
@@ -502,6 +517,6 @@ void *cnt_deque_iterator_get( struct cnt_deque_iterator *iter )
 void cnt_deque_iterator_free( struct cnt_deque_iterator *iter )
 {
     if( iter ) {
-        free( iter );
+        cnt_deque_freemem( iter );
     }
 }

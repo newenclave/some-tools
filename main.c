@@ -194,17 +194,17 @@ int main( )
 
     size_t t;
     size_t acc;
-    for( t=0; t<10000000; ++t ) {
-        struct test tt;
-        tt.i = t;
-        tt.j = t >> 1;
-        cnt_deque_push_back2( dequ, &tt, NULL );
-    }
+//    for( t=0; t<10000000; ++t ) {
+//        struct test tt;
+//        tt.i = t;
+//        tt.j = t >> 1;
+//        cnt_deque_push_back2( dequ, &tt, NULL );
+//    }
 
-    while( !cnt_deque_empty( dequ ) ) {
-        acc += ((struct test *)cnt_deque_front( dequ ))->j;
-        cnt_deque_pop_front( dequ );
-    }
+//    while( !cnt_deque_empty( dequ ) ) {
+//        acc += ((struct test *)cnt_deque_front( dequ ))->j;
+//        cnt_deque_pop_front( dequ );
+//    }
 
     struct test tt = { 0, 0 };
 
@@ -218,7 +218,7 @@ int main( )
     cnt_deque_free( dequ );
     printf( "%u\n", acc );
 
-    //return 0;
+    return 0;
 
     struct cnt_deque *deq = cnt_deque_new_reserved_pos( sizeof(size_t),
                                                     33, DEQUE_START_BOTTOM);
