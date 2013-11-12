@@ -42,14 +42,26 @@ struct aa_tree_iterator
     short  next_side_;
 };
 
+static void *aa_tree_malloc(size_t size)
+{
+    return malloc( size );
+}
+
+static void aa_tree_freemem(void *ptr)
+{
+    free(ptr);
+}
+
 struct aa_tree *aa_tree_new3 ( aa_tree_data_compare compare,
                                aa_tree_data_free free_call)
 {
     struct aa_tree *new_tree =
-            (struct aa_tree *)calloc( 1, sizeof(struct aa_tree) );
+            (struct aa_tree *)aa_tree_malloc( sizeof(struct aa_tree) );
     if( new_tree ) {
-        new_tree->cmp_  = compare;
-        new_tree->free_ = free_call;
+        new_tree->root_  = NULL;
+        new_tree->count_ = 0;
+        new_tree->cmp_   = compare;
+        new_tree->free_  = free_call;
     }
     return new_tree;
 }
@@ -143,11 +155,12 @@ static void split0( aa_tree_node_ptr *top )
 
 struct aa_tree_node *aa_tree_create_node( void *data )
 {
-    struct aa_tree_node *new_data =
-            (struct aa_tree_node *)calloc(1, sizeof(struct aa_tree_node) );
+    struct aa_tree_node *new_data = (struct aa_tree_node *)
+            aa_tree_malloc( sizeof(struct aa_tree_node) );
     if( new_data ) {
-        new_data->data_.ptr_ = data;
-        new_data->level_     = AA_BOTTOM_LEVEL_VALUE;
+        new_data->links_[0] = new_data->links_[1] = NULL;
+        new_data->data_.ptr_    = data;
+        new_data->level_        = AA_BOTTOM_LEVEL_VALUE;
     }
     return new_data;
 }
@@ -324,7 +337,7 @@ int aa_tree_node_delete( aa_tree_node_ptr *top,
 
             if( free_fun )
                 free_fun( t->data_.ptr_ );
-            free( t );
+            aa_tree_freemem( t );
             result = 1;
             t = tmp;
 
@@ -369,7 +382,7 @@ void aa_tree_free_node( struct aa_tree_node *t, aa_tree_data_free free_fun )
         if( free_fun )
             free_fun( t->data_.ptr_ );
         aa_tree_free_node( t->links_[AA_LINK_RIGHT], free_fun );
-        free( t );
+        aa_tree_freemem( t );
     }
 }
 
@@ -377,7 +390,7 @@ void aa_tree_free2( struct aa_tree *aat, aa_tree_data_free free_fun)
 {
     if( aat ) {
         aa_tree_free_node( aat->root_, free_fun );
-        free( aat );
+        aa_tree_freemem( aat );
     }
 }
 
@@ -494,8 +507,8 @@ int aa_tree_iterator_next( struct aa_tree_iterator *iter )
 static struct aa_tree_iterator
         *aa_tree_iterator_new_both( const struct aa_tree *aat, int forward)
 {
-    struct aa_tree_iterator *new_iter =
-            (struct aa_tree_iterator *)malloc( sizeof(struct aa_tree_iterator));
+    struct aa_tree_iterator *new_iter = (struct aa_tree_iterator *)
+                        aa_tree_malloc( sizeof(struct aa_tree_iterator));
     int res = 0;
     if( new_iter ) {
         new_iter->stack_ =
@@ -516,7 +529,7 @@ static struct aa_tree_iterator
         }
     }
     if( new_iter && !res ) {
-        free(new_iter);
+        aa_tree_freemem(new_iter);
         new_iter = NULL;
     }
     return new_iter;
@@ -536,7 +549,7 @@ void aa_tree_iterator_free( struct aa_tree_iterator *iter )
 {
     if( iter ) {
         cnt_deque_free(iter->stack_);
-        free(iter);
+        aa_tree_freemem(iter);
     }
 }
 
@@ -564,8 +577,8 @@ static int aa_tree_copy_stack( struct cnt_deque *d, const struct cnt_deque *s )
 struct aa_tree_iterator
         *aa_tree_iterator_clone(const struct aa_tree_iterator *iter)
 {
-    struct aa_tree_iterator *new_iter =
-            (struct aa_tree_iterator *)malloc( sizeof(struct aa_tree_iterator));
+    struct aa_tree_iterator *new_iter = (struct aa_tree_iterator *)
+            aa_tree_malloc( sizeof(struct aa_tree_iterator));
     int res = 0;
     if( new_iter ) {
         new_iter->stack_ =
@@ -586,7 +599,7 @@ struct aa_tree_iterator
         }
     }
     if( new_iter && !res ) {
-        free(new_iter);
+        aa_tree_freemem(new_iter);
         new_iter = NULL;
     }
     return new_iter;
