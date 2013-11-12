@@ -203,8 +203,39 @@ void save_to_file( struct mm_block *mem, const char *filename )
     }
 }
 
+static unsigned long fix(long inp)
+{
+    static const unsigned bit_shift = ((sizeof(long) * 8) - 1);
+    unsigned long uval = (unsigned long)inp;
+    const unsigned long f = (uval >> bit_shift);
+    return (f ? ((~uval) << 1) : (uval << 1)) ^ f;
+}
+
+static long unfix(unsigned long inp)
+{
+    static const unsigned bit_shift = ((sizeof(long) * 8) - 1);
+    static const unsigned long shift_value =
+                        ((unsigned long)(1) << ((sizeof(long) * 8) - 1)) - 1;
+    if(!(inp & 1))
+        return (inp >> 1); // positive
+    else {
+         // negative
+        inp = ( ( ( (~inp) >> 1) & shift_value ) | ( inp  <<  bit_shift) );
+        return (long)(inp);
+    }
+
+}
+
 int main( )
 {
+
+    printf( "%ld\n", unfix(fix( -1 )) );
+    printf( "%ld\n", unfix(fix( -2 )) );
+    printf( "%ld\n", unfix(fix( -3 )) );
+    printf( "%ld\n", unfix(fix( -4 )) );
+    printf( "%ld\n", unfix(fix( 5 )) );
+    printf( "%ld\n", unfix(fix( 1 )) );
+    return 0;
 //    struct mm_block *mem = mm_block_new(  );
 
 //    pack_string( "1234567890", mem );
