@@ -4,11 +4,6 @@
 
 #define AA_BOTTOM_LEVEL_VALUE 1
 
-int aa_tree_data_compare_default( const void *l, const void *r )
-{
-    return (l < r) ? -1 : (r < l);
-}
-
 enum aa_tree_link_position {
      AA_LINK_LEFT   = 0
     ,AA_LINK_RIGHT  = 1
@@ -41,6 +36,11 @@ struct aa_tree_iterator
     short  push_side_;
     short  next_side_;
 };
+
+static int aa_tree_data_compare_default( const void *l, const void *r )
+{
+    return (l < r) ? -1 : (r < l);
+}
 
 static void *aa_tree_malloc(size_t size)
 {
