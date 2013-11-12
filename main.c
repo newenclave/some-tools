@@ -220,7 +220,7 @@ int main( )
     cnt_deque_free( dequ );
     //printf( "%u\n", acc );
 
-    return 0;
+    //return 0;
 
     struct cnt_deque *deq = cnt_deque_new_reserved_pos( sizeof(size_t),
                                                     33, DEQUE_START_BOTTOM);
@@ -240,6 +240,10 @@ int main( )
         aa_tree_insert( at, (void *)cc );
     }
 
+    aa_tree_delete( at, (void *)15 );
+    aa_tree_delete( at, (void *)17 );
+    aa_tree_delete( at, (void *)67 );
+
     size_t tree_size = aa_tree_size( at );
 
     struct aa_tree_iterator *ai = aa_tree_reverse_iterator_new( at );
@@ -252,6 +256,7 @@ int main( )
             ac = aa_tree_iterator_clone( ai );
         aa_tree_iterator_next( ai );
     }
+
 
     printf( "------\n" );
     while( !aa_tree_iterator_end( ac ) ) {

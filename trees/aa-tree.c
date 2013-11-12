@@ -264,7 +264,8 @@ struct aa_tree_node *aa_tree_node_take_left( struct aa_tree_node * cur,
     return aa_tree_node_rebalance(cur);
 }
 
-struct aa_tree_node *aa_tree_node_del( struct aa_tree_node *del )
+/*
+static struct aa_tree_node *aa_tree_node_del( struct aa_tree_node *del )
 {
     struct aa_tree_node *res_node = NULL;
     if( NULL == del->links_[AA_LINK_LEFT] ) {
@@ -285,6 +286,7 @@ struct aa_tree_node *aa_tree_node_del( struct aa_tree_node *del )
     }
     return res_node;
 }
+*/
 
 int aa_tree_node_delete( aa_tree_node_ptr *top,
                          void *data,
@@ -303,9 +305,13 @@ int aa_tree_node_delete( aa_tree_node_ptr *top,
 
             struct aa_tree_node *tmp = NULL;
             if( NULL == t->links_[AA_LINK_LEFT] ) {
+
                 tmp = t->links_[AA_LINK_RIGHT];
+
             } else if( NULL == t->links_[AA_LINK_RIGHT] ) {
+
                 tmp = t->links_[AA_LINK_LEFT];
+
             } else {
 
                 t->links_[AA_LINK_RIGHT] =
@@ -462,7 +468,7 @@ static void *void_ptr_copy(void *new_place, const void *element, size_t es )
 }
 
 static int aa_tree_iterator_shift( struct aa_tree_iterator *iter,
-                            struct aa_tree_node *root )
+                                   struct aa_tree_node *root )
 {
     while( root ) {
         if( !cnt_deque_push_front2( iter->stack_, &root, void_ptr_copy ) )
