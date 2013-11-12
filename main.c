@@ -205,19 +205,19 @@ void save_to_file( struct mm_block *mem, const char *filename )
 
 int main( )
 {
-    struct mm_block *mem = mm_block_new(  );
+//    struct mm_block *mem = mm_block_new(  );
 
-    pack_string( "1234567890", mem );
-    pack_string( "abcdefg", mem );
-    pack_string( "zxcvbnmm", mem );
-    pack_string( "qwertyui", mem );
+//    pack_string( "1234567890", mem );
+//    pack_string( "abcdefg", mem );
+//    pack_string( "zxcvbnmm", mem );
+//    pack_string( "qwertyui", mem );
 
-    printf( "total block %lu\n", mm_block_size( mem ) );
+//    printf( "total block %lu\n", mm_block_size( mem ) );
 
-    save_to_file( mem, "test.bin" );
+//    save_to_file( mem, "test.bin" );
 
-    mm_block_free( mem );
-/*
+//    mm_block_free( mem );
+
     struct cnt_deque *dequ = cnt_deque_new_reserved( sizeof(struct test),32);
 
     size_t t;
@@ -334,6 +334,6 @@ int main( )
 
     mm_block_free( tmp_str );
     prefix_tree_free( trie );
-*/
+
     return 0;
 }
