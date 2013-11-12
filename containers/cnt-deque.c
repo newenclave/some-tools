@@ -37,10 +37,10 @@ struct cnt_deque_iterator
 };
 
 
-#define CNT_DEQUE_ELEMENT_NEXT( ptr, element_size ) \
+#define CNT_DEQUE_ELEMENT_NEXT( ptr, element_size )         \
             (((char *)ptr) + (element_size))
 
-#define CNT_DEQUE_ELEMENT_PREV( ptr, element_size ) \
+#define CNT_DEQUE_ELEMENT_PREV( ptr, element_size )         \
             (((char *)ptr) - (element_size))
 
 #define CNT_DEQUE_ELEMENT_AT( ptr, element_size, position ) \
@@ -48,11 +48,11 @@ struct cnt_deque_iterator
 
 #define CNT_DEQUE_BLOCK_SIDE( unit, side ) ((unit)->border_[!(side)])
 
-#define CNT_DEQUE_BLOCK_IS_SIDE( unit, ptr, side )       \
+#define CNT_DEQUE_BLOCK_IS_SIDE( unit, ptr, side )          \
         CNT_DEQUE_BLOCK_SIDE(unit, side) == (ptr)
 
-#define CNT_DEQUE_IS_BORDER( cnd, side )            \
-        ((cnd)->sides_[side].ptr_ ==                \
+#define CNT_DEQUE_IS_BORDER( cnd, side )                    \
+        ((cnd)->sides_[side].ptr_ ==                        \
          (cnd)->sides_[side].unit_->border_[side] )
 
 //#define CNT_DEQUE_DEF_INC(size) ((size))
@@ -77,8 +77,8 @@ static void *cnt_deque_memcpy(void *dest, const void *src, size_t n)
     return memcpy(dest, src, n);
 }
 
-struct cnt_deque_unit *cnt_deque_unit_create( struct cnt_deque* cnd,
-                                              size_t elements )
+static struct cnt_deque_unit *cnt_deque_unit_create( struct cnt_deque* cnd,
+                                                     size_t elements )
 {
     struct cnt_deque_unit *new_unit =
       (struct cnt_deque_unit *)cnt_deque_malloc(sizeof(struct cnt_deque_unit));
@@ -96,8 +96,8 @@ struct cnt_deque_unit *cnt_deque_unit_create( struct cnt_deque* cnd,
     return new_unit;
 }
 
-void cnt_deque_init_unit_position( struct cnt_deque *cnd, size_t reserve,
-                                   enum cnt_deque_start_point position)
+static void cnt_deque_init_unit_position( struct cnt_deque *cnd, size_t reserve,
+                                          enum cnt_deque_start_point position)
 {
     void *ptr_new = NULL;
     void *front = cnd->sides_[SIDE_FRONT].unit_->border_[SIDE_FRONT];
@@ -118,10 +118,10 @@ void cnt_deque_init_unit_position( struct cnt_deque *cnd, size_t reserve,
     cnd->sides_[SIDE_FRONT].ptr_ = cnd->sides_[SIDE_BACK].ptr_ =  ptr_new;
 }
 
-struct cnt_deque *cnt_deque_new_all( size_t element_size,
-                                     size_t init_reserve,
-                                     cnt_deque_element_free free_call,
-                                     enum cnt_deque_start_point position)
+static struct cnt_deque *cnt_deque_new_all( size_t element_size,
+                                            size_t init_reserve,
+                                            cnt_deque_element_free free_call,
+                                            enum cnt_deque_start_point position)
 {
     struct cnt_deque *new_deq =
             (struct cnt_deque *)cnt_deque_malloc(sizeof(struct cnt_deque));

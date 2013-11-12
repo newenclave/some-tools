@@ -194,7 +194,7 @@ int main( )
 
     size_t t;
     size_t acc;
-    for( t=0; t<1000000; ++t ) {
+    for( t=0; t<10000000; ++t ) {
         struct test tt;
         tt.i = t;
         tt.j = t >> 1;
@@ -211,7 +211,7 @@ int main( )
     struct test tt = { 0, 0 };
 
     cnt_deque_push_back( dequ, &tt );
-    for( t=0; t<1000000; ++t ) {
+    for( t=0; t<10000000; ++t ) {
         struct test *f = (struct test *)cnt_deque_front( dequ );
         cnt_deque_push_back( dequ, f );
         cnt_deque_pop_front( dequ );
