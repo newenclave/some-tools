@@ -187,9 +187,37 @@ struct test {
     size_t j;
 };
 
+void pack_string( const char *str, struct mm_block *mem )
+{
+    size_t len = strlen( str );
+    b128_pack_append( len, mem );
+    mm_block_concat( mem, str, len );
+}
+
+void save_to_file( struct mm_block *mem, const char *filename )
+{
+    FILE *f = fopen( filename, "wb" );
+    if( f ) {
+        fwrite( mm_block_begin(mem), 1, mm_block_size( mem ), f );
+        fclose(f);
+    }
+}
+
 int main( )
 {
+    struct mm_block *mem = mm_block_new(  );
 
+    pack_string( "1234567890", mem );
+    pack_string( "abcdefg", mem );
+    pack_string( "zxcvbnmm", mem );
+    pack_string( "qwertyui", mem );
+
+    printf( "total block %lu\n", mm_block_size( mem ) );
+
+    save_to_file( mem, "test.bin" );
+
+    mm_block_free( mem );
+/*
     struct cnt_deque *dequ = cnt_deque_new_reserved( sizeof(struct test),32);
 
     size_t t;
@@ -306,6 +334,6 @@ int main( )
 
     mm_block_free( tmp_str );
     prefix_tree_free( trie );
-
+*/
     return 0;
 }
