@@ -1,5 +1,6 @@
 
 #include "base128.h"
+
 #include "../memory/mm-block.h"
 
 int b128_unpack_shift( const void **data, size_t *lenght, size_t *result )

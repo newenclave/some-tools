@@ -1,5 +1,6 @@
 
 #include <stdio.h>
+#include <stdint.h>
 
 #include "trees/prefix-tree.h"
 #include "memory/mm-block.h"
@@ -96,6 +97,7 @@ void fill_table( struct prefix_tree *trie )
 
 int main( )
 {
+
     struct prefix_tree *trie = prefix_tree_new2( prefix_info_free );
     fill_table( trie );
     prefix_tree_insert_string( trie, "1234", info(cp_black) );
@@ -128,7 +130,7 @@ int main( )
     mm_block_push_back( tmp_str, 0 );
     mm_block_reduce( tmp_str, 1 );
 
-    printf( "%s\n", mm_block_begin( tmp_str ) );
+    printf( "%s\n", mm_block_const_begin( tmp_str ) );
 
     mm_block_free( tmp_str );
     prefix_tree_free( trie );
