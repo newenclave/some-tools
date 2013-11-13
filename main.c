@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #include "trees/prefix-tree.h"
+#include "varints/zig-zag.h"
 
 struct prefix_info {
     int inf;
@@ -11,7 +12,7 @@ struct prefix_info {
 struct prefix_info *info( const char * data )
 {
     static int i = 0;
-    //printf( "create info: %i\n", ++i );
+    printf( "create info: %i\n", ++i );
 
     struct prefix_info* n =
             (struct prefix_info *)malloc(sizeof(struct prefix_info));
@@ -24,7 +25,7 @@ void prefix_info_free( void *ptr )
 {
     static int i = 0;
     struct prefix_info* n = (struct prefix_info*)ptr;
-    //printf( "free info: %i %i\n", n->inf, ++i );
+    printf( "free info: %i %i\n", n->inf, ++i );
     free( n );
 }
 
@@ -90,10 +91,33 @@ void fill_table( struct prefix_tree *trie )
 
 }
 
+static unsigned long fix(long inp)
+{
+    static const unsigned bit_shift = ((sizeof(long) * 8) - 1);
+    unsigned long uinp = (unsigned long)inp;
+    const unsigned long f = (uinp >> bit_shift);
+    return (f ? ((~uinp) << 1) : (uinp << 1)) ^ f;
+}
+
+static long unfix(unsigned long inp)
+{
+    if(!(inp & 1))
+        return (inp >> 1); // positive
+    else {
+        return (long)(~(inp >> 1)); // negative
+    }
+
+}
 
 int main( )
 {
 
+    int i;
+
+    for( i=-10; i<=10; ++i )
+        printf( "%i %d\n", i, zig_zag_fix( i ));
+
+    return 0;
     struct prefix_tree *trie = prefix_tree_new2( prefix_info_free );
     fill_table( trie );
     prefix_tree_insert_string( trie, "1234", info(cp_black) );
@@ -105,7 +129,7 @@ int main( )
     const char *data = "black\nyellow\tred wings\nred-one\nvioletti\norange";
     size_t tmp_len = strlen(data);
 
-    for( c=0; c<1; ++c ) {
+    for( c=0; c<100; ++c ) {
         const char *p = data;
         size_t len = tmp_len;
         while ( len ) {
@@ -126,7 +150,7 @@ int main( )
     mm_block_push_back( tmp_str, 0 );
     mm_block_reduce( tmp_str, 1 );
 
-    printf( "%s\n", mm_block_begin( tmp_str ) );
+    //printf( "%s\n", mm_block_begin( tmp_str ) );
 
     mm_block_free( tmp_str );
     prefix_tree_free( trie );
