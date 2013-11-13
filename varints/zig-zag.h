@@ -1,6 +1,20 @@
 #ifndef ZIG_ZAG_20131108_H
 #define ZIG_ZAG_20131108_H
 
+/*
+ * zig-zag:
+ *  -3 -> 5
+ *  -2 -> 3
+ *  -1 -> 1
+ *   0 -> 0
+ *   1 -> 2
+ *   2 -> 4
+ *   3 -> 6
+ *
+ *   for signed 32 bit values (n << 1) ^ (n >> 31)
+ *   for signed 64 bit values (n << 1) ^ (n >> 63)
+*/
+
 #define ZIG_ZAG_UNFIX( type_name, inp )             \
         ((type_name)(((inp) & 1) ? (~((inp) >> 1)) : ((inp) >> 1)))
 
