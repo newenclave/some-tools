@@ -174,7 +174,7 @@ size_t mm_block_capacity( const struct mm_block *mb )
     return mb->capacity_;
 }
 
-size_t mm_block_available( const   struct mm_block *mb )
+size_t mm_block_available( const struct mm_block *mb )
 {
     return MM_BLOCK_AVAILABLE_LOCAL( mb );
 }

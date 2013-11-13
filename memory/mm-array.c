@@ -128,12 +128,12 @@ void mm_array_set_free( struct mm_array *mar,
 
 void *mm_array_begin( struct mm_array *mar )
 {
-    return MM_ARRAY_AT_LOCAL( mar, 0);
+    return mm_block_begin( mar->mmblock_ );
 }
 
 void  *mm_array_end( struct mm_array *mar )
 {
-    return MM_ARRAY_AT_LOCAL( mar, mm_array_size(mar));
+    return mm_block_end( mar->mmblock_ );
 }
 
 void  *mm_array_at( struct mm_array *mar, size_t element_index )
@@ -261,7 +261,7 @@ int mm_array_reserve( struct mm_array *mar, size_t count )
     return mm_block_reserve( mar->mmblock_, MM_ELEMENTS_SIZE(mar, count) );
 }
 
-size_t mm_array_available (struct mm_array *mar)
+size_t mm_array_available ( const struct mm_array *mar)
 {
     return (mm_block_available( mar->mmblock_ ) / mar->element_size_);
 }
@@ -308,9 +308,10 @@ int mm_array_insert3 ( struct mm_array *mar,
     return (insertion != NULL);
 }
 
-int mm_array_bin_lower_bound( struct mm_array *mar,
-                              void    *element, mm_array_compare cmp_call,
-                              size_t  *position )
+static int mm_array_bin_lower_bound( const struct mm_array *mar,
+                                     const void  *element,
+                                     mm_array_compare cmp_call,
+                                     size_t  *position )
 {
     size_t right  =  mm_array_size( mar );
     size_t left   =  0;
@@ -320,7 +321,7 @@ int mm_array_bin_lower_bound( struct mm_array *mar,
 
         middle = left + ((right - left) >> 1);
 
-        cmp    = cmp_call( element, mm_array_at( mar, middle ) );
+        cmp = cmp_call( element, mm_array_const_at( mar, middle ) );
 
         if( cmp != 0 ) {
             if( cmp < 0 ) {
@@ -342,6 +343,14 @@ void  *mm_array_bin_find( struct mm_array *mar, void *element,
     size_t pos = 0;
     int res = mm_array_bin_lower_bound( mar, element, cmp_call, &pos );
     return res ? MM_ARRAY_AT_LOCAL( mar, pos ) : NULL;
+}
+
+const void *mm_array_const_bin_find( const struct mm_array *mar, void *element,
+                                     mm_array_compare cmp_call)
+{
+    size_t pos = 0;
+    int res = mm_array_bin_lower_bound( mar, element, cmp_call, &pos );
+    return res ? MM_ARRAY_AT_LOCAL_CONST( mar, pos ) : NULL;
 }
 
 void *mm_array_bin_insert2( struct mm_array *mar, void *element,

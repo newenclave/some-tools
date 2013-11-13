@@ -71,10 +71,12 @@ int    mm_array_resize2( struct mm_array *mar, size_t new_count,
                          mm_array_element_free free_call);
 
 int    mm_array_reserve   ( struct mm_array *mar, size_t count );
-size_t mm_array_available ( struct mm_array *mar);
+size_t mm_array_available ( const struct mm_array *mar);
 
 void  *mm_array_bin_find( struct mm_array *mar, void *element,
                           mm_array_compare cmp_call);
+const void *mm_array_const_bin_find( const struct mm_array *mar, void *element,
+                                     mm_array_compare cmp_call);
 
 void  *mm_array_bin_insert( struct mm_array *mar, void *element,
                             mm_array_compare cmp_call);
