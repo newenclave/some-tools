@@ -11,7 +11,7 @@ struct prefix_info {
 struct prefix_info *info( const char * data )
 {
     static int i = 0;
-    printf( "create info: %i\n", ++i );
+    //printf( "create info: %i\n", ++i );
 
     struct prefix_info* n =
             (struct prefix_info *)malloc(sizeof(struct prefix_info));
@@ -24,7 +24,7 @@ void prefix_info_free( void *ptr )
 {
     static int i = 0;
     struct prefix_info* n = (struct prefix_info*)ptr;
-    printf( "free info: %i %i\n", n->inf, ++i );
+    //printf( "free info: %i %i\n", n->inf, ++i );
     free( n );
 }
 
