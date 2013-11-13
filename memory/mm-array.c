@@ -12,6 +12,9 @@ struct mm_array {
 #define MM_ARRAY_AT_LOCAL( arr, index )                 \
     ((char *)mm_block_at((arr)->mmblock_, (index)*(arr)->element_size_))
 
+#define MM_ARRAY_AT_LOCAL_CONST( arr, index )           \
+    ((char *)mm_block_const_at((arr)->mmblock_, (index)*(arr)->element_size_))
+
 #define MM_ELEMENTS_SIZE( arr, count )                  \
         ((arr)->element_size_ * count)
 
@@ -123,16 +126,6 @@ void mm_array_set_free( struct mm_array *mar,
     mar->free_ = free_call;
 }
 
-void  *mm_array_at( struct mm_array *mar, size_t element_index )
-{
-    return MM_ARRAY_AT_LOCAL( mar, element_index );
-}
-
-size_t mm_array_size( struct mm_array *mar )
-{
-    return (mm_block_size( mar->mmblock_ ) / mar->element_size_);
-}
-
 void *mm_array_begin( struct mm_array *mar )
 {
     return MM_ARRAY_AT_LOCAL( mar, 0);
@@ -143,7 +136,32 @@ void  *mm_array_end( struct mm_array *mar )
     return MM_ARRAY_AT_LOCAL( mar, mm_array_size(mar));
 }
 
-size_t mm_array_element_size( struct mm_array *mar )
+void  *mm_array_at( struct mm_array *mar, size_t element_index )
+{
+    return MM_ARRAY_AT_LOCAL( mar, element_index );
+}
+
+const void *mm_array_const_begin( const struct mm_array *mar )
+{
+    return mm_block_const_begin( mar->mmblock_ );
+}
+
+const void *mm_array_const_end( const struct mm_array *mar )
+{
+    return mm_block_const_end( mar->mmblock_ );
+}
+
+const void *mm_array_const_at(const struct mm_array *mar, size_t element_index)
+{
+    return MM_ARRAY_AT_LOCAL_CONST( mar, element_index );
+}
+
+size_t mm_array_size( const struct mm_array *mar )
+{
+    return (mm_block_size( mar->mmblock_ ) / mar->element_size_);
+}
+
+size_t mm_array_element_size( const struct mm_array *mar )
 {
     return mar->element_size_;
 }

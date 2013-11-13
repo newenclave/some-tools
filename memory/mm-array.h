@@ -32,8 +32,12 @@ void  *mm_array_begin( struct mm_array *mar );
 void  *mm_array_end( struct mm_array *mar );
 void  *mm_array_at( struct mm_array *mar, size_t element_index );
 
-size_t mm_array_size( struct mm_array *mar );
-size_t mm_array_element_size( struct mm_array *mar );
+const void *mm_array_const_begin( const struct mm_array *mar );
+const void *mm_array_const_end( const struct mm_array *mar );
+const void *mm_array_const_at(const struct mm_array *mar, size_t element_index);
+
+size_t mm_array_size( const struct mm_array *mar );
+size_t mm_array_element_size( const struct mm_array *mar );
 
 
 void  *mm_array_create_back( struct mm_array *mar, size_t count );
