@@ -91,24 +91,6 @@ void fill_table( struct prefix_tree *trie )
 
 }
 
-static unsigned long fix(long inp)
-{
-    static const unsigned bit_shift = ((sizeof(long) * 8) - 1);
-    unsigned long uinp = (unsigned long)inp;
-    const unsigned long f = (uinp >> bit_shift);
-    return (f ? ((~uinp) << 1) : (uinp << 1)) ^ f;
-}
-
-static long unfix(unsigned long inp)
-{
-    if(!(inp & 1))
-        return (inp >> 1); // positive
-    else {
-        return (long)(~(inp >> 1)); // negative
-    }
-
-}
-
 int main( )
 {
 
