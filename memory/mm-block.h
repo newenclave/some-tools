@@ -8,7 +8,7 @@ struct mm_block;
 struct mm_block *mm_block_new( );
 struct mm_block *mm_block_new2( size_t init_size );
 struct mm_block *mm_block_new_reserved( size_t reserve_size );
-struct mm_block *mm_block_new_copy( const struct mm_block *oth );
+struct mm_block *mm_block_new_copy( const struct mm_block *other );
 void   mm_block_free(struct mm_block *mb);
 
 size_t mm_block_size      (const struct mm_block *mb);

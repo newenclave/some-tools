@@ -108,12 +108,12 @@ mm_block_data_type *mm_block_new( )
 }
 
 
-struct mm_block *mm_block_new_copy( const struct mm_block *oth )
+struct mm_block *mm_block_new_copy( const struct mm_block *other )
 {
-    size_t new_size = oth->used_;
+    size_t new_size = other->used_;
     struct mm_block *new_block = mm_block_new2(new_size);
     if( new_block && (new_size > 0)) {
-        mm_block_memcpy( new_block->data_, oth->data_, new_size );
+        mm_block_memcpy( new_block->data_, other->data_, new_size );
     }
     return new_block;
 }
