@@ -12,11 +12,11 @@ struct mm_array {
 #define MM_ARRAY_AT_LOCAL( arr, index )                 \
     ((char *)mm_block_at((arr)->mmblock_, (index)*(arr)->element_size_))
 
-#define MM_ARRAY_AT_LOCAL_CONST( arr, index )           \
-    ((char *)mm_block_const_at((arr)->mmblock_, (index)*(arr)->element_size_))
-
 #define MM_ELEMENTS_SIZE( arr, count )                  \
-        ((arr)->element_size_ * count)
+        ((arr)->element_size_ * (count))
+
+#define MM_ARRAY_AT_LOCAL_CONST( arr, index )           \
+    ((char *)mm_block_const_at((arr)->mmblock_, MM_ELEMENTS_SIZE(arr, index)))
 
 #define MM_ELEMENT_SHIFT( ptr, element_size, count )    \
     (((char *)ptr) + ((element_size) * (count)))

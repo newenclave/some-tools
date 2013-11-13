@@ -11,8 +11,8 @@
  *   2 -> 4
  *   3 -> 6
  *
- *   for signed 32 bit values (n << 1) ^ (n >> 31)
- *   for signed 64 bit values (n << 1) ^ (n >> 63)
+ *   for signed 32 bit values (val << 1) ^ (val >> 31)
+ *   for signed 64 bit values (val << 1) ^ (val >> 63)
 */
 
 #define ZIG_ZAG_UNFIX( type_name, inp )             \

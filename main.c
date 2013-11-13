@@ -57,6 +57,7 @@ void fill_table( struct prefix_tree *trie )
     prefix_tree_insert_string( trie, "красный", info(cp_red ) );
     prefix_tree_insert_string( trie, "puna", info(cp_red ) );
 
+    prefix_tree_insert_string( trie, "wings", info(cp_green ) );
     prefix_tree_insert_string( trie, "green", info(cp_green ) );
     prefix_tree_insert_string( trie, "зелёный", info(cp_green ) );
     prefix_tree_insert_string( trie, "зеленый", info(cp_green ) );
@@ -79,6 +80,7 @@ void fill_table( struct prefix_tree *trie )
     prefix_tree_insert_string( trie, "lightblue", info(cp_vaaleansininen ) );
     prefix_tree_insert_string( trie, "голубой", info(cp_vaaleansininen ) );
     prefix_tree_insert_string( trie, "vaaleansininen", info(cp_vaaleansininen ));
+    prefix_tree_insert_string( trie, "one", info(cp_vaaleansininen ));
 
     prefix_tree_insert_string( trie, "purple",     info(cp_purple) );
     prefix_tree_insert_string( trie, "пурпурный",  info(cp_purple) );
@@ -105,7 +107,7 @@ int main( )
     const char *data = "black\nyellow\tred wings\nred-one\nvioletti\norange";
     size_t tmp_len = strlen(data);
 
-    for( c=0; c<100; ++c ) {
+    for( c=0; c<1; ++c ) {
         const char *p = data;
         size_t len = tmp_len;
         while ( len ) {
