@@ -39,9 +39,6 @@ long          zig_zag_unfixl(unsigned long inp);
 unsigned int zig_zag_fix(int inp);
 int          zig_zag_unfix(unsigned int inp);
 
-unsigned int zig_zag_fix(int inp);
-int          zig_zag_unfix(unsigned int inp);
-
 unsigned short zig_zag_fixs(short inp);
 short          zig_zag_unfixs(unsigned short inp);
 

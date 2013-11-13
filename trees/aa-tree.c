@@ -30,11 +30,11 @@ struct aa_tree {
 
 struct aa_tree_iterator
 {
-    struct cnt_deque    *stack_;
-    struct aa_tree_node *current_;
-    size_t               root_level_;
-    short  push_side_;
-    short  next_side_;
+    const struct aa_tree      *parent_;
+    struct       cnt_deque    *stack_;
+    struct       aa_tree_node *current_;
+    short        push_side_;
+    short        next_side_;
 };
 
 static int aa_tree_data_compare_default( const void *l, const void *r )
@@ -517,7 +517,7 @@ static struct aa_tree_iterator
                                             DEQUE_START_BOTTOM);
         if( new_iter->stack_ ) {
             res = 1;
-            new_iter->root_level_ = aat->root_->level_;
+            new_iter->parent_     = aat;
             new_iter->current_    = aat->root_;
             new_iter->push_side_  = ( forward == 0 );
             new_iter->next_side_  = ( forward != 0 );
@@ -583,11 +583,11 @@ struct aa_tree_iterator
     if( new_iter ) {
         new_iter->stack_ =
                 cnt_deque_new_reserved_pos( sizeof(void *),
-                                            iter->root_level_ << 1,
+                                            iter->parent_->root_->level_ << 1,
                                             DEQUE_START_BOTTOM);
         if( new_iter->stack_ ) {
             res = 1;
-            new_iter->root_level_ = iter->root_level_;
+            new_iter->parent_     = iter->parent_;
             new_iter->current_    = iter->current_;
             new_iter->push_side_  = iter->push_side_;
             new_iter->next_side_  = iter->next_side_;
@@ -605,7 +605,8 @@ struct aa_tree_iterator
     return new_iter;
 }
 
-void aa_tree_non_rec_node_walk_test( struct aa_tree *aat )
+/*
+static void aa_tree_non_rec_node_walk_test( struct aa_tree *aat )
 {
     struct aa_tree_node *root = aat->root_;
     if( root ) {
@@ -626,4 +627,4 @@ void aa_tree_non_rec_node_walk_test( struct aa_tree *aat )
         }
     }
 }
-
+*/

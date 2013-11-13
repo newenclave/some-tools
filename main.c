@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 #include "trees/prefix-tree.h"
+#include "trees/aa-tree.h"
 #include "memory/mm-block.h"
 #include "varints/zig-zag.h"
 
@@ -43,7 +44,7 @@ static const char * cp_white           = "\x1b[37;1m";
 
 // color suffix
 static const char * cs_stop            = "\x1b[0m";
-
+//static const char * cs_stop            = "\033[B";
 #define COLOR( str ) str, strlen(str)
 
 void fill_table( struct prefix_tree *trie )
@@ -125,7 +126,33 @@ void save_to_file( struct mm_block *mem, const char *filename )
 
 int main( )
 {
+    size_t it = 0;
+    struct aa_tree *aat = aa_tree_new(  );
 
+    for( it=0; it<100; it++ )
+        aa_tree_insert( aat, (void *)it );
+
+    struct aa_tree_iterator *iter = aa_tree_iterator_new( aat );
+    struct aa_tree_iterator *iter2;
+    while( !aa_tree_iterator_end( iter ) ) {
+        size_t ig = (size_t)aa_tree_iterator_get( iter );
+        printf( "iter next %lu\n", ig );
+        aa_tree_iterator_next( iter );
+        if( ig == 50 )
+            iter2 = aa_tree_iterator_clone( iter );
+    }
+    printf( "========\n" );
+    while( !aa_tree_iterator_end( iter2 ) ) {
+        size_t ig = (size_t)aa_tree_iterator_get( iter2 );
+        printf( "iter next %lu\n", ig );
+        aa_tree_iterator_next( iter2 );
+    }
+
+    aa_tree_free( aat );
+    aa_tree_iterator_free( iter );
+    aa_tree_iterator_free( iter2 );
+
+    return 0;
     struct prefix_tree *trie = prefix_tree_new2( prefix_info_free );
     fill_table( trie );
     prefix_tree_insert_string( trie, "1234", info(cp_black) );
