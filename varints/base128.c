@@ -1,8 +1,9 @@
 
 #include "base128.h"
+
 #include "../memory/mm-block.h"
 
-int b128_unpack_shift( void **data, size_t *lenght, size_t *result )
+int b128_unpack_shift( const void **data, size_t *lenght, size_t *result )
 {
     size_t   tmp     = 0;
     int      ret     = 0;
@@ -28,14 +29,14 @@ int b128_unpack_shift( void **data, size_t *lenght, size_t *result )
     return ret;
 }
 
-int b128_unpack2( void *data, size_t lenght, size_t *result )
+int b128_unpack2( const void *data, size_t lenght, size_t *result )
 {
     return b128_unpack_shift( &data, &lenght, result );
 }
 
-int b128_unpack( struct mm_block *container, size_t *result )
+int b128_unpack( const struct mm_block *container, size_t *result )
 {
-    return b128_unpack2(mm_block_begin(container),
+    return b128_unpack2(mm_block_const_begin(container),
                         mm_block_size (container), result);
 }
 

@@ -5,9 +5,9 @@
 
 struct mm_block;
 
-int b128_unpack( struct mm_block *container, size_t *result );
-int b128_unpack2( void *data, size_t lenght, size_t *result );
-int b128_unpack_shift( void **data, size_t *lenght, size_t *result );
+int b128_unpack( const struct mm_block *container, size_t *result );
+int b128_unpack2( const void *data, size_t lenght, size_t *result );
+int b128_unpack_shift( const void **data, size_t *lenght, size_t *result );
 
 int b128_pack( size_t number, struct mm_block *container );
 int b128_pack2( size_t number, void *container, size_t avail );

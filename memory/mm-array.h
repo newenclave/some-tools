@@ -32,8 +32,12 @@ void  *mm_array_begin( struct mm_array *mar );
 void  *mm_array_end( struct mm_array *mar );
 void  *mm_array_at( struct mm_array *mar, size_t element_index );
 
-size_t mm_array_size( struct mm_array *mar );
-size_t mm_array_element_size( struct mm_array *mar );
+const void *mm_array_const_begin( const struct mm_array *mar );
+const void *mm_array_const_end( const struct mm_array *mar );
+const void *mm_array_const_at(const struct mm_array *mar, size_t element_index);
+
+size_t mm_array_size( const struct mm_array *mar );
+size_t mm_array_element_size( const struct mm_array *mar );
 
 
 void  *mm_array_create_back( struct mm_array *mar, size_t count );
@@ -67,10 +71,12 @@ int    mm_array_resize2( struct mm_array *mar, size_t new_count,
                          mm_array_element_free free_call);
 
 int    mm_array_reserve   ( struct mm_array *mar, size_t count );
-size_t mm_array_available ( struct mm_array *mar);
+size_t mm_array_available ( const struct mm_array *mar);
 
 void  *mm_array_bin_find( struct mm_array *mar, void *element,
                           mm_array_compare cmp_call);
+const void *mm_array_const_bin_find( const struct mm_array *mar, void *element,
+                                     mm_array_compare cmp_call);
 
 void  *mm_array_bin_insert( struct mm_array *mar, void *element,
                             mm_array_compare cmp_call);

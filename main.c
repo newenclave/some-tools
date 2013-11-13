@@ -1,91 +1,10 @@
 
 #include <stdio.h>
-#include <string.h>
-#include <time.h>
+#include <stdint.h>
 
-#include "bitpacker/bitpack.h"
-#include "memory/mm-block.h"
-#include "memory/mm-array.h"
-#include "lists/linked-list.h"
-#include "inc/struct-fields.h"
-#include "trees/aa-tree.h"
 #include "trees/prefix-tree.h"
-#include "containers/cnt-deque.h"
-#include "varints/base128.h"
-
-char * byte_to_( unsigned char b, char *storage )
-{
-    int i;
-    for( i=8; i>0; --i ) {
-        storage[8-i] = (b & (1 << (i-1))) ? '1' : '0';
-    }
-    storage[8] = '\0';
-    return storage;
-}
-
-void size_dump_( size_t b )
-{
-    char d[9];
-    char *data = (char *)(&b);
-    int i;
-    for( i=0; i<sizeof( size_t ); ++i ) {
-        printf( " %s", byte_to_( data[i], d ) );
-    }
-    printf( "\n" );
-}
-
-int tree_walker( void *c )
-{
-    printf( "%s\n", c );
-    return 1;
-}
-
-void aa_tree_fake_del( void *d )
-{
-    printf( "del %d\n", (int)( d ) );
-}
-
-void fake_freeing( size_t *elem )
-{
-    //printf( "free element: %p\n", elem );
-}
-
-void fake_freeing2( size_t *elem )
-{
-    printf( "free element: %u %p\n", *elem, elem );
-}
-
-void fake_freeing3( char *elem )
-{
-//    printf( "free element: %c %c %c %p\n",
-//            elem[0], elem[1], elem[2], elem );
-}
-
-void fake_pop( size_t *elem )
-{
-    printf( "pop element: %u %p\n", *elem, elem );
-}
-
-void copy_element( size_t *new_place,
-                   size_t *element, size_t element_size  )
-{
-    printf( "copy element: %u to %p, (%u)\n",
-            *element, new_place, element_size );
-    *new_place = *element;
-}
-
-
-int cmp( int l, int r )
-{
-    return l < r ? -1 : r < l;
-}
-
-int cmp2( int *l, int *r )
-{
-    static int i = 0;
-    printf( "chek %u %u %u \n", i++, *l, *r );
-    return *l < *r ? -1 : *r < *l;
-}
+#include "memory/mm-block.h"
+#include "varints/zig-zag.h"
 
 struct prefix_info {
     int inf;
@@ -139,6 +58,7 @@ void fill_table( struct prefix_tree *trie )
     prefix_tree_insert_string( trie, "красный", info(cp_red ) );
     prefix_tree_insert_string( trie, "puna", info(cp_red ) );
 
+    prefix_tree_insert_string( trie, "wings", info(cp_green ) );
     prefix_tree_insert_string( trie, "green", info(cp_green ) );
     prefix_tree_insert_string( trie, "зелёный", info(cp_green ) );
     prefix_tree_insert_string( trie, "зеленый", info(cp_green ) );
@@ -161,6 +81,7 @@ void fill_table( struct prefix_tree *trie )
     prefix_tree_insert_string( trie, "lightblue", info(cp_vaaleansininen ) );
     prefix_tree_insert_string( trie, "голубой", info(cp_vaaleansininen ) );
     prefix_tree_insert_string( trie, "vaaleansininen", info(cp_vaaleansininen ));
+    prefix_tree_insert_string( trie, "one", info(cp_vaaleansininen ));
 
     prefix_tree_insert_string( trie, "purple",     info(cp_purple) );
     prefix_tree_insert_string( trie, "пурпурный",  info(cp_purple) );
@@ -173,7 +94,6 @@ void fill_table( struct prefix_tree *trie )
     prefix_tree_insert_string( trie, "valkoinen",   info(cp_white) );
 
 }
-
 
 static void *void_ptr_copy(void *new_place, const void *element, size_t es )
 {
@@ -203,135 +123,9 @@ void save_to_file( struct mm_block *mem, const char *filename )
     }
 }
 
-static unsigned long fix(long inp)
-{
-    static const unsigned bit_shift = ((sizeof(long) * 8) - 1);
-    unsigned long uval = (unsigned long)inp;
-    const unsigned long f = (uval >> bit_shift);
-    return (f ? ((~uval) << 1) : (uval << 1)) ^ f;
-}
-
-static long unfix(unsigned long inp)
-{
-    static const unsigned bit_shift = ((sizeof(long) * 8) - 1);
-    static const unsigned long shift_value =
-                        ((unsigned long)(1) << ((sizeof(long) * 8) - 1)) - 1;
-    if(!(inp & 1))
-        return (inp >> 1); // positive
-    else {
-        return (long)(~(inp >> 1));
-         // negative
-        inp = ( ( ( (~inp) >> 1) & shift_value ) | ( inp  <<  bit_shift) );
-        return (long)(inp);
-    }
-
-}
-
 int main( )
 {
 
-    printf( "%ld\n", unfix(fix( -1 )) );
-    printf( "%ld\n", unfix(fix( -2 )) );
-    printf( "%ld\n", unfix(fix( -4 )) );
-    printf( "%ld\n", unfix(fix( -2147483648 )) );
-    printf( "%ld\n", unfix(fix( 5 )) );
-    printf( "%ld\n", unfix(fix( 400 )) );
-    printf( "%ld\n", unfix(fix( 500 )) );
-    printf( "%ld\n", unfix(fix( 1 )) );
-    return 0;
-//    struct mm_block *mem = mm_block_new(  );
-
-//    pack_string( "1234567890", mem );
-//    pack_string( "abcdefg", mem );
-//    pack_string( "zxcvbnmm", mem );
-//    pack_string( "qwertyui", mem );
-
-//    printf( "total block %lu\n", mm_block_size( mem ) );
-
-//    save_to_file( mem, "test.bin" );
-
-//    mm_block_free( mem );
-
-    struct cnt_deque *dequ = cnt_deque_new_reserved( sizeof(struct test),32);
-
-    size_t t;
-    size_t acc;
-    for( t=0; t<10000000; ++t ) {
-        struct test tt;
-        tt.i = t;
-        tt.j = t >> 1;
-        cnt_deque_push_back( dequ, &tt );
-    }
-
-    while( !cnt_deque_empty( dequ ) ) {
-        struct test *t = ((struct test *)cnt_deque_front( dequ ));
-        acc += t->j;
-        cnt_deque_pop_front( dequ );
-        //printf( "pop %u\n", t->j );
-    }
-
-    struct test tt = { 0, 0 };
-
-    cnt_deque_push_back( dequ, &tt );
-    for( t=0; t<10000000; ++t ) {
-        struct test *f = (struct test *)cnt_deque_front( dequ );
-        cnt_deque_push_back( dequ, f );
-        cnt_deque_pop_front( dequ );
-    }
-
-    cnt_deque_free( dequ );
-    //printf( "%u\n", acc );
-
-    //return 0;
-
-    struct cnt_deque *deq = cnt_deque_new_reserved_pos( sizeof(size_t),
-                                                    33, DEQUE_START_BOTTOM);
-
-    size_t ci = 0;
-    for( ;ci<100; ++ci ) {
-        printf( "next ci %u\n", ci );
-        cnt_deque_push_front2( deq, &ci, void_ptr_copy );
-    }
-
-    cnt_deque_free( deq );
-    struct aa_tree *at = aa_tree_new2( cmp );
-
-    int cc = 0;
-
-    for( cc = 0; cc<100; ++cc ) {
-        aa_tree_insert( at, (void *)cc );
-    }
-
-    aa_tree_delete( at, (void *)15 );
-    aa_tree_delete( at, (void *)17 );
-    aa_tree_delete( at, (void *)67 );
-
-    size_t tree_size = aa_tree_size( at );
-
-    struct aa_tree_iterator *ai = aa_tree_reverse_iterator_new( at );
-    struct aa_tree_iterator *ac;
-
-    while( !aa_tree_iterator_end( ai ) ) {
-        int r = (int)aa_tree_iterator_get( ai );
-        printf( "i = %u\n", r );
-        if( r == 14 )
-            ac = aa_tree_iterator_clone( ai );
-        aa_tree_iterator_next( ai );
-    }
-
-
-    printf( "------\n" );
-    while( !aa_tree_iterator_end( ac ) ) {
-        int r = (int)aa_tree_iterator_get( ac );
-        printf( "i = %u\n", r );
-        aa_tree_iterator_next( ac );
-    }
-
-    aa_tree_free( at );
-    aa_tree_iterator_free( ai );
-    aa_tree_iterator_free( ac );
-
-    return 0;
     struct prefix_tree *trie = prefix_tree_new2( prefix_info_free );
     fill_table( trie );
     prefix_tree_insert_string( trie, "1234", info(cp_black) );
@@ -364,7 +158,7 @@ int main( )
     mm_block_push_back( tmp_str, 0 );
     mm_block_reduce( tmp_str, 1 );
 
-    printf( "%s\n", mm_block_begin( tmp_str ) );
+    printf( "%s\n", mm_block_const_begin( tmp_str ) );
 
     mm_block_free( tmp_str );
     prefix_tree_free( trie );

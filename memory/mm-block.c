@@ -108,12 +108,12 @@ mm_block_data_type *mm_block_new( )
 }
 
 
-struct mm_block *mm_block_new_copy( const struct mm_block *oth )
+struct mm_block *mm_block_new_copy( const struct mm_block *other )
 {
-    size_t new_size = oth->used_;
+    size_t new_size = other->used_;
     struct mm_block *new_block = mm_block_new2(new_size);
     if( new_block && (new_size > 0)) {
-        mm_block_memcpy( new_block->data_, oth->data_, new_size );
+        mm_block_memcpy( new_block->data_, other->data_, new_size );
     }
     return new_block;
 }
@@ -164,17 +164,17 @@ int mm_block_resize2(struct mm_block *mb, size_t new_size, int c)
     return result;
 }
 
-size_t mm_block_size(mm_block_data_type *mb)
+size_t mm_block_size( const mm_block_data_type *mb )
 {
     return mb->used_;
 }
 
-size_t mm_block_capacity(struct mm_block *mb)
+size_t mm_block_capacity( const struct mm_block *mb )
 {
     return mb->capacity_;
 }
 
-size_t mm_block_available(struct mm_block *mb)
+size_t mm_block_available( const struct mm_block *mb )
 {
     return MM_BLOCK_AVAILABLE_LOCAL( mb );
 }
@@ -193,6 +193,22 @@ void *mm_block_at( struct mm_block *mb, size_t position )
 {
     return MM_BLOCK_AT(mb->data_, position);
 }
+
+const void  *mm_block_const_begin (const struct mm_block *mb)
+{
+    return mb->data_;
+}
+
+const void  *mm_block_const_end(const struct mm_block *mb)
+{
+    return MM_BLOCK_AT(mb->data_, mb->used_);
+}
+
+const void  *mm_block_const_at(const struct mm_block *mb, size_t posision)
+{
+    return MM_BLOCK_AT(mb->data_, posision);
+}
+
 
 void mm_block_clear(struct mm_block *mb)
 {

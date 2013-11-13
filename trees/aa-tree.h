@@ -33,8 +33,8 @@ int             aa_tree_insert ( struct aa_tree *aat, void *data );
 void           *aa_tree_insert_get ( struct aa_tree *aat, void *data );
 void           *aa_tree_find   ( struct aa_tree *aat, void *data );
 
-size_t          aa_tree_size     ( struct aa_tree *aat );
-unsigned        aa_tree_top_level(struct aa_tree *aat);
+size_t          aa_tree_size     ( const struct aa_tree *aat );
+unsigned        aa_tree_top_level(const struct aa_tree *aat);
 
 int             aa_tree_delete ( struct aa_tree *aat, void *data );
 int             aa_tree_delete2( struct aa_tree *aat,
