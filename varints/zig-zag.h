@@ -6,7 +6,7 @@
 #define ZIG_ZAG_UNFIX( type_name, inp )             \
         ((type_name)(((inp) & 1) ? (~((inp) >> 1)) : ((inp) >> 1)))
 
-#define ZIG_ZAG_TOP_BIT_SHIFT( type_name ) ((sizeof(type_name) << 3 ) -1 )
+#define ZIG_ZAG_TOP_BIT_SHIFT(type_name) ((sizeof(type_name) << 3 ) -1 )
 
 #define ZIG_ZAG_TOP_BIT( type_name, inp )           \
     ((unsigned type_name)(inp) >> ZIG_ZAG_TOP_BIT_SHIFT(type_name))
@@ -18,13 +18,16 @@
               ZIG_ZAG_TOP_BIT(type_name, inp))
 
 unsigned int zig_zag_fix(int inp);
-         int zig_zag_unfix(unsigned int inp);
+int          zig_zag_unfix(unsigned int inp);
 
 unsigned long zig_zag_fixl(long inp);
-         long zig_zag_unfixl(unsigned long inp);
+long          zig_zag_unfixl(unsigned long inp);
 
 unsigned short zig_zag_fixs(short inp);
-         short zig_zag_unfixs(unsigned short inp);
+short          zig_zag_unfixs(unsigned short inp);
+
+unsigned char zig_zag_fixc(char inp);
+char          zig_zag_unfixc(unsigned char inp);
 
 
 #endif

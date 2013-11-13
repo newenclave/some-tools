@@ -29,3 +29,13 @@ short zig_zag_unfixs(unsigned short inp)
 {
     return ZIG_ZAG_UNFIX( short, inp );
 }
+
+unsigned char zig_zag_fixc(char inp)
+{
+    return ZIG_ZAG_FIX( char, inp );
+}
+
+char zig_zag_unfixc(unsigned char inp)
+{
+    return ZIG_ZAG_UNFIX( char, inp );
+}
