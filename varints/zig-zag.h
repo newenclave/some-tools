@@ -23,10 +23,10 @@
 #define ZIG_ZAG_TOP_BIT( type_name, inp )           \
     ((unsigned type_name)(inp) >> ZIG_ZAG_TOP_BIT_SHIFT(type_name))
 
-#define ZIG_ZAG_FIX( type_name, inp )              \
-   ((ZIG_ZAG_TOP_BIT(type_name, inp)        ?      \
-        ((~(unsigned type_name)(inp)) << 1) :      \
-          ((unsigned type_name)(inp) << 1)) ^      \
+#define ZIG_ZAG_FIX( type_name, inp )               \
+   ((ZIG_ZAG_TOP_BIT(type_name, inp)        ?       \
+        ((~(unsigned type_name)(inp)) << 1) :       \
+          ((unsigned type_name)(inp) << 1)) ^       \
      ZIG_ZAG_TOP_BIT(type_name, inp))
 
 unsigned int zig_zag_fix(int inp);

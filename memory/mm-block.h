@@ -11,13 +11,17 @@ struct mm_block *mm_block_new_reserved( size_t reserve_size );
 struct mm_block *mm_block_new_copy( const struct mm_block *oth );
 void   mm_block_free(struct mm_block *mb);
 
-size_t mm_block_size      (struct mm_block *mb);
-size_t mm_block_capacity  (struct mm_block *mb);
-size_t mm_block_available (struct mm_block *mb);
+size_t mm_block_size      (const struct mm_block *mb);
+size_t mm_block_capacity  (const struct mm_block *mb);
+size_t mm_block_available (const struct mm_block *mb);
 
 void  *mm_block_begin     (struct mm_block *mb);
 void  *mm_block_end       (struct mm_block *mb);
-void  *mm_block_at        (struct mm_block *mb, size_t posision);
+void  *mm_block_at        (struct mm_block *mb, size_t position);
+
+const void  *mm_block_const_begin (const struct mm_block *mb);
+const void  *mm_block_const_end   (const struct mm_block *mb);
+const void  *mm_block_const_at    (const struct mm_block *mb, size_t position);
 
 int  mm_block_resize  (struct mm_block *mb, size_t new_size);
 int  mm_block_resize2 (struct mm_block *mb, size_t new_size, int c);
