@@ -219,6 +219,7 @@ static long unfix(unsigned long inp)
     if(!(inp & 1))
         return (inp >> 1); // positive
     else {
+        return (long)(~(inp >> 1));
          // negative
         inp = ( ( ( (~inp) >> 1) & shift_value ) | ( inp  <<  bit_shift) );
         return (long)(inp);
@@ -231,9 +232,11 @@ int main( )
 
     printf( "%ld\n", unfix(fix( -1 )) );
     printf( "%ld\n", unfix(fix( -2 )) );
-    printf( "%ld\n", unfix(fix( -3 )) );
     printf( "%ld\n", unfix(fix( -4 )) );
+    printf( "%ld\n", unfix(fix( -2147483648 )) );
     printf( "%ld\n", unfix(fix( 5 )) );
+    printf( "%ld\n", unfix(fix( 400 )) );
+    printf( "%ld\n", unfix(fix( 500 )) );
     printf( "%ld\n", unfix(fix( 1 )) );
     return 0;
 //    struct mm_block *mem = mm_block_new(  );
