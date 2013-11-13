@@ -1,14 +1,5 @@
 #include "zig-zag.h"
 
-unsigned int zig_zag_fix(int inp)
-{
-    return ZIG_ZAG_FIX( int, inp );
-}
-
-int zig_zag_unfix(unsigned int inp)
-{
-    return ZIG_ZAG_UNFIX( int, inp );
-}
 
 unsigned long zig_zag_fixl(long inp)
 {
@@ -18,6 +9,16 @@ unsigned long zig_zag_fixl(long inp)
 long zig_zag_unfixl(unsigned long inp)
 {
     return ZIG_ZAG_UNFIX( long, inp );
+}
+
+unsigned int zig_zag_fix(int inp)
+{
+    return ZIG_ZAG_FIX( int, inp );
+}
+
+int zig_zag_unfix(unsigned int inp)
+{
+    return ZIG_ZAG_UNFIX( int, inp );
 }
 
 unsigned short zig_zag_fixs(short inp)

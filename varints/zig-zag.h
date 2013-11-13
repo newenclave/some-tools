@@ -13,6 +13,8 @@
  *
  *   for signed 32 bit values (val << 1) ^ (val >> 31)
  *   for signed 64 bit values (val << 1) ^ (val >> 63)
+ *
+ *  but we use unsigned values
 */
 
 #define ZIG_ZAG_UNFIX( type_name, inp )             \
@@ -29,11 +31,15 @@
           ((unsigned type_name)(inp) << 1)) ^       \
      ZIG_ZAG_TOP_BIT(type_name, inp))
 
-unsigned int zig_zag_fix(int inp);
-int          zig_zag_unfix(unsigned int inp);
 
 unsigned long zig_zag_fixl(long inp);
 long          zig_zag_unfixl(unsigned long inp);
+
+unsigned int zig_zag_fix(int inp);
+int          zig_zag_unfix(unsigned int inp);
+
+unsigned int zig_zag_fix(int inp);
+int          zig_zag_unfix(unsigned int inp);
 
 unsigned short zig_zag_fixs(short inp);
 short          zig_zag_unfixs(unsigned short inp);

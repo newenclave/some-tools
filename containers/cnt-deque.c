@@ -197,6 +197,18 @@ void *cnt_deque_back( struct cnt_deque *cnd )
     return ptr;
 }
 
+const void *cnt_deque_const_front( const struct cnt_deque *cnd )
+{
+    return cnd->sides_[SIDE_FRONT].ptr_;
+}
+
+const void *cnt_deque_const_back ( const struct cnt_deque *cnd )
+{
+    return CNT_DEQUE_ELEMENT_PREV( cnd->sides_[SIDE_BACK].ptr_,
+                                   cnd->element_size_ );
+}
+
+
 static int cnt_deque_extend_side( struct cnt_deque *cnd, int dir )
 {
     struct cnt_deque_side *side       = &cnd->sides_[dir];
@@ -367,12 +379,12 @@ int cnt_deque_push_back ( struct cnt_deque *cnd, const void *element )
     return cnt_deque_push_back2( cnd, element, cnt_deque_memcpy );
 }
 
-int cnt_deque_empty( struct cnt_deque *cnd )
+int cnt_deque_empty( const struct cnt_deque *cnd )
 {
     return cnd->sides_[SIDE_FRONT].ptr_ == cnd->sides_[SIDE_BACK].ptr_;
 }
 
-size_t cnt_deque_size ( struct cnt_deque *cnd )
+size_t cnt_deque_size ( const struct cnt_deque *cnd )
 {
     return cnd->count_;
 }

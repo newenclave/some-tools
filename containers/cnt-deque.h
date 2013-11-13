@@ -38,10 +38,14 @@ void    cnt_deque_free( struct cnt_deque *cnd );
 void    cnt_deque_free2( struct cnt_deque *cnd,
                          cnt_deque_element_free free_call );
 
-int     cnt_deque_empty( struct cnt_deque *cnd );
-size_t  cnt_deque_size ( struct cnt_deque *cnd );
+int     cnt_deque_empty( const struct cnt_deque *cnd );
+size_t  cnt_deque_size ( const struct cnt_deque *cnd );
+
 void   *cnt_deque_front( struct cnt_deque *cnd );
 void   *cnt_deque_back ( struct cnt_deque *cnd );
+
+const void   *cnt_deque_const_front( const struct cnt_deque *cnd );
+const void   *cnt_deque_const_back ( const struct cnt_deque *cnd );
 
 void    cnt_deque_pop_front ( struct cnt_deque *cnd );
 void    cnt_deque_pop_front2( struct cnt_deque *cnd,
