@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #include "trees/prefix-tree.h"
+#include "memory/mm-block.h"
 #include "varints/zig-zag.h"
 
 struct prefix_info {
@@ -93,13 +94,6 @@ void fill_table( struct prefix_tree *trie )
 
 int main( )
 {
-
-    int i;
-
-    for( i=-10; i<=10; ++i )
-        printf( "%i %d\n", i, zig_zag_fix( i ));
-
-    return 0;
     struct prefix_tree *trie = prefix_tree_new2( prefix_info_free );
     fill_table( trie );
     prefix_tree_insert_string( trie, "1234", info(cp_black) );
@@ -132,7 +126,7 @@ int main( )
     mm_block_push_back( tmp_str, 0 );
     mm_block_reduce( tmp_str, 1 );
 
-    //printf( "%s\n", mm_block_begin( tmp_str ) );
+    printf( "%s\n", mm_block_begin( tmp_str ) );
 
     mm_block_free( tmp_str );
     prefix_tree_free( trie );
