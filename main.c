@@ -130,7 +130,7 @@ int main( )
     mm_block_push_back( tmp_str, 0 );
     mm_block_reduce( tmp_str, 1 );
 
-    //printf( "%s\n", mm_block_const_begin( tmp_str ) );
+    printf( "%s\n", mm_block_const_begin( tmp_str ) );
 
     mm_block_free( tmp_str );
     prefix_tree_free( trie );
