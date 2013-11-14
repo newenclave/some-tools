@@ -149,33 +149,6 @@ void bits( u_int32_t data )
 
 int main( )
 {
-
-//    printf( "%u\n", ~ranges[0][0] );
-
-//    return 0;
-    char ddd[10];
-    size_t rr;
-    size_t s1;
-    for( rr = 0; rr<0x7FFFFFFF; ++rr ) {
-        char data1[10], data2[10];
-        s1 =  cs_ucs4_to_utf8( rr, data1, 10 );
-        size_t s2 =  cs_ucs4_to_utf8( rr, data2, 10 );
-
-        if( 0 == rr % 10000000 ) {
-            printf( " %p passed %u\n", rr, s1);
-        }
-        if( s1 != s1 || 0 != memcmp( data1, data2, s1 ) ) {
-            printf( " %u not good s1 %u s2 %u\n", rr, s1, s2 );
-            return -1;
-        }
-    }
-
-    char test[10];
-    size_t avail = 10;
-    size_t res = cs_ucs4_to_utf8( 400000, test, 10 );
-    res = cs_utf8_to_ucs4( test, 10, &avail );
-
-    return 0;
     size_t it = 0;
     struct aa_tree *aat = aa_tree_new(  );
 
