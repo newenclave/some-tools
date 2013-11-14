@@ -129,6 +129,8 @@ void save_to_file( struct mm_block *mem, const char *filename )
 int main( )
 {
 
+    printf( "%ul, %ul\n", 234234234 % 0x40, 234234234 & 0x3F );
+
     char test[10];
     size_t avail = 10;
     size_t res = cs_ucs4_to_utf8( 4000, test, 10 );

@@ -19,16 +19,17 @@ static const unsigned char size_table[ ] = {
     4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 0, 0
 };
 
+static const u_int32_t step_table[6][2] = {
+    { 0x0000000, 0x0000007F },
+    { 0x0000080, 0x000007FF },
+    { 0x0000800, 0x0000FFFF },
+    { 0x0010000, 0x001FFFFF },
+    { 0x0200000, 0x03FFFFFF },
+    { 0x4000000, 0x7FFFFFFF }
+};
+
 size_t cs_ucs4_to_utf8(uint32_t ucs, char *container, size_t avail)
 {
-    static const u_int32_t utf8_steps[6][2] = {
-        { 0x0000000, 0x0000007F },
-        { 0x0000080, 0x000007FF },
-        { 0x0000800, 0x0000FFFF },
-        { 0x0010000, 0x001FFFFF },
-        { 0x0200000, 0x03FFFFFF },
-        { 0x4000000, 0x7FFFFFFF }
-    };
 
     char *utf8_enc = container;
     size_t used  = 0;
@@ -37,40 +38,40 @@ size_t cs_ucs4_to_utf8(uint32_t ucs, char *container, size_t avail)
         used = 1;
         utf8_enc[0] = (char)(ucs);
 
-    } else if((avail>=2) && (ucs>=utf8_steps[1][0]) && (ucs<=utf8_steps[1][1])){
+    } else if((avail>=2) && (ucs>=step_table[1][0]) && (ucs<=step_table[1][1])){
         used = 2;
-        utf8_enc[0] = (char)(0xC0 + ( ucs / 0x40));
-        utf8_enc[1] = (char)(0x80 + ( ucs % 0x40));
+        utf8_enc[0] = (char)(0xC0 + ( ucs >>  6 ));
+        utf8_enc[1] = (char)(0x80 + ( ucs & 0x3F ));
 
-    } else if((avail>=3) && (ucs>=utf8_steps[2][0]) && (ucs<=utf8_steps[2][1])){
+    } else if((avail>=3) && (ucs>=step_table[2][0]) && (ucs<=step_table[2][1])){
         used = 3;
-        utf8_enc[0] = (char)(0xE0 + ( ucs / 0x1000));
-        utf8_enc[1] = (char)(0x80 + ((ucs / 0x0040) % 0x40));
+        utf8_enc[0] = (char)(0xE0 + ( ucs >> 12 ));
+        utf8_enc[1] = (char)(0x80 + ((ucs >>  6 ) % 0x40));
         utf8_enc[2] = (char)(0x80 + ( ucs % 0x0040));
 
-    } else if((avail>=4) && (ucs>=utf8_steps[3][0]) && (ucs<=utf8_steps[3][1])){
+    } else if((avail>=4) && (ucs>=step_table[3][0]) && (ucs<=step_table[3][1])){
         used = 4;
-        utf8_enc[0] = (char)(0xF0 + ( ucs / 0x40000));
-        utf8_enc[1] = (char)(0x80 + ((ucs / 0x01000) % 0x40));
-        utf8_enc[2] = (char)(0x80 + ((ucs / 0x00040) % 0x40));
-        utf8_enc[3] = (char)(0x80 + ( ucs % 0x00040));
+        utf8_enc[0] = (char)(0xF0 + ( ucs >> 18 ));
+        utf8_enc[1] = (char)(0x80 + ((ucs >> 12 ) & 0x3F));
+        utf8_enc[2] = (char)(0x80 + ((ucs >>  6 ) & 0x3F));
+        utf8_enc[3] = (char)(0x80 + ( ucs & 0x3F));
 
-    } else if((avail>=5) && (ucs>=utf8_steps[4][0]) && (ucs<=utf8_steps[4][1])){
+    } else if((avail>=5) && (ucs>=step_table[4][0]) && (ucs<=step_table[4][1])){
         used = 5;
-        utf8_enc[0] = (char)(0xF8 + ( ucs / 0x1000000));
-        utf8_enc[1] = (char)(0x80 + ((ucs / 0x0040000) % 0x40));
-        utf8_enc[2] = (char)(0x80 + ((ucs / 0x0001000) % 0x40));
-        utf8_enc[3] = (char)(0x80 + ((ucs / 0x0000040) % 0x40));
-        utf8_enc[4] = (char)(0x80 + ( ucs % 0x0000040));
+        utf8_enc[0] = (char)(0xF8 + ( ucs >> 24 ));
+        utf8_enc[1] = (char)(0x80 + ((ucs >> 18 ) & 0x3F));
+        utf8_enc[2] = (char)(0x80 + ((ucs >> 12 ) & 0x3F));
+        utf8_enc[3] = (char)(0x80 + ((ucs >>  6 ) & 0x3F));
+        utf8_enc[4] = (char)(0x80 + ( ucs & 0x3F));
 
-    } else if((avail>=6) && (ucs>=utf8_steps[5][0]) && (ucs<=utf8_steps[6][1])){
+    } else if((avail>=6) && (ucs>=step_table[5][0]) && (ucs<=step_table[6][1])){
         used = 6;
-        utf8_enc[0] = (char)(0xFC + ( ucs / 0x40000000));
-        utf8_enc[1] = (char)(0x80 + ((ucs / 0x01000000) % 0x40));
-        utf8_enc[2] = (char)(0x80 + ((ucs / 0x00040000) % 0x40));
-        utf8_enc[3] = (char)(0x80 + ((ucs / 0x00001000) % 0x40));
-        utf8_enc[4] = (char)(0x80 + ((ucs / 0x00000040) % 0x40));
-        utf8_enc[5] = (char)(0x80 + ( ucs % 0x00000040));
+        utf8_enc[0] = (char)(0xFC + ( ucs >> 30 ));
+        utf8_enc[1] = (char)(0x80 + ((ucs >> 24 ) & 0x3F));
+        utf8_enc[2] = (char)(0x80 + ((ucs >> 18 ) & 0x3F));
+        utf8_enc[3] = (char)(0x80 + ((ucs >> 12 ) & 0x3F));
+        utf8_enc[4] = (char)(0x80 + ((ucs >>  6 ) & 0x3F));
+        utf8_enc[5] = (char)(0x80 + ( ucs & 0x3F));
     }
 
     return used;
