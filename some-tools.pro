@@ -14,7 +14,8 @@ SOURCES += \
     lists/bilinked-list.c \
     varints/base128.c \
     trees/prefix-tree.c \
-    varints/zig-zag.c
+    varints/zig-zag.c \
+    charset/cs-utf8.c
 
 HEADERS += \
     bitpacker/bitpack.h \
@@ -27,6 +28,7 @@ HEADERS += \
     lists/bilinked-list.h \
     varints/base128.h \
     trees/prefix-tree.h \
-    varints/zig-zag.h
+    varints/zig-zag.h \
+    charset/cs-utf8.h
 
 
