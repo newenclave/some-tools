@@ -149,24 +149,6 @@ void bits( u_int32_t data )
 
 int main( )
 {
-    struct mm_block *ucs4_data = mm_block_new( );
-    const char *utf8str = "Привет, землянин!\n";
-
-    const char *p = utf8str;
-    size_t avail = strlen( p );
-    size_t used = 0;
-    u_int32_t next = 0;
-    while (avail) {
-        used = cs_utf8_to_ucs4( p, avail, &next );
-        if( used ) {
-            mm_block_concat( ucs4_data, (const void *)&next, sizeof( next ) );
-            p += used;
-            avail-=used;
-        }
-    }
-    save_to_file( ucs4_data, "test.ucs" );
-    mm_block_free( ucs4_data );
-    return 0;
     size_t it = 0;
     struct aa_tree *aat = aa_tree_new(  );
 
