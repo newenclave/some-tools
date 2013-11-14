@@ -6,6 +6,8 @@
 #include "trees/aa-tree.h"
 #include "memory/mm-block.h"
 #include "varints/zig-zag.h"
+#include "varints/base128.h"
+#include "charset/cs-utf8.h"
 
 struct prefix_info {
     int inf;
@@ -127,6 +129,12 @@ void save_to_file( struct mm_block *mem, const char *filename )
 int main( )
 {
 
+    char test[10];
+    size_t avail = 10;
+    size_t res = cs_ucs4_to_utf8( 4000, test, 10 );
+    res = cs_utf8_to_ucs4( test, 10, &avail );
+
+    return 0;
     size_t it = 0;
     struct aa_tree *aat = aa_tree_new(  );
 

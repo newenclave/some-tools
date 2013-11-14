@@ -1,7 +1,25 @@
 #include "cs-utf8.h"
 
+static const unsigned char size_table[ ] = {
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+    3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+    4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 0, 0
+};
 
-int cs_ucs4_to_utf8(uint32_t ucs, char *container, size_t *available)
+size_t cs_ucs4_to_utf8(uint32_t ucs, char *container, size_t avail)
 {
     static const u_int32_t utf8_steps[6][2] = {
         { 0x0000000, 0x0000007F },
@@ -14,7 +32,6 @@ int cs_ucs4_to_utf8(uint32_t ucs, char *container, size_t *available)
 
     char *utf8_enc = container;
     size_t used  = 0;
-    size_t avail = *available;
 
     if( avail>=1 && ucs <= 0x7F ) {
         used = 1;
@@ -56,6 +73,77 @@ int cs_ucs4_to_utf8(uint32_t ucs, char *container, size_t *available)
         utf8_enc[5] = (char)(0x80 + ( ucs % 0x00000040));
     }
 
-    *available = (avail - used);
-    return (used != 0);
+    return used;
+}
+
+
+size_t cs_utf8_to_ucs4( const char *utf8, size_t available, u_int32_t *ucs )
+{
+
+    unsigned char a = utf8[0];
+    unsigned char b, c, d, e, f;
+
+    u_int32_t res = 0;
+    size_t   used = size_table[a];
+
+    if( available < used ) {
+        return 0;
+    }
+
+    switch( used ) {
+    case 1:
+        res = utf8[0];
+        break;
+    case 2:
+        b = utf8[1];
+        res = ( (a-0xC0) <<  6 ) +
+                (b-0x80);
+        break;
+    case 3:
+        b = utf8[1];
+        c = utf8[2];
+
+        res = ( (a-0xE0) << 12 ) +
+              ( (b-0x80) <<  6 ) +
+                (c-0x80);
+        break;
+    case 4:
+        b = utf8[1];
+        c = utf8[2];
+        d = utf8[3];
+
+        res = ( (a-0xF0) << 18 ) +
+              ( (b-0x80) << 12 ) +
+              ( (c-0x80) <<  6 ) +
+                (d-0x80);
+        break;
+    case 5:
+        b = utf8[1];
+        c = utf8[2];
+        d = utf8[3];
+        e = utf8[4];
+
+        res =  ( (a-0xF8) << 24 ) +
+               ( (b-0x80) << 18 ) +
+               ( (c-0x80) << 12 ) +
+               ( (d-0x80) <<  6 ) +
+                 (e-0x80);
+        break;
+    case 6:
+        b = utf8[1];
+        c = utf8[2];
+        d = utf8[3];
+        e = utf8[4];
+        f = utf8[5];
+
+        res = ( (a-0xFC) << 30 ) +
+              ( (b-0x80) << 24 ) +
+              ( (c-0x80) << 18 ) +
+              ( (d-0x80) << 12 ) +
+              ( (e-0x80) <<  6 ) +
+                (f-0x80);
+        break;
+    }
+    *ucs = res;
+    return used;
 }

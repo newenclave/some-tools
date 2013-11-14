@@ -40,11 +40,11 @@ int b128_unpack( const struct mm_block *container, size_t *result )
                         mm_block_size (container), result);
 }
 
-int b128_pack_shift( size_t number, void **container, size_t *available )
+size_t b128_pack_shift( size_t number, void **container, size_t *available )
 {
-    int   result        = 0;
-    unsigned char *data = (unsigned char *)*container;
-    size_t tmp          = *available;
+    size_t result        = 0;
+    unsigned char *data  = (unsigned char *)*container;
+    size_t tmp           = *available;
 
     if( tmp ) {
         if( number <= 0x7F ) {
@@ -59,7 +59,8 @@ int b128_pack_shift( size_t number, void **container, size_t *available )
                 next |= (( number >>= 7 ) ? 0x80 : 0x00 );
                 *data++ = next;
             }
-            result = (number == 0);
+            if( number == 0 )
+                result = (*available) - tmp;
         }
         *container = data;
         *available = tmp;
@@ -67,18 +68,19 @@ int b128_pack_shift( size_t number, void **container, size_t *available )
     return result;
 }
 
-int b128_pack2( size_t number, void *container, size_t avail )
+size_t b128_pack2( size_t number, void *container, size_t avail )
 {
     return b128_pack_shift(number, &container, &avail);
 }
 
-int b128_pack_append( size_t number, struct mm_block *container )
+size_t b128_pack_append( size_t number, struct mm_block *container )
 {
-    int result = 0;
+    int    result = 0;
+    size_t added  = 0;
     if( number <= 0x7F ) {
         result = mm_block_push_back( container, (char)(number & 0x7F));
+        added = 1;
     } else {
-        size_t added = 0;
         unsigned char next;
         result = 1;
         while( number && result ) {
@@ -87,15 +89,17 @@ int b128_pack_append( size_t number, struct mm_block *container )
             result = mm_block_push_back( container, next );
             added += (result != 0);
         }
-        if( !result )
+        if( !result ) {
             mm_block_reduce( container, added );
+            added = 0;
+        }
     }
-    return result;
+    return added;
 }
 
-int b128_pack( size_t number, struct mm_block *container )
+size_t b128_pack( size_t number, struct mm_block *container )
 {
-    int result = 0;
+    size_t result = 0;
     struct mm_block *tmp = mm_block_new_reserved(sizeof(number));
     if( tmp ) {
         result = b128_pack_append( number, tmp );
