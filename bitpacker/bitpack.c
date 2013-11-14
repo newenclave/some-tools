@@ -63,7 +63,7 @@ masks
 0x1FFFFFFFFFFFFFFF, 0x3FFFFFFFFFFFFFFF, 0x7FFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF,
 */
 
-unsigned char make_char_mask( unsigned count )
+static unsigned char make_char_mask( unsigned count )
 {
     static const unsigned char masks[] = { // zero and 8 bits
        0, 0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F, 0x7F, 0xFF
