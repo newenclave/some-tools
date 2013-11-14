@@ -133,7 +133,7 @@ int main( )
 
     char test[10];
     size_t avail = 10;
-    size_t res = cs_ucs4_to_utf8( 4000, test, 10 );
+    size_t res = cs_ucs4_to_utf8( 400000, test, 10 );
     res = cs_utf8_to_ucs4( test, 10, &avail );
 
     return 0;
