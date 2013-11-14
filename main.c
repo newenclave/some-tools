@@ -124,8 +124,21 @@ void save_to_file( struct mm_block *mem, const char *filename )
     }
 }
 
+void f( ) { printf( "f\n" ); }
+void g( int i ) { printf( "g %d\n", i ); }
+void h( c, i ) char *c; { printf( "%s %d\n", c, i ); }
+
 int main( )
 {
+
+    void (*fn[])() = { f, g, h };
+
+    fn[0]();
+    fn[1](10);
+    fn[2]("123456789", 100);
+
+    return 0;
+
     size_t it = 0;
     struct aa_tree *aat = aa_tree_new(  );
 
