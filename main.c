@@ -127,26 +127,6 @@ void save_to_file( struct mm_block *mem, const char *filename )
     }
 }
 
-static const u_int32_t ranges[6][2] = {
-    { 0x0000000, 0x0000007F },
-    { 0x0000080, 0x000007FF },
-    { 0x0000800, 0x0000FFFF },
-    { 0x0010000, 0x001FFFFF },
-    { 0x0200000, 0x03FFFFFF },
-    { 0x4000000, 0x7FFFFFFF }
-};
-
-void bits( u_int32_t data )
-{
-    data = ~data;
-    unsigned bit = 32;
-    while( --bit ) {
-        printf( "%d", (data & (1 << bit)) ? 1 : 0 );
-        if( 0 == bit % 8 ) printf( " " );
-    }
-    printf( "\t" );
-}
-
 int main( )
 {
     size_t it = 0;
