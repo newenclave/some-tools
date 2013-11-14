@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <memory.h>
 
 #include "trees/prefix-tree.h"
 #include "trees/aa-tree.h"
@@ -126,10 +127,48 @@ void save_to_file( struct mm_block *mem, const char *filename )
     }
 }
 
+static const u_int32_t ranges[6][2] = {
+    { 0x0000000, 0x0000007F },
+    { 0x0000080, 0x000007FF },
+    { 0x0000800, 0x0000FFFF },
+    { 0x0010000, 0x001FFFFF },
+    { 0x0200000, 0x03FFFFFF },
+    { 0x4000000, 0x7FFFFFFF }
+};
+
+void bits( u_int32_t data )
+{
+    data = ~data;
+    unsigned bit = 32;
+    while( --bit ) {
+        printf( "%d", (data & (1 << bit)) ? 1 : 0 );
+        if( 0 == bit % 8 ) printf( " " );
+    }
+    printf( "\t" );
+}
+
 int main( )
 {
 
-    printf( "%ul, %ul\n", 234234234 % 0x40, 234234234 & 0x3F );
+//    printf( "%u\n", ~ranges[0][0] );
+
+//    return 0;
+    char ddd[10];
+    size_t rr;
+    size_t s1;
+    for( rr = 0; rr<0x7FFFFFFF; ++rr ) {
+        char data1[10], data2[10];
+        s1 =  cs_ucs4_to_utf8( rr, data1, 10 );
+        size_t s2 =  cs_ucs4_to_utf8( rr, data2, 10 );
+
+        if( 0 == rr % 10000000 ) {
+            printf( " %p passed %u\n", rr, s1);
+        }
+        if( s1 != s1 || 0 != memcmp( data1, data2, s1 ) ) {
+            printf( " %u not good s1 %u s2 %u\n", rr, s1, s2 );
+            return -1;
+        }
+    }
 
     char test[10];
     size_t avail = 10;
