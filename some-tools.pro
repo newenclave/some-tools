@@ -15,7 +15,8 @@ SOURCES += \
     varints/base128.c \
     trees/prefix-tree.c \
     varints/zig-zag.c \
-    charset/cs-utf8.c
+    charset/cs-utf8.c \
+    memory/mm-hex.c
 
 HEADERS += \
     bitpacker/bitpack.h \
@@ -29,6 +30,7 @@ HEADERS += \
     varints/base128.h \
     trees/prefix-tree.h \
     varints/zig-zag.h \
-    charset/cs-utf8.h
+    charset/cs-utf8.h \
+    memory/mm-hex.h
 
 

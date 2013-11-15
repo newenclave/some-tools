@@ -129,6 +129,8 @@ void save_to_file( struct mm_block *mem, const char *filename )
 
 int main( )
 {
+
+    return 0;
     size_t it = 0;
     struct aa_tree *aat = aa_tree_new(  );
 
