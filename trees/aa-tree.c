@@ -56,7 +56,7 @@ struct aa_tree *aa_tree_new3 ( aa_tree_data_compare compare,
                                aa_tree_data_free free_call)
 {
     struct aa_tree *new_tree =
-            (struct aa_tree *)aa_tree_malloc( sizeof(struct aa_tree) );
+            (struct aa_tree *)aa_tree_malloc(sizeof(*new_tree));
     if( new_tree ) {
         new_tree->root_  = NULL;
         new_tree->count_ = 0;
