@@ -19,7 +19,7 @@ static const unsigned char size_table[ ] = {
     4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 0, 0
 };
 
-static const u_int32_t ranges[6] = {
+static const uint32_t ranges[6] = {
      0x0000007F
     ,0x000007FF
     ,0x0000FFFF
@@ -33,32 +33,32 @@ size_t cs_ucs4_to_utf8(uint32_t ucs, char *container, size_t avail)
 
     char *utf8_enc = container;
 
-    if( ucs <= ranges[0]  ) {
+    if( ( avail>=1 ) && ucs <= ranges[0]  ) {
         *utf8_enc++ = (char)(ucs);
 
-    } else if( ucs <= ranges[1] ) {
+    } else if( ( avail>=2 ) && ucs <= ranges[1] ) {
         *utf8_enc++ = (char)(0xC0 | ( ucs >>  6 ));
         *utf8_enc++ = (char)(0x80 | ( ucs & 0x3F ));
 
-    } else if( ucs <= ranges[2] ) {
+    } else if( ( avail>=3 ) && ucs <= ranges[2] ) {
         *utf8_enc++ = (char)(0xE0 | ( ucs >> 12 ));
         *utf8_enc++ = (char)(0x80 | ((ucs >>  6 ) % 0x40));
         *utf8_enc++ = (char)(0x80 | ( ucs % 0x0040));
 
-    } else if( ucs <= ranges[3] ) {
+    } else if( ( avail>=4 ) && ucs <= ranges[3] ) {
         *utf8_enc++ = (char)(0xF0 | ( ucs >> 18 ));
         *utf8_enc++ = (char)(0x80 | ((ucs >> 12 ) & 0x3F));
         *utf8_enc++ = (char)(0x80 | ((ucs >>  6 ) & 0x3F));
         *utf8_enc++ = (char)(0x80 | ( ucs & 0x3F));
 
-    } else if( ucs <= ranges[4] ) {
+    } else if( ( avail>=5 ) && ucs <= ranges[4] ) {
         *utf8_enc++ = (char)(0xF8 | ( ucs >> 24 ));
         *utf8_enc++ = (char)(0x80 | ((ucs >> 18 ) & 0x3F));
         *utf8_enc++ = (char)(0x80 | ((ucs >> 12 ) & 0x3F));
         *utf8_enc++ = (char)(0x80 | ((ucs >>  6 ) & 0x3F));
         *utf8_enc++ = (char)(0x80 | ( ucs & 0x3F));
 
-    } else if( ucs <= ranges[5] ) {
+    } else if( ( avail>=6 ) && ucs <= ranges[5] ) {
         *utf8_enc++ = (char)(0xFC | ( ucs >> 30 ));
         *utf8_enc++ = (char)(0x80 | ((ucs >> 24 ) & 0x3F));
         *utf8_enc++ = (char)(0x80 | ((ucs >> 18 ) & 0x3F));
@@ -71,7 +71,7 @@ size_t cs_ucs4_to_utf8(uint32_t ucs, char *container, size_t avail)
 }
 
 
-size_t cs_utf8_to_ucs4( const char *utf8, size_t available, u_int32_t *ucs )
+size_t cs_utf8_to_ucs4( const char *utf8, size_t available, uint32_t *ucs )
 {
 
     unsigned char a = utf8[0];

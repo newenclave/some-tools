@@ -6,6 +6,6 @@
 
 size_t cs_ucs4_to_utf8( uint32_t ucs, char *container, size_t available );
 
-size_t cs_utf8_to_ucs4( const char *utf8, size_t available, u_int32_t *ucs );
+size_t cs_utf8_to_ucs4( const char *utf8, size_t available, uint32_t *ucs );
 
 #endif
