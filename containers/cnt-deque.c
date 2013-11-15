@@ -511,9 +511,9 @@ int cnt_deque_iterator_end( struct cnt_deque_iterator *iter )
 
 void *cnt_deque_iterator_get( struct cnt_deque_iterator *iter )
 {
-    return iter->next_direction_ ? iter->ptr_
-                       : CNT_DEQUE_ELEMENT_PREV(iter->ptr_,
-                                                iter->parent_->element_size_);
+    return iter->next_direction_
+            ? iter->ptr_
+            : CNT_DEQUE_ELEMENT_PREV(iter->ptr_, iter->parent_->element_size_);
 }
 
 void cnt_deque_iterator_free( struct cnt_deque_iterator *iter )
