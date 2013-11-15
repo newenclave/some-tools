@@ -454,11 +454,11 @@ static struct cnt_deque_iterator
     struct cnt_deque_iterator *iter = (struct cnt_deque_iterator *)
             cnt_deque_malloc(sizeof(struct cnt_deque_iterator));
     if( iter ) {
-        iter->parent_ = cnd;
+        iter->parent_           = cnd;
         iter->side_direction_   = !direction;
         iter->next_direction_   = direction;
-        iter->unit_   = cnd->sides_[!direction].unit_;
-        iter->ptr_    = cnd->sides_[!direction].ptr_;
+        iter->unit_             = cnd->sides_[!direction].unit_;
+        iter->ptr_              = cnd->sides_[!direction].ptr_;
     }
     return iter;
 }
