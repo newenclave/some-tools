@@ -11,8 +11,8 @@ enum cnt_deque_direction {
 };
 
 struct cnt_deque_unit {
-    struct bilinked_list_head list_;
-    void                     *border_[2];
+    struct bilinked_list_head  list_;
+    void                      *border_[2];
 };
 
 struct cnt_deque_side {
