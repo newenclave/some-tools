@@ -32,8 +32,8 @@ struct cnt_deque_iterator
     const struct cnt_deque *parent_;
     struct cnt_deque_unit  *unit_;
     void                   *ptr_;
-    short  next_;
-    short  side_;
+    short  next_direction_;
+    short  side_direction_;
 };
 
 
@@ -455,8 +455,8 @@ static struct cnt_deque_iterator
             cnt_deque_malloc(sizeof(struct cnt_deque_iterator));
     if( iter ) {
         iter->parent_ = cnd;
-        iter->side_   = !direction;
-        iter->next_   = direction;
+        iter->side_direction_   = !direction;
+        iter->next_direction_   = direction;
         iter->unit_   = cnd->sides_[!direction].unit_;
         iter->ptr_    = cnd->sides_[!direction].ptr_;
     }
@@ -489,14 +489,15 @@ struct cnt_deque_iterator
 int cnt_deque_iterator_next( struct cnt_deque_iterator *iter )
 {
     size_t elem_size = iter->parent_->element_size_;
-    void *ptr = iter->next_ ? CNT_DEQUE_ELEMENT_NEXT(iter->ptr_, elem_size)
-                            : CNT_DEQUE_ELEMENT_PREV(iter->ptr_, elem_size);
-    if( CNT_DEQUE_BLOCK_IS_SIDE( iter->unit_, ptr, iter->side_ ) ) {
+    void *ptr = iter->next_direction_
+                        ? CNT_DEQUE_ELEMENT_NEXT(iter->ptr_, elem_size)
+                        : CNT_DEQUE_ELEMENT_PREV(iter->ptr_, elem_size);
+    if( CNT_DEQUE_BLOCK_IS_SIDE( iter->unit_, ptr, iter->side_direction_ ) ) {
         struct bilinked_list_head *lh =
-                BILINKED_LIST_STEP( &iter->unit_->list_, iter->next_ );
+                BILINKED_LIST_STEP( &iter->unit_->list_, iter->next_direction_);
         if( lh ) {
             iter->unit_ = FIELD_ENTRY( lh, struct cnt_deque_unit, list_ );
-            ptr = CNT_DEQUE_BLOCK_SIDE( iter->unit_, iter->next_ );
+            ptr = CNT_DEQUE_BLOCK_SIDE( iter->unit_, iter->next_direction_ );
         }
     }
     iter->ptr_ = ptr;
@@ -505,12 +506,12 @@ int cnt_deque_iterator_next( struct cnt_deque_iterator *iter )
 
 int cnt_deque_iterator_end( struct cnt_deque_iterator *iter )
 {
-    return iter->ptr_ == iter->parent_->sides_[iter->next_].ptr_;
+    return iter->ptr_ == iter->parent_->sides_[iter->next_direction_].ptr_;
 }
 
 void *cnt_deque_iterator_get( struct cnt_deque_iterator *iter )
 {
-    return iter->next_ ? iter->ptr_
+    return iter->next_direction_ ? iter->ptr_
                        : CNT_DEQUE_ELEMENT_PREV(iter->ptr_,
                                                 iter->parent_->element_size_);
 }
