@@ -439,7 +439,7 @@ void cnt_deque_free2( struct cnt_deque *cnd, cnt_deque_element_free free_call )
 {
     if( cnd ) {
         cnt_deque_list_free( cnd, free_call );
-        cnt_deque_freemem(cnd);
+        cnt_deque_freemem( cnd );
     }
 }
 
