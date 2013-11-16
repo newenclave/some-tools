@@ -51,20 +51,20 @@ size_t mm_hex_bytes2hex_block( const void *bytes, size_t length,
     case '4':   case '5':               \
     case '6':   case '7':               \
     case '8':   case '9':               \
-            hc -= '0';                  \
-            break;                      \
+        hc = (hc - '0');                \
+        break;                          \
     case 'a':   case 'b':               \
     case 'c':   case 'd':               \
     case 'e':   case 'f':               \
-            hc = (hc - 'a' + 0xa);      \
-            break;                      \
+        hc = (hc - 'a' + 0xa);          \
+        break;                          \
     case 'A':   case 'B':               \
     case 'C':   case 'D':               \
     case 'E':   case 'F':               \
-            hc = (hc - 'A' + 0xA);      \
-            break;                      \
+        hc = (hc - 'A' + 0xA);          \
+        break;                          \
     default:                            \
-        hc = 0xFF;                      \
+        hc = 0xFF;  /* bad hex */       \
     }
 
 size_t mm_hex_hex2bytes( const void *hex, size_t hex_length, void *bytes )
