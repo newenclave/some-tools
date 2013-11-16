@@ -12,14 +12,14 @@ static const char hex_table[] = {
 void mm_hex_bytes2hex( const void *bytes, size_t length, char *hex )
 {
     const uint8_t *pb = (const uint8_t *)bytes;
-    char *ph                = hex;
+    char *ph          = hex;
     while( length-- ) {
-        *ph++ = hex_table[ (*pb >> 4) & 0x0F ];
+        *ph++ = hex_table[ *pb >> 4 ];
         *ph++ = hex_table[ *pb++ & 0x0F ];
     }
 }
 
-int mm_hex_bytes2hexappend( const void *bytes, size_t length,
+int mm_hex_bytes2hex_append( const void *bytes, size_t length,
                                         struct mm_block *hex )
 {
     size_t old_size = mm_block_size( hex );
@@ -31,17 +31,59 @@ int mm_hex_bytes2hexappend( const void *bytes, size_t length,
 }
 
 
-int mm_hex_bytes2hexblock( const void *bytes, size_t length,
+int mm_hex_bytes2hex_block( const void *bytes, size_t length,
                                         struct mm_block *hex )
 {
-    int result = 0;
-    struct mm_block *new_block = mm_block_new_reserved( length << 1 );
+    struct mm_block *new_block = mm_block_new2( length << 1 );
     if( new_block ) {
-        result = mm_hex_bytes2hexappend( bytes, length, new_block );
-        if( result ) {
-            mm_block_swap( hex, new_block );
-        }
+        mm_hex_bytes2hex( bytes, length, (char *)mm_block_begin( new_block ));
+        mm_block_swap( hex, new_block );
         mm_block_free(new_block);
     }
-    return result;
+    return (new_block != NULL);
 }
+
+
+#define MM_HEX_SWITCH_SET_HEX_CODE( hc )\
+    switch( hc ) {                      \
+    case '0':   case '1':               \
+    case '2':   case '3':               \
+    case '4':   case '5':               \
+    case '6':   case '7':               \
+    case '8':   case '9':               \
+            hc -= '0';                  \
+            break;                      \
+    case 'a':   case 'b':               \
+    case 'c':   case 'd':               \
+    case 'e':   case 'f':               \
+            hc = (hc - 'a' + 0xa);      \
+            break;                      \
+    case 'A':   case 'B':               \
+    case 'C':   case 'D':               \
+    case 'E':   case 'F':               \
+            hc = (hc - 'A' + 0xA);      \
+            break;                      \
+    default:                            \
+        hc = 0xFF;                      \
+    }
+
+size_t mm_hex_hex2bytes( const void *hex, size_t hex_length, void *bytes )
+{
+    const char *ph = (const char *)hex;
+    uint8_t    *pb = (uint8_t    *)bytes;
+
+    hex_length >>= 1;
+    while( hex_length-- ) {
+        uint8_t f = *ph++;
+        uint8_t l = *ph++;
+        MM_HEX_SWITCH_SET_HEX_CODE( f );
+        MM_HEX_SWITCH_SET_HEX_CODE( l );
+        if( (f | l) & 0xF0 ) {
+            hex_length = 0;
+        }
+        *pb++ = (f << 4 | l);
+    }
+
+    return (pb - (uint8_t *)bytes);
+}
+
