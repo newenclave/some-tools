@@ -303,8 +303,10 @@ int mm_array_insert3 ( struct mm_array *mar,
                        mm_array_element_copy copy_call)
 {
     void * insertion = mm_array_create_insertion( mar, pos, count );
-    mm_array_copy_elements( insertion, element,
+    if( insertion ) {
+        mm_array_copy_elements( insertion, element,
                                 mar->element_size_, count, copy_call );
+    }
     return (insertion != NULL);
 }
 

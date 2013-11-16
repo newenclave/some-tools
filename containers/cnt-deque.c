@@ -230,7 +230,9 @@ static int cnt_deque_extend_side( struct cnt_deque *cnd, int dir )
             const size_t new_size = CNT_DEQUE_DEF_INC(old_size);
             new_unit = cnt_deque_unit_create( cnd, new_size );
         }
-        BILINKED_LIST_INSERT( &side->unit_->list_, &new_unit->list_, dir );
+        if( new_unit ) {
+            BILINKED_LIST_INSERT( &side->unit_->list_, &new_unit->list_, dir );
+        }
     }
 
     if( new_unit ) {
