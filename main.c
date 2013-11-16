@@ -149,7 +149,7 @@ int main( )
     mm_block_push_back( str, 0 );
     mm_block_reduce( str, 1 );
 
-    printf("result: %s %u\n", mm_block_begin(str), mm_block_size( bytes ));
+    printf("result: %s %u\n", mm_block_begin(str), *(size_t *)mm_block_begin( bytes ));
 
     mm_block_free( str );
     mm_block_free( bytes );

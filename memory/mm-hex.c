@@ -87,13 +87,13 @@ size_t mm_hex_hex2bytes( const void *hex, size_t hex_length, void *bytes )
     hex_length >>= 1;
     while( hex_length-- ) {
 
-        const uint8_t f = bytes_table[*ph++];
-        const uint8_t l = bytes_table[*ph++];
+        const uint8_t hi = bytes_table[*ph++];
+        const uint8_t lo = bytes_table[*ph++];
 
-        if( (f | l) & 0xF0 ) {
+        if( (hi | lo) & 0xF0 ) {
             hex_length = 0;
         } else {
-            *pb++ = ( (f << 4) | l);
+            *pb++ = ( (hi << 4) | lo);
         }
     }
     return (pb - (uint8_t *)bytes);
