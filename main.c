@@ -131,7 +131,6 @@ void save_to_file( struct mm_block *mem, const char *filename )
 int main( )
 {
 
-    char test_bytes[] = { 1, 2, 255, 45, 128, 127 };
     struct mm_block *str = mm_block_new( );
     struct mm_block *bytes = mm_block_new( );
 
@@ -154,7 +153,7 @@ int main( )
     mm_block_free( str );
     mm_block_free( bytes );
 
-    return 0;
+    //return 0;
     size_t it = 0;
     struct aa_tree *aat = aa_tree_new(  );
 
