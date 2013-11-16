@@ -9,6 +9,7 @@
 #include "varints/zig-zag.h"
 #include "varints/base128.h"
 #include "charset/cs-utf8.h"
+#include "memory/mm-hex.h"
 
 struct prefix_info {
     int inf;
@@ -129,6 +130,16 @@ void save_to_file( struct mm_block *mem, const char *filename )
 
 int main( )
 {
+
+    char test_bytes[] = { 1, 2, 255, 45, 128, 127 };
+    struct mm_block *str = mm_block_new( );
+
+    mm_hex_bytes2hexblock( test_bytes, 6, str );
+
+    mm_block_push_back( str, 0 );
+    mm_block_reduce( str, 1 );
+
+    printf("result: %s\n", mm_block_begin(str));
 
     return 0;
     size_t it = 0;
