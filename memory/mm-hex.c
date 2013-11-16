@@ -93,7 +93,7 @@ size_t mm_hex_hex2bytes( const void *hex, size_t hex_length, void *bytes )
         if( (f | l) & 0xF0 ) {
             hex_length = 0;
         } else {
-            *pb++ = (f << 4 | l);
+            *pb++ = ( (f << 4) | l);
         }
     }
     return (pb - (uint8_t *)bytes);
