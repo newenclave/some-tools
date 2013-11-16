@@ -140,6 +140,8 @@ int main( )
     char out[100];
     size_t up = mm_hex_hex2bytes( mm_block_begin(str), mm_block_size(str), out);
 
+    *(char *)mm_block_at( str, 5 ) = 'W';
+
     up = mm_hex_hex2bytes_block( mm_block_begin(str), mm_block_size(str), bytes);
 
     mm_block_push_back( str, 0 );
