@@ -87,8 +87,8 @@ size_t mm_hex_hex2bytes( const void *hex, size_t hex_length, void *bytes )
     hex_length >>= 1;
     while( hex_length-- ) {
 
-        uint8_t f = bytes_table[*ph++];
-        uint8_t l = bytes_table[*ph++];
+        const uint8_t f = bytes_table[*ph++];
+        const uint8_t l = bytes_table[*ph++];
 
         if( (f | l) & 0xF0 ) {
             hex_length = 0;
@@ -117,12 +117,14 @@ size_t mm_hex_hex2bytes_append( const void *hex, size_t hex_length,
 size_t mm_hex_hex2bytes_block( const void *hex, size_t hex_length,
                                                 struct mm_block *bytes )
 {
-    struct mm_block *new_block = mm_block_new2( hex_length >> 1 );
+    const size_t new_size = hex_length >> 1;
+    struct mm_block *new_block = mm_block_new2( new_size );
     size_t result = 0;
     if( new_block ) {
         result = mm_hex_hex2bytes( hex, hex_length, mm_block_begin(new_block) );
+        mm_block_reduce( new_block, new_size - result );
         mm_block_swap( bytes, new_block );
-        mm_block_free(new_block);
+        mm_block_free( new_block );
     }
     return result;
 }
