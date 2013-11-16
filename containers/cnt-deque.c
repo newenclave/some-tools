@@ -81,7 +81,7 @@ static struct cnt_deque_unit *cnt_deque_unit_create( struct cnt_deque* cnd,
                                                      size_t elements )
 {
     struct cnt_deque_unit *new_unit =
-      (struct cnt_deque_unit *)cnt_deque_malloc(sizeof(struct cnt_deque_unit));
+      (struct cnt_deque_unit *)cnt_deque_malloc(sizeof(*new_unit));
     if( new_unit ) {
         size_t length = elements * cnd->element_size_;
         void *new_border = cnt_deque_malloc( length );
@@ -124,9 +124,9 @@ static struct cnt_deque *cnt_deque_new_all( size_t element_size,
                                             enum cnt_deque_start_point position)
 {
     struct cnt_deque *new_deq =
-            (struct cnt_deque *)cnt_deque_malloc(sizeof(struct cnt_deque));
+            (struct cnt_deque *)cnt_deque_malloc(sizeof(*new_deq));
     if( new_deq ) {
-        memset( new_deq, 0, sizeof(struct cnt_deque) );
+        memset( new_deq, 0, sizeof(*new_deq) );
         new_deq->element_size_ = element_size;
         new_deq->free_         = free_call;
         struct cnt_deque_unit *unit =
@@ -454,7 +454,7 @@ static struct cnt_deque_iterator
     *cnt_deque_iterator_both(const struct cnt_deque *cnd, short direction)
 {
     struct cnt_deque_iterator *iter = (struct cnt_deque_iterator *)
-            cnt_deque_malloc(sizeof(struct cnt_deque_iterator));
+            cnt_deque_malloc(sizeof(*iter));
     if( iter ) {
         iter->parent_           = cnd;
         iter->side_direction_   = !direction;
@@ -481,9 +481,9 @@ struct cnt_deque_iterator
         *cnt_deque_iterator_clone(const struct cnt_deque_iterator *src)
 {
     struct cnt_deque_iterator *iter = (struct cnt_deque_iterator *)
-            cnt_deque_malloc(sizeof(struct cnt_deque_iterator));
+            cnt_deque_malloc(sizeof(*iter));
     if( iter ) {
-       cnt_deque_memcpy( iter, src, sizeof(struct cnt_deque_iterator) );
+       cnt_deque_memcpy( iter, src, sizeof(*iter) );
     }
     return iter;
 }

@@ -75,7 +75,7 @@ static size_t mm_block_calc_prefer_size( size_t old_capa, size_t desired_size )
 struct mm_block *mm_block_new_reserved( size_t reserve_size )
 {
     mm_block_data_type *new_block =
-            (mm_block_data_type *)mm_block_malloc(sizeof(mm_block_data_type));
+            (mm_block_data_type *)mm_block_malloc(sizeof(*new_block));
 
     size_t new_size = MM_BLOCK_FIX_SIZE0(reserve_size);
 

@@ -111,7 +111,7 @@ static struct mm_array *pt_new_keys(  )
 struct prefix_tree *prefix_tree_new2( prefix_tree_data_free free_call )
 {
     struct prefix_tree *new_tree =
-            (struct prefix_tree *)malloc(sizeof(struct prefix_tree));
+            (struct prefix_tree *)malloc(sizeof(*new_tree));
     if( new_tree ) {
         if( (new_tree->root_keys_ = pt_new_keys( )) ) {
             new_tree->ktools_     = &s_pt_key_tools[0];

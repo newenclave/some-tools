@@ -156,7 +156,7 @@ static void split0( aa_tree_node_ptr *top )
 struct aa_tree_node *aa_tree_create_node( void *data )
 {
     struct aa_tree_node *new_data = (struct aa_tree_node *)
-            aa_tree_malloc( sizeof(struct aa_tree_node) );
+            aa_tree_malloc( sizeof(*new_data) );
     if( new_data ) {
         new_data->links_[0] = new_data->links_[1] = NULL;
         new_data->data_.ptr_    = data;
@@ -508,7 +508,7 @@ static struct aa_tree_iterator
         *aa_tree_iterator_new_both( const struct aa_tree *aat, int forward)
 {
     struct aa_tree_iterator *new_iter = (struct aa_tree_iterator *)
-                        aa_tree_malloc( sizeof(struct aa_tree_iterator));
+                        aa_tree_malloc( sizeof(*new_iter));
     int res = 0;
     if( new_iter ) {
         new_iter->stack_ =
@@ -578,7 +578,7 @@ struct aa_tree_iterator
         *aa_tree_iterator_clone(const struct aa_tree_iterator *iter)
 {
     struct aa_tree_iterator *new_iter = (struct aa_tree_iterator *)
-            aa_tree_malloc( sizeof(struct aa_tree_iterator));
+            aa_tree_malloc( sizeof(*new_iter) );
     int res = 0;
     if( new_iter ) {
         new_iter->stack_ =
