@@ -110,3 +110,28 @@ size_t b128_pack( size_t number, struct mm_block *container )
     return result;
 }
 
+
+size_t b128_pack_signed_32( int32_t number, void *container, size_t avail )
+{
+    size_t tmp = avail;
+    if( avail ) {
+        uint8_t *data = (uint8_t *)container;
+        uint32_t unumber = (uint32_t)number;
+        uint8_t signbit = ((unumber & (1 << 31)) != 0);
+        uint8_t next = 0;
+        unumber = signbit ? (~unumber + 1) : unumber;
+
+        next = (uint8_t)(unumber & 0x3F) | (signbit << 6);
+
+        unumber >>= 6;
+        *data = next;
+        tmp--;
+        while (unumber && tmp--) {
+            next = (uint8_t)(unumber & 0x7F);
+            next |= (( unumber >>= 7 ) ? 0x80 : 0x00 );
+            *data++ = next;
+            used++;
+        }
+    }
+    return used;
+}

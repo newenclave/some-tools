@@ -130,8 +130,9 @@ void save_to_file( struct mm_block *mem, const char *filename )
 
 int main( )
 {
-    int i = -998;
-
+    int i = 0;
+    char ttt[100];
+    b128_pack_signed_32(i, ttt, 100);
 
     for( i = -10; i<11; ++i ) {
         unsigned di = i;
