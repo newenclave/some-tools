@@ -130,6 +130,15 @@ void save_to_file( struct mm_block *mem, const char *filename )
 
 int main( )
 {
+    int i = -998;
+
+
+    for( i = -10; i<11; ++i ) {
+        unsigned di = i;
+        printf( "%d %d\n", i, ~di);
+    }
+
+    return 0;
 
     struct mm_block *str = mm_block_new( );
     struct mm_block *bytes = mm_block_new( );

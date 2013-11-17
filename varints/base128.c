@@ -109,3 +109,4 @@ size_t b128_pack( size_t number, struct mm_block *container )
     }
     return result;
 }
+
