@@ -11,6 +11,8 @@
 #include "charset/cs-utf8.h"
 #include "memory/mm-hex.h"
 
+#include <atomic.h>
+
 struct prefix_info {
     int inf;
     const char *data;
