@@ -62,6 +62,11 @@ static void *mm_block_memcpy(void *dest, const void *src, size_t n)
     return memcpy( dest, src, n );
 }
 
+static void *mm_block_memmove(void *dest, const void *src, size_t n)
+{
+    return memmove( dest, src, n );
+}
+
 static size_t mm_block_calc_prefer_size( size_t old_capa, size_t desired_size )
 {
     size_t new_capa = MM_BLOCK_FIX_SIZE(MM_BLOCK_DEF_INC(old_capa));
@@ -307,7 +312,7 @@ void *mm_block_create_insertion( struct mm_block *mb,
         }
     } else {
         void *from = MM_BLOCK_AT(mb->data_.ptr_ , position);
-        memmove( MM_BLOCK_AT(from, count), from, mb->used_ - position);
+        mm_block_memmove( MM_BLOCK_AT(from, count), from, mb->used_ - position);
         mb->used_ += count;
         block = from;
     }
@@ -324,7 +329,8 @@ void *mm_block_delete( struct mm_block *mb, size_t position, size_t count )
 {
     void  *tail_begin = MM_BLOCK_AT(mb->data_.ptr_,  position);
     size_t tail_len  = mb->used_ - (position + count);
-    void *res = memmove( tail_begin, MM_BLOCK_AT(tail_begin, count), tail_len );
+    void *res = mm_block_memmove( tail_begin,
+                                  MM_BLOCK_AT(tail_begin, count), tail_len );
     mb->used_ -= count;
     return res;
 }
