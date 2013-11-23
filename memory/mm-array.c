@@ -180,8 +180,8 @@ void mm_array_copy_elements( void *dst, void *src,
     if( dst && copy_call ) {
         while ( count-- ) {
             copy_call( dst, src, element_size );
-            dst = MM_ELEMENT_SHIFT( dst, element_size, 1 );
-            src = MM_ELEMENT_SHIFT( src, element_size, 1 );
+            dst = MM_ELEMENT_NEXT( dst, element_size );
+            src = MM_ELEMENT_NEXT( src, element_size );
         }
     }
 }
@@ -247,7 +247,7 @@ int mm_array_resize2( struct mm_array *mar, size_t new_count,
     if( new_count < count ) {
         mm_array_free_interval( mar, new_count, count - new_count, free_call );
     }
-    res = mm_block_resize2( mar->mmblock_, MM_ELEMENTS_SIZE(mar, new_count), 0);
+    res = mm_block_resize( mar->mmblock_, MM_ELEMENTS_SIZE(mar, new_count));
     return res;
 }
 

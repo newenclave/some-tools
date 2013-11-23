@@ -72,9 +72,8 @@ static size_t mm_block_calc_prefer_size( size_t old_capa, size_t desired_size )
     size_t new_capa = MM_BLOCK_FIX_SIZE(MM_BLOCK_DEF_INC(old_capa));
     desired_size = MM_BLOCK_FIX_SIZE(desired_size);
 
-    if( new_capa > desired_size ) desired_size = new_capa;
+    return ( new_capa > desired_size ) ? new_capa : desired_size;
 
-    return desired_size;
 }
 
 struct mm_block *mm_block_new_reserved( size_t reserve_size )
@@ -140,18 +139,20 @@ void mm_block_free(mm_block_data_type *mb)
 
 int mm_block_reserve(struct mm_block *mb, size_t new_size)
 {
-    if( new_size <= mb->capacity_ ) return 1;
+    char *new_data = mb->data_.ptr_;
 
-    new_size = mm_block_calc_prefer_size( mb->capacity_, new_size );
+    if( new_size > mb->capacity_ ) {
 
-    char *new_data = (char *)mm_block_realloc(mb->data_.ptr_, new_size);
-    if( NULL == new_data ) {
-        return 0;
-    } else {
-        mb->data_.ptr_     = new_data;
-        mb->capacity_ = new_size;
+        new_size = mm_block_calc_prefer_size( mb->capacity_, new_size );
+        new_data = (char *)mm_block_realloc( new_data, new_size );
+
+        if( new_data ) {
+            mb->data_.ptr_ = new_data;
+            mb->capacity_  = new_size;
+        }
     }
-    return 1;
+
+    return (new_data != NULL);
 }
 
 int mm_block_resize(struct mm_block *mb, size_t new_size)
