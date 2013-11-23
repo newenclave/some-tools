@@ -172,7 +172,7 @@ int mm_block_resize2(struct mm_block *mb, size_t new_size, int c)
 
     if( result && (old_used < new_size) )
         mm_block_memset(MM_BLOCK_AT(mb->data_.ptr_, old_used),
-                                        c, new_size-old_used);
+                                        c, new_size - old_used);
 
     return result;
 }
