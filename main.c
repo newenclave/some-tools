@@ -53,7 +53,7 @@ static const char * cs_stop            = "\x1b[0m";
 
 void fill_table( struct prefix_tree *trie )
 {
-    prefix_tree_insert_string( trie, "black", info(cp_black) );
+    prefix_tree_insert_string( trie, "%black%", info(cp_black) );
     prefix_tree_insert_string( trie, "черный", info(cp_black ) );
     prefix_tree_insert_string( trie, "чёрный", info(cp_black ) );
     prefix_tree_insert_string( trie, "musta", info(cp_black ) );
@@ -63,7 +63,7 @@ void fill_table( struct prefix_tree *trie )
     prefix_tree_insert_string( trie, "красный", info(cp_red ) );
     prefix_tree_insert_string( trie, "puna", info(cp_red ) );
 
-    prefix_tree_insert_string( trie, "wings", info(cp_green ) );
+    prefix_tree_insert_string( trie, "%wings%", info(cp_green ) );
     prefix_tree_insert_string( trie, "green", info(cp_green ) );
     prefix_tree_insert_string( trie, "зелёный", info(cp_green ) );
     prefix_tree_insert_string( trie, "зеленый", info(cp_green ) );
@@ -139,7 +139,7 @@ int main( )
         printf( "%d %d\n", i, ~di);
     }
 
-    return 0;
+    //return 0;
 
     struct mm_block *str = mm_block_new( );
     struct mm_block *bytes = mm_block_new( );
@@ -200,7 +200,7 @@ int main( )
 
     size_t c = 0;
 
-    const char *data = "black\nyellow\tred wings\nred-one\nvioletti\norange";
+    const char *data = "black\nyellow\tred %wings%\nred-one\nvioletti\norange";
     size_t tmp_len = strlen(data);
 
     for( c=0; c<1; ++c ) {
