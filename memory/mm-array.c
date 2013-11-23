@@ -32,7 +32,7 @@ struct mm_array *mm_array_new_reserved2( size_t element_size, size_t count,
                                          mm_array_element_free free_call)
 {
     struct mm_array *new_data =
-        (struct mm_array *)malloc(sizeof( *new_data ) );
+        (struct mm_array *)malloc( sizeof *new_data );
 
     if( new_data ) {
         new_data->mmblock_ = mm_block_new_reserved( count * element_size );

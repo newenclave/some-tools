@@ -73,7 +73,6 @@ static size_t mm_block_calc_prefer_size( size_t old_capa, size_t desired_size )
     desired_size = MM_BLOCK_FIX_SIZE(desired_size);
 
     return ( new_capa > desired_size ) ? new_capa : desired_size;
-
 }
 
 struct mm_block *mm_block_new_reserved( size_t reserve_size )
