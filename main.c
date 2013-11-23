@@ -53,7 +53,7 @@ static const char * cs_stop            = "\x1b[0m";
 
 void fill_table( struct prefix_tree *trie )
 {
-    prefix_tree_insert_string( trie, "%black%", info(cp_black) );
+    prefix_tree_insert_string( trie, "black", info(cp_black) );
     prefix_tree_insert_string( trie, "черный", info(cp_black ) );
     prefix_tree_insert_string( trie, "чёрный", info(cp_black ) );
     prefix_tree_insert_string( trie, "musta", info(cp_black ) );
@@ -171,13 +171,13 @@ int main( )
         aa_tree_insert( aat, (void *)it );
 
     struct aa_tree_iterator *iter = aa_tree_iterator_new( aat );
-    struct aa_tree_iterator *iter2;
+    struct aa_tree_iterator *iter2 = NULL;
     while( !aa_tree_iterator_end( iter ) ) {
         size_t ig = (size_t)aa_tree_iterator_get( iter );
         printf( "iter next %lu\n", ig );
-        aa_tree_iterator_next( iter );
         if( ig == 50 )
             iter2 = aa_tree_iterator_clone( iter );
+        aa_tree_iterator_next( iter );
     }
     printf( "========\n" );
     while( !aa_tree_iterator_end( iter2 ) ) {
