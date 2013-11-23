@@ -83,17 +83,18 @@ struct mm_block *mm_block_new_reserved( size_t reserve_size )
 
     size_t new_size = MM_BLOCK_FIX_SIZE0(reserve_size);
 
-    new_block->data_.ptr_ = NULL;
-    if( new_size ) {
+    if( new_block ) {
+
         new_block->data_.ptr_ = (char *)mm_block_malloc(new_size);
-        if( NULL == new_block->data_.ptr_ ) {
+
+        if( new_block->data_.ptr_ ) {
+            new_block->capacity_ = new_size;
+            new_block->used_     = 0;
+        } else {
             mm_block_free_ptr(new_block);
-            return NULL;
+            new_block = NULL;
         }
     }
-
-    new_block->capacity_ = new_size;
-    new_block->used_     = 0;
 
     return new_block;
 }
