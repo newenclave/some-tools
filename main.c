@@ -130,6 +130,7 @@ void save_to_file( struct mm_block *mem, const char *filename )
 
 int main( )
 {
+
     int i = 0;
     char ttt[100];
     b128_pack_signed_32(i, ttt, 100);
