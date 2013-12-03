@@ -1,4 +1,3 @@
-
 project(test-cmake)
 
 cmake_minimum_required(VERSION 2.8.8)
@@ -26,15 +25,16 @@ foreach(next_proto ${protofiles})
     GET_FILENAME_COMPONENT(out_FILE ${next_proto} NAME_WE)
     GET_FILENAME_COMPONENT(in_PATH  ${next_proto} PATH)
 
-    set( OUTPUT_HEADER_NAME ${GENERATED_FILES_OUTPUT}/${out_FILE}.pb.h )
-    set( OUTPUT_SOURCE_NAME ${GENERATED_FILES_OUTPUT}/${out_FILE}.pb.cc )
+    set( OUTPUT_FILES 
+                ${GENERATED_FILES_OUTPUT}/${out_FILE}.pb.h 
+                ${GENERATED_FILES_OUTPUT}/${out_FILE}.pb.cc 
+       )
 
     add_custom_command(
         OUTPUT 
-                ${OUTPUT_HEADER_NAME} 
-                ${OUTPUT_SOURCE_NAME}
+                ${OUTPUT_FILES}
         COMMAND 
-                 ${PROTOBUF_PROTOC_EXECUTABLE} 
+                ${PROTOBUF_PROTOC_EXECUTABLE} 
                         --proto_path=${PROTOBUF_INCLUDE_DIRS}
                         --proto_path=${POTOBUF_IMPORT_DIRS}
                         --proto_path=${in_PATH}
@@ -47,13 +47,13 @@ foreach(next_proto ${protofiles})
         )
 
     set_source_files_properties(
-        ${OUTPUT_HEADER_NAME} ${OUTPUT_SOURCE_NAME}
+        ${OUTPUT_FILES} 
         PROPERTIES
         GENERATED TRUE
     )
 
-    list(APPEND src_list ${OUTPUT_HEADER_NAME} ${OUTPUT_SOURCE_NAME} )
-    list(APPEND src_list ${next_proto})
+    list( APPEND src_list ${OUTPUT_FILES})
+    list( APPEND src_list ${next_proto})
 
 endforeach()
 
