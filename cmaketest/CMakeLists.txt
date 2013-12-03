@@ -22,8 +22,8 @@ file(MAKE_DIRECTORY ${GENERATED_FILES_OUTPUT})
 foreach(next_proto ${protofiles})
 
 
-    GET_FILENAME_COMPONENT(out_FILE ${next_proto} NAME_WE)
-    GET_FILENAME_COMPONENT(in_PATH  ${next_proto} PATH)
+    get_filename_component(out_FILE ${next_proto} NAME_WE)
+    get_filename_component(in_PATH  ${next_proto} PATH)
 
     set( OUTPUT_FILES 
                 ${GENERATED_FILES_OUTPUT}/${out_FILE}.pb.h 
@@ -58,7 +58,7 @@ foreach(next_proto ${protofiles})
 endforeach()
 
 list(APPEND src_list test.cpp)
-include_directories( test-cmake ${Boost_INCLUDE_DIRS} ${GENERATED_FILES_OUTPUT} )
+include_directories( test-cmake ${Boost_INCLUDE_DIRS} ${GENERATED_FILES_OUTPUT})
 add_executable( test-cmake ${src_list} )
 
 target_link_libraries(test-cmake ${PROTOBUF_LIBRARIES} ${Boost_LIBRARIES})
