@@ -27,34 +27,34 @@ foreach(next_proto ${protofiles})
     GET_FILENAME_COMPONENT(in_PATH  ${next_proto} PATH)
 
     set( OUTPUT_HEADER_NAME ${GENERATED_FILES_OUTPUT}/${out_FILE}.pb.h )
-    set( OUTPUT_SOURCE_NAME ${GENERATED_FILES_OUTPUT}/${out_FILE}.pb.cc )	
+    set( OUTPUT_SOURCE_NAME ${GENERATED_FILES_OUTPUT}/${out_FILE}.pb.cc )
 
     add_custom_command(
-	OUTPUT 
-		${OUTPUT_HEADER_NAME} 
-		${OUTPUT_SOURCE_NAME}
+        OUTPUT 
+                ${OUTPUT_HEADER_NAME} 
+                ${OUTPUT_SOURCE_NAME}
         COMMAND 
-		${PROTOBUF_PROTOC_EXECUTABLE} 
-			--proto_path=${PROTOBUF_INCLUDE_DIRS}
-			--proto_path=${POTOBUF_IMPORT_DIRS}
-                	--proto_path=${in_PATH}
-                	--cpp_out=${GENERATED_FILES_OUTPUT}
-                	${CMAKE_CURRENT_SOURCE_DIR}/${out_FILE}.proto
+                 ${PROTOBUF_PROTOC_EXECUTABLE} 
+                        --proto_path=${PROTOBUF_INCLUDE_DIRS}
+                        --proto_path=${POTOBUF_IMPORT_DIRS}
+                        --proto_path=${in_PATH}
+                        --cpp_out=${GENERATED_FILES_OUTPUT}
+                        ${CMAKE_CURRENT_SOURCE_DIR}/${out_FILE}.proto
         DEPENDS
-		${CMAKE_CURRENT_SOURCE_DIR}/${out_FILE}.proto
+                ${CMAKE_CURRENT_SOURCE_DIR}/${out_FILE}.proto
         WORKING_DIRECTORY 
-		${GENERATED_FILES_OUTPUT}
+                ${GENERATED_FILES_OUTPUT}
         )
-    
+
     set_source_files_properties(
-	${OUTPUT_HEADER_NAME} ${OUTPUT_SOURCE_NAME}
+        ${OUTPUT_HEADER_NAME} ${OUTPUT_SOURCE_NAME}
         PROPERTIES
         GENERATED TRUE
     )
 
     list(APPEND src_list ${OUTPUT_HEADER_NAME} ${OUTPUT_SOURCE_NAME} )
     list(APPEND src_list ${next_proto})
-    
+
 endforeach()
 
 list(APPEND src_list test.cpp)
