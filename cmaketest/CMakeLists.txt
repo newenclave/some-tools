@@ -31,19 +31,19 @@ foreach(next_proto ${protofiles})
        )
 
     add_custom_command(
-        OUTPUT 
-                ${OUTPUT_FILES}
         COMMAND 
                 ${PROTOBUF_PROTOC_EXECUTABLE} 
                         --proto_path=${PROTOBUF_INCLUDE_DIRS}
                         --proto_path=${POTOBUF_IMPORT_DIRS}
                         --proto_path=${in_PATH}
                         --cpp_out=${GENERATED_FILES_OUTPUT}
-                        ${CMAKE_CURRENT_SOURCE_DIR}/${out_FILE}.proto
-        DEPENDS
-                ${CMAKE_CURRENT_SOURCE_DIR}/${out_FILE}.proto
-        WORKING_DIRECTORY 
+                        ${next_proto}
+        WORKING_DIRECTORY
                 ${GENERATED_FILES_OUTPUT}
+        OUTPUT
+                ${OUTPUT_FILES}
+        DEPENDS
+                ${next_proto}
         )
 
     set_source_files_properties(
