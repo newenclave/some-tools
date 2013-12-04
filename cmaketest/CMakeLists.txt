@@ -63,3 +63,6 @@ add_executable( test-cmake ${src_list} )
 
 target_link_libraries(test-cmake ${PROTOBUF_LIBRARIES} ${Boost_LIBRARIES})
 
+#c:\test-cmake\build>cmake -G "Visual Studio 9 2008"  -DBOOST_INCLUDEDIR="C:\SDK\boost\Boost_1.53\include" -DBOOST_LIBRARYDIR="C:\SDK\boost\Boost_1.53\lib
+#" -DPROTOBUF_INCLUDE_DIR="C:\SDK\ProtoBuf\ProtoBuf_2.4.1\include" -DPROTOBUF_LIBRARY="C:\SDK\ProtoBuf\libprotobuf-mt.lib" -DPROTOBUF_PROTOC_EXECUTABLE="C:\SDK\Prot
+#oBuf\ProtoBuf_2.4.1\bin\protoc.exe" ../
