@@ -1,3 +1,6 @@
+
+set(CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_CURRENT_SOURCE_DIR}/flags_override.cmake")
+
 project(test-cmake)
 
 cmake_minimum_required(VERSION 2.8.8)
