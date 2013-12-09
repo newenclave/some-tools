@@ -40,7 +40,8 @@ int b128_unpack( const struct mm_block *container, size_t *result )
                         mm_block_size (container), result);
 }
 
-size_t b128_pack_shift( size_t number, void **container, size_t *available )
+/*
+size_t b128_pack_shift0( size_t number, void **container, size_t *available )
 {
     size_t result        = 0;
     unsigned char *data  = (unsigned char *)*container;
@@ -67,10 +68,34 @@ size_t b128_pack_shift( size_t number, void **container, size_t *available )
     }
     return result;
 }
+*/
 
-size_t b128_pack2( size_t number, void *container, size_t avail )
+size_t b128_pack2( size_t number, void *container, size_t available )
 {
-    return b128_pack_shift(number, &container, &avail);
+    const size_t old_avail = available;
+    unsigned char *data = (unsigned char *)container;
+
+    for( ;number > 0x7F && available; number >>= 7 ) {
+        *data++ = ((unsigned char)(number & 0x7F) | 0x80);
+        available--;
+    }
+    if( available ) {
+        *data++ = (unsigned char)(number);
+        available--;
+    } else {
+        return 0;
+    }
+    return old_avail - available;
+}
+
+size_t b128_pack_shift( size_t number, void **container, size_t *available )
+{
+    size_t res = b128_pack2( number, *container, *available );
+    if( res ) {
+        *container += res;
+        *available -= res;
+    }
+    return res;
 }
 
 size_t b128_pack_append( size_t number, struct mm_block *container )
