@@ -467,5 +467,6 @@ void mm_array_reduce_from ( struct mm_array *mar, size_t position )
 
 int mm_array_extend( struct mm_array *mar, size_t count )
 {
-    return mm_block_extend( mar->mmblock_, MM_ELEMENTS_SIZE( mar, count ) );
+    return mm_array_resize( mar, mm_array_size( mar ) + count );
+    //return mm_block_extend( mar->mmblock_, MM_ELEMENTS_SIZE( mar, count ) );
 }

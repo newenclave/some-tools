@@ -141,6 +141,7 @@ int int_cmp(  const void *l, const void *r, size_t size )
 {
     (void)(size);
     return *(int *)l - *(int *)r;
+    //return *(int *)l < *(int *)r ? -1 : *(int *)r < *(int *)l;
 }
 
 int main( )
@@ -153,14 +154,19 @@ int main( )
     cnt_heap_set_copy( heap, int_copy );
 
     int i = 0;
-    for( i=0; i<300; ++i ) {
-        int next = rand( ) % 10;
+    for( i=0; i<3000; ++i ) {
+        int next = rand( ) % 10000;
         cnt_heap_push( heap, &next );
         //cnt_heap_dump( heap );
     }
 
+    int last = 0;
     while( cnt_heap_size( heap ) > 0 ) {
         int *next = (int *)cnt_heap_front( heap );
+        if( *next < last ) {
+            printf( "\nerror at: %u\n", last );
+        }
+        last = *next;
         printf( "%u ", *next );
         cnt_heap_pop( heap );
         //cnt_heap_dump( heap );
