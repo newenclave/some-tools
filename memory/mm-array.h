@@ -14,8 +14,8 @@ typedef int   (* mm_array_compare)( const void *lelem, const void *relem,
 struct mm_array;
 
 struct mm_array *mm_array_new( size_t element_size );
-struct mm_array *mm_array_new2( size_t count, size_t element_size );
-struct mm_array *mm_array_new3( size_t count, size_t element_size,
+struct mm_array *mm_array_new2( size_t element_size, size_t count );
+struct mm_array *mm_array_new3( size_t element_size, size_t count,
                                      mm_array_element_free free_call);
 
 struct mm_array *mm_array_new_reserved( size_t element_size, size_t count );

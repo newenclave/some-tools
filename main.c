@@ -10,6 +10,7 @@
 #include "varints/base128.h"
 #include "charset/cs-utf8.h"
 #include "memory/mm-hex.h"
+#include "containers/cnt-heap.h"
 
 struct prefix_info {
     int inf;
@@ -128,19 +129,33 @@ void save_to_file( struct mm_block *mem, const char *filename )
     }
 }
 
+void * int_copy( void *l, const void *r, size_t size )
+{
+    (void)(size);
+    *(int *)l = *(int *)r;
+    return l;
+}
+
 int main( )
 {
 
-    int i = 0;
-    char ttt[100];
-    b128_pack_signed_32(i, ttt, 100);
+    srand( time( NULL ) );
 
-    for( i = -10; i<11; ++i ) {
-        unsigned di = i;
-        printf( "%d %d\n", i, ~di);
+    struct cnt_heap *heap = cnt_heap_new( sizeof( int ) );
+
+    cnt_heap_set_copy( heap, int_copy );
+
+    int i = 0;
+    for( i=0; i<2; ++i ) {
+        int next = rand( ) % 100;
+        cnt_heap_insert( heap, &next );
     }
 
-    //return 0;
+    printf( "Heap len is: %d\n", cnt_heap_size( heap ) );
+
+    cnt_heap_free( heap );
+
+    return 0;
 
     struct mm_block *str = mm_block_new( );
     struct mm_block *bytes = mm_block_new( );

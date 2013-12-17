@@ -20,6 +20,8 @@ struct cnt_heap *cnt_heap_new3 ( size_t element_size,
 
 void cnt_heap_set_free ( struct cnt_heap *heap,
                                     cnt_heap_element_free free_call );
+void cnt_heap_set_copy ( struct cnt_heap *heap,
+                                    cnt_heap_element_copy copy_call );
 
 int cnt_heap_insert ( struct cnt_heap *heap, const void *element );
 
