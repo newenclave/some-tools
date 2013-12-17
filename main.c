@@ -133,6 +133,7 @@ void * int_copy( void *l, const void *r, size_t size )
 {
     (void)(size);
     *(int *)l = *(int *)r;
+    //printf( "Copy %d\n",  *(int *)r );
     return l;
 }
 
@@ -146,12 +147,22 @@ int main( )
     cnt_heap_set_copy( heap, int_copy );
 
     int i = 0;
-    for( i=0; i<2; ++i ) {
+    for( i=0; i<20; ++i ) {
         int next = rand( ) % 100;
-        cnt_heap_insert( heap, &next );
+        cnt_heap_push( heap, &next );
+        //cnt_heap_dump( heap );
     }
 
-    printf( "Heap len is: %d\n", cnt_heap_size( heap ) );
+    cnt_heap_dump( heap );
+
+    while( cnt_heap_size( heap ) > 0 ) {
+        int *next = (int *)cnt_heap_front( heap );
+        printf( "%d ", *next );
+        cnt_heap_pop( heap );
+        //cnt_heap_dump( heap );
+    }
+
+    printf( "\nHeap len is: %d\n", cnt_heap_size( heap ) );
 
     cnt_heap_free( heap );
 

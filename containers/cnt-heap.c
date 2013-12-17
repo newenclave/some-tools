@@ -9,6 +9,7 @@ struct cnt_heap
     struct mm_array          *container_;
     cnt_heap_element_compare  compare_;
     cnt_heap_element_copy     copy_;
+    cnt_heap_element_free     free_;
 };
 
 static void *cnt_heap_alloc( size_t size )
@@ -40,10 +41,11 @@ struct cnt_heap *cnt_heap_new3 ( size_t element_size,
     struct cnt_heap *new_heap =
             (struct cnt_heap *)cnt_heap_alloc(sizeof(*new_heap));
     if( new_heap ) {
-        new_heap->container_ = mm_array_new3( element_size, 1, free_call );
+        new_heap->container_ = mm_array_new2( element_size, 1 );
         if( new_heap->container_ ) {
             new_heap->compare_ = compare;
             new_heap->copy_    = cnt_heap_default_copy;
+            new_heap->free_    = free_call;
         } else {
             cnt_heap_memfree(new_heap);
             new_heap = 0;
@@ -68,7 +70,7 @@ struct cnt_heap *cnt_heap_new ( size_t element_size )
 
 void cnt_heap_set_free ( struct cnt_heap *heap, cnt_heap_element_free free_call)
 {
-    mm_array_set_free( heap->container_, free_call );
+    heap->free_ = free_call;
 }
 
 void cnt_heap_set_copy ( struct cnt_heap *heap,
@@ -92,10 +94,92 @@ static void swap_elements( void *l, void *r, void *tmp, size_t size,
     copy_call( r, tmp, size );
 }
 
+//void siftdown( std::vector<int> &heap )
+//{
+//    const size_t heap_size = heap.size( );
+//    size_t next = 1;
+//    while( (next << 1) <= heap_size ) {
+//        size_t minimum = (next << 1) - 1;
+//        if( minimum + 1 < heap_size ) {
+//            minimum = heap[minimum] < heap[minimum+1]
+//                      ? minimum : minimum + 1;
+//        }
+//        if( heap[minimum] < heap[next-1] )
+//            std::swap( heap[next-1], heap[minimum] );
+//        else
+//            break;
+//        next = minimum+1;
+//    }
+//}
+
 static void sift_down( struct cnt_heap *heap, size_t heap_size )
 {
+    struct mm_array *arr = heap->container_;
+    const size_t element_size = mm_array_element_size(arr);
 
+    size_t next     = 1;
+    size_t children = next << 1;
+
+    void *tmp_store = mm_array_at( arr, heap_size );
+
+    while( children <= heap_size ) {
+        size_t minimum = children - 1;
+        if( children < heap_size ) {
+            const int cmp_children =
+                    heap->compare_( mm_array_at( arr, minimum + 1 ),
+                                    mm_array_at( arr, minimum ),
+                                    element_size);
+            if( cmp_children < 0) minimum++;
+        }
+
+        void *src_elem = mm_array_at( arr, next-1  );
+        void *min_elem = mm_array_at( arr, minimum );
+
+        const int cmp = heap->compare_( min_elem, src_elem, element_size);
+        if( cmp < 0 ) {
+            swap_elements( src_elem, min_elem, tmp_store,
+                                        element_size, heap->copy_ );
+            next = minimum + 1;
+            children = next << 1;
+        } else {
+            children = heap_size + 1; // break;
+        }
+    }
 }
+
+void cnt_heap_pop ( struct cnt_heap *heap )
+{
+    const size_t element_size = mm_array_element_size( heap->container_ );
+    const size_t arr_size = mm_array_size( heap->container_ ) - 1;
+    void *first = mm_array_begin( heap->container_ );
+
+    if( heap->free_ )
+        heap->free_( first );
+
+    if( arr_size > 1 ) {
+        heap->copy_( first,
+                 mm_array_at(heap->container_, arr_size-1), element_size);
+
+        sift_down( heap, arr_size - 1 );
+    }
+
+    mm_array_reduce( heap->container_, 1 );
+}
+
+
+//void siftup( std::vector<int> &heap )
+//{
+//    size_t heap_size = heap.size( );
+//    while( heap_size >> 1 ) {
+//        const size_t parent = (heap_size >> 1);
+//        if( heap[heap_size - 1] < heap[parent - 1] ) {
+//            std::swap( heap[heap_size - 1], heap[parent - 1] );
+//            heap_size = parent;
+//        } else {
+//            break;
+//        }
+//    }
+//}
 
 static void sift_up( struct cnt_heap *heap, size_t heap_size )
 {
@@ -103,13 +187,18 @@ static void sift_up( struct cnt_heap *heap, size_t heap_size )
     void *tmp_store = mm_array_at( heap->container_, heap_size );
 
     size_t parent_index = (heap_size >> 1);
+
     while( parent_index ) {
+
         void *current = mm_array_at( heap->container_, heap_size - 1 );
         void *parent  = mm_array_at( heap->container_, parent_index - 1 );
-        const int cmp_res   = heap->compare_( current, parent, element_size );
+
+        const int cmp_res = heap->compare_( current, parent, element_size );
+
         if( cmp_res < 0 ) {
             swap_elements( current, parent, tmp_store,
                            element_size, heap->copy_ );
+            heap_size = parent_index;
             parent_index >>= 1;
         } else {
             parent_index = 0; // break
@@ -117,7 +206,7 @@ static void sift_up( struct cnt_heap *heap, size_t heap_size )
     }
 }
 
-int cnt_heap_insert ( struct cnt_heap *heap, const void *element )
+int cnt_heap_push ( struct cnt_heap *heap, const void *element )
 {
     const size_t element_size = mm_array_element_size( heap->container_ );
     const size_t arr_size = mm_array_size( heap->container_ );
@@ -128,6 +217,16 @@ int cnt_heap_insert ( struct cnt_heap *heap, const void *element )
         sift_up( heap, arr_size );
     }
     return res;
+}
+
+void *cnt_heap_front( struct cnt_heap *heap )
+{
+    return mm_array_begin( heap->container_ );
+}
+
+const void *cnt_heap_const_front( const struct cnt_heap *heap )
+{
+    return mm_array_const_begin( heap->container_ );
 }
 
 // =============
@@ -141,7 +240,14 @@ void cnt_heap_free2 ( struct cnt_heap *heap, cnt_heap_element_free free_call )
 
 void cnt_heap_free ( struct cnt_heap *heap )
 {
-    mm_array_reduce2(  heap->container_, 1, NULL );
-    mm_array_free( heap->container_ );
-    cnt_heap_memfree( heap );
+    cnt_heap_free2( heap, heap->free_ );
+}
+
+void cnt_heap_dump( struct cnt_heap *heap )
+{
+    size_t i;
+    for( i=0; i<cnt_heap_size( heap ); ++i ) {
+        printf( "%d ", *(int *)mm_array_at( heap->container_, i ) );
+    }
+    printf( "\n");
 }
