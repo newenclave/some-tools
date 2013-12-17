@@ -323,7 +323,8 @@ static int mm_array_bin_bound( const struct mm_array *mar,
 
         middle = left + ((right - left) >> 1);
 
-        cmp = cmp_call( element, mm_array_const_at( mar, middle ) );
+        cmp = cmp_call( element, mm_array_const_at( mar, middle ),
+                                                    mar->element_size_ );
 
         if( cmp != 0 ) {
             if( cmp < 0 ) {
@@ -352,7 +353,8 @@ size_t mm_array_bin_lower_bound( const struct mm_array *mar,
 
         middle = left + ((right - left) >> 1);
 
-        cmp = cmp_call( element, mm_array_const_at( mar, middle ) );
+        cmp = cmp_call( element, mm_array_const_at( mar, middle ),
+                                                    mar->element_size_ );
 
         if( cmp <= 0 ) {
             right =   middle;
@@ -376,7 +378,8 @@ size_t mm_array_bin_upper_bound( const struct mm_array *mar,
 
         middle = left + ((right - left) >> 1);
 
-        cmp = cmp_call( element, mm_array_const_at( mar, middle ) );
+        cmp = cmp_call( element, mm_array_const_at( mar, middle ),
+                                                        mar->element_size_ );
 
         if( cmp < 0 ) {
             right =   middle;

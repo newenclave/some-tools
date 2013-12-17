@@ -18,7 +18,8 @@ struct pt_key_info {
     struct mm_array    *next_keys_;
 };
 
-typedef int    (*pt_key_comparator)( const void *lptr, const void *rptr);
+typedef int    (*pt_key_comparator)( const void *lptr, const void *rptr,
+                                     size_t element_size );
 typedef size_t (*pt_key_length)( const void *key );
 typedef void   (*pt_key_setter)( struct pt_key_info *e, const void *k);
 
@@ -29,7 +30,8 @@ struct pt_key_tools_type {
     pt_key_length      len_;
 };
 
-static int pt_key_compare_8( const void *lptr, const void *rptr);
+static int pt_key_compare_8( const void *lptr, const void *rptr,
+                                                    size_t element_size);
 static void pt_key_set_8( struct pt_key_info *e, const void *k );
 static size_t pt_key_lenght_8( const void *k );
 
@@ -43,8 +45,10 @@ struct prefix_tree {
     const struct pt_key_tools_type  *ktools_;
 };
 
-static int pt_key_compare_8( const void *lptr, const void *rptr)
+static int pt_key_compare_8( const void *lptr, const void *rptr,
+                                                        size_t element_size)
 {
+    (void)(element_size);
     const struct pt_key_info *l = (const struct pt_key_info *)lptr;
     const struct pt_key_info *r = (const struct pt_key_info *)rptr;
 
