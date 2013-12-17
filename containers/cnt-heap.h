@@ -11,10 +11,9 @@ typedef void  (* cnt_heap_element_free ) ( void *element );
 typedef void *(* cnt_heap_element_copy)  ( void *dst, const void *src,
                                                           size_t element_size );
 
-struct cnt_heap *cnt_heap_new  ( size_t element_size );
-struct cnt_heap *cnt_heap_new2 ( size_t element_size,
+struct cnt_heap *cnt_heap_new  ( size_t element_size,
                                  cnt_heap_element_compare compare );
-struct cnt_heap *cnt_heap_new3 ( size_t element_size,
+struct cnt_heap *cnt_heap_new2 ( size_t element_size,
                                  cnt_heap_element_compare compare,
                                  cnt_heap_element_free free_call );
 
@@ -34,7 +33,5 @@ size_t cnt_heap_size ( const struct cnt_heap *heap );
 
 void cnt_heap_free  ( struct cnt_heap *heap );
 void cnt_heap_free2 ( struct cnt_heap *heap, cnt_heap_element_free free_call );
-
-void cnt_heap_dump( struct cnt_heap *heap );
 
 #endif // CNTHEAP_20131217_H

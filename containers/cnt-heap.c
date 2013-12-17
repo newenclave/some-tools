@@ -28,13 +28,7 @@ static void *cnt_heap_default_copy( void *dst, const void *src,
     return memcpy( dst, src, element_size );
 }
 
-static int cnt_heap_default_comparator( const void *l, const void *r,
-                                                           size_t element_size )
-{
-    return memcmp( l, r, element_size );
-}
-
-struct cnt_heap *cnt_heap_new3 ( size_t element_size,
+struct cnt_heap *cnt_heap_new2 ( size_t element_size,
                                  cnt_heap_element_compare compare,
                                  cnt_heap_element_free free_call )
 {
@@ -55,17 +49,10 @@ struct cnt_heap *cnt_heap_new3 ( size_t element_size,
 }
 
 
-struct cnt_heap *cnt_heap_new2 ( size_t element_size,
+struct cnt_heap *cnt_heap_new ( size_t element_size,
                                  cnt_heap_element_compare compare )
 {
-    return cnt_heap_new3(element_size, compare, NULL);
-}
-
-
-struct cnt_heap *cnt_heap_new ( size_t element_size )
-{
-    return cnt_heap_new3(element_size,
-                         cnt_heap_default_comparator, NULL);
+    return cnt_heap_new2(element_size, compare, NULL);
 }
 
 void cnt_heap_set_free ( struct cnt_heap *heap, cnt_heap_element_free free_call)
@@ -210,7 +197,8 @@ int cnt_heap_push ( struct cnt_heap *heap, const void *element )
 {
     const size_t element_size = mm_array_element_size( heap->container_ );
     const size_t arr_size = mm_array_size( heap->container_ );
-    int res = mm_array_resize( heap->container_,  arr_size + 1 );
+    int res = mm_array_extend( heap->container_, 1 );
+
     if( res ) {
         heap->copy_( mm_array_at( heap->container_, arr_size - 1 ),
                                                        element, element_size );
@@ -243,11 +231,3 @@ void cnt_heap_free ( struct cnt_heap *heap )
     cnt_heap_free2( heap, heap->free_ );
 }
 
-void cnt_heap_dump( struct cnt_heap *heap )
-{
-    size_t i;
-    for( i=0; i<cnt_heap_size( heap ); ++i ) {
-        printf( "%d ", *(int *)mm_array_at( heap->container_, i ) );
-    }
-    printf( "\n");
-}

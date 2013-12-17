@@ -137,25 +137,31 @@ void * int_copy( void *l, const void *r, size_t size )
     return l;
 }
 
+int int_cmp(  const void *l, const void *r, size_t size )
+{
+    (void)(size);
+    return *(int *)l - *(int *)r;
+}
+
 int main( )
 {
 
     srand( time( NULL ) );
 
-    struct cnt_heap *heap = cnt_heap_new( sizeof( int ) );
+    struct cnt_heap *heap = cnt_heap_new( sizeof( int ), int_cmp );
 
     cnt_heap_set_copy( heap, int_copy );
 
     int i = 0;
-    for( i=0; i<200; ++i ) {
-        int next = rand( ) % 100;
+    for( i=0; i<300; ++i ) {
+        int next = rand( ) % 1000;
         cnt_heap_push( heap, &next );
         //cnt_heap_dump( heap );
     }
 
     while( cnt_heap_size( heap ) > 0 ) {
         int *next = (int *)cnt_heap_front( heap );
-        printf( "%d ", *next );
+        printf( "%u ", *next );
         cnt_heap_pop( heap );
         //cnt_heap_dump( heap );
     }
