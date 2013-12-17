@@ -154,13 +154,13 @@ void cnt_heap_pop ( struct cnt_heap *heap )
 }
 
 
-//void siftup( std::vector<int> &heap )
+//siftup( array heap )
 //{
-//    size_t heap_size = heap.size( );
-//    while( heap_size >> 1 ) {
-//        const size_t parent = (heap_size >> 1);
+//    heap_size = len(heap);
+//    while( heap_size * 2 ) {
+//        parent = (heap_size * 2);
 //        if( heap[heap_size - 1] < heap[parent - 1] ) {
-//            std::swap( heap[heap_size - 1], heap[parent - 1] );
+//            swap( heap[heap_size - 1], heap[parent - 1] );
 //            heap_size = parent;
 //        } else {
 //            break;
