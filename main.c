@@ -154,11 +154,16 @@ int main( )
     cnt_heap_set_copy( heap, int_copy );
 
     int i = 0;
-    for( i=0; i<30000; ++i ) {
+    for( i=0; i<300; ++i ) {
         int next = rand( ) % 1000;
+        cnt_heap_push( heap, &i );
         cnt_heap_push( heap, &next );
+        cnt_heap_push( heap, &i );
+
         //cnt_heap_dump( heap );
     }
+
+    printf( "\nHeap len is: %d\n", cnt_heap_size( heap ) );
 
     int last = 0;
     while( cnt_heap_size( heap ) > 0 ) {
