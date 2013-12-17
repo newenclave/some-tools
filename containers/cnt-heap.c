@@ -85,8 +85,8 @@ static void swap_elements( void *l, void *r, void *tmp, size_t size,
 //{
 //    heap_size = len(heap);
 //    next = 1;
-//    while( (next / 2) <= heap_size ) {
-//        minimum = (next / 2) - 1;
+//    while( (next * 2) <= heap_size ) {
+//        minimum = (next * 2) - 1;
 //        if( minimum + 1 < heap_size ) {
 //            minimum = heap[minimum] < heap[minimum+1]
 //                      ? minimum : minimum + 1;
@@ -99,17 +99,17 @@ static void swap_elements( void *l, void *r, void *tmp, size_t size,
 //    }
 //}
 
-static void sift_down( struct cnt_heap *heap, size_t heap_size )
+static void sift_down( struct cnt_heap *heap, const size_t heap_size )
 {
     struct mm_array *arr = heap->container_;
     const size_t element_size = mm_array_element_size(arr);
 
-    size_t next     = 1;
-    size_t children = next << 1;
-
     void *tmp_store = mm_array_at( arr, heap_size );
 
-    while( children <= heap_size ) {
+    size_t next = 1;
+
+    while( next <= (heap_size >> 1) ) {
+        const size_t children = next << 1;
         size_t minimum = children - 1;
         if( children < heap_size ) {
             const int cmp_children =
@@ -127,9 +127,8 @@ static void sift_down( struct cnt_heap *heap, size_t heap_size )
             swap_elements( src_elem, min_elem, tmp_store,
                                         element_size, heap->copy_ );
             next = minimum + 1;
-            children = next << 1;
         } else {
-            children = heap_size + 1; // break;
+            next = heap_size; // break;
         }
     }
 }
@@ -161,7 +160,7 @@ void cnt_heap_pop ( struct cnt_heap *heap )
 //siftup( array heap )
 //{
 //    heap_size = len(heap);
-//    while( heap_size * 2 ) {
+//    while( heap_size / 2 ) {
 //        parent = (heap_size * 2);
 //        if( heap[heap_size - 1] < heap[parent - 1] ) {
 //            swap( heap[heap_size - 1], heap[parent - 1] );
@@ -174,15 +173,16 @@ void cnt_heap_pop ( struct cnt_heap *heap )
 
 static void sift_up( struct cnt_heap *heap, size_t heap_size )
 {
-    const size_t element_size = mm_array_element_size( heap->container_ );
-    void *tmp_store = mm_array_at( heap->container_, heap_size );
+    struct mm_array *arr = heap->container_;
+    const size_t element_size = mm_array_element_size( arr );
+    void *tmp_store = mm_array_at( arr, heap_size );
 
     size_t parent_index = (heap_size >> 1);
 
     while( parent_index ) {
 
-        void *current = mm_array_at( heap->container_, heap_size - 1 );
-        void *parent  = mm_array_at( heap->container_, parent_index - 1 );
+        void *current = mm_array_at( arr, heap_size - 1 );
+        void *parent  = mm_array_at( arr, parent_index - 1 );
 
         const int cmp_res = heap->compare_( current, parent, element_size );
 

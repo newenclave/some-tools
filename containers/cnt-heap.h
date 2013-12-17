@@ -1,5 +1,5 @@
-#ifndef CNTHEAP_20131217_H
-#define CNTHEAP_20131217_H
+#ifndef CNT_HEAP_20131217_H
+#define CNT_HEAP_20131217_H
 
 #include <stdlib.h>
 

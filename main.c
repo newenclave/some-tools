@@ -154,8 +154,8 @@ int main( )
     cnt_heap_set_copy( heap, int_copy );
 
     int i = 0;
-    for( i=0; i<3000; ++i ) {
-        int next = rand( ) % 10000;
+    for( i=0; i<300; ++i ) {
+        int next = rand( ) % 1000;
         cnt_heap_push( heap, &next );
         //cnt_heap_dump( heap );
     }
