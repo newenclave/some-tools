@@ -16,7 +16,8 @@ SOURCES += \
     trees/prefix-tree.c \
     varints/zig-zag.c \
     charset/cs-utf8.c \
-    memory/mm-hex.c
+    memory/mm-hex.c \
+    containers/cnt-heap.c
 
 HEADERS += \
     bitpacker/bitpack.h \
@@ -31,6 +32,7 @@ HEADERS += \
     varints/base128.h \
     trees/prefix-tree.h \
     varints/zig-zag.h \
-    charset/cs-utf8.h
+    charset/cs-utf8.h \
+    containers/cnt-heap.h
 
 

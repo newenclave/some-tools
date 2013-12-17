@@ -83,7 +83,7 @@ size_t b128_pack2( size_t number, void *container, size_t available )
         *data++ = (unsigned char)(number);
         available--;
     } else {
-        return 0;
+        available = old_avail;
     }
     return old_avail - available;
 }
