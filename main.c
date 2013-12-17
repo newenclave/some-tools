@@ -154,7 +154,7 @@ int main( )
 
     int i = 0;
     for( i=0; i<300; ++i ) {
-        int next = rand( ) % 1000;
+        int next = rand( ) % 10;
         cnt_heap_push( heap, &next );
         //cnt_heap_dump( heap );
     }

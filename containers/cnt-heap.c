@@ -81,18 +81,18 @@ static void swap_elements( void *l, void *r, void *tmp, size_t size,
     copy_call( r, tmp, size );
 }
 
-//void siftdown( std::vector<int> &heap )
+//siftdown( array heap )
 //{
-//    const size_t heap_size = heap.size( );
-//    size_t next = 1;
-//    while( (next << 1) <= heap_size ) {
-//        size_t minimum = (next << 1) - 1;
+//    heap_size = len(heap);
+//    next = 1;
+//    while( (next / 2) <= heap_size ) {
+//        minimum = (next / 2) - 1;
 //        if( minimum + 1 < heap_size ) {
 //            minimum = heap[minimum] < heap[minimum+1]
 //                      ? minimum : minimum + 1;
 //        }
 //        if( heap[minimum] < heap[next-1] )
-//            std::swap( heap[next-1], heap[minimum] );
+//            swap( heap[next-1], heap[minimum] );
 //        else
 //            break;
 //        next = minimum+1;
@@ -134,14 +134,14 @@ static void sift_down( struct cnt_heap *heap, size_t heap_size )
     }
 }
 
-void cnt_heap_pop ( struct cnt_heap *heap )
+void cnt_heap_pop2 ( struct cnt_heap *heap, cnt_heap_element_free free_call )
 {
     const size_t element_size = mm_array_element_size( heap->container_ );
     const size_t arr_size = mm_array_size( heap->container_ ) - 1;
     void *first = mm_array_begin( heap->container_ );
 
-    if( heap->free_ )
-        heap->free_( first );
+    if( free_call )
+        free_call( first );
 
     if( arr_size > 1 ) {
         heap->copy_( first,
@@ -153,6 +153,10 @@ void cnt_heap_pop ( struct cnt_heap *heap )
     mm_array_reduce( heap->container_, 1 );
 }
 
+void cnt_heap_pop ( struct cnt_heap *heap )
+{
+    cnt_heap_pop2( heap, heap->free_ );
+}
 
 //siftup( array heap )
 //{
@@ -193,18 +197,26 @@ static void sift_up( struct cnt_heap *heap, size_t heap_size )
     }
 }
 
-int cnt_heap_push ( struct cnt_heap *heap, const void *element )
+int cnt_heap_push2 ( struct cnt_heap *heap, const void *element,
+                     cnt_heap_element_copy copy_call)
 {
     const size_t element_size = mm_array_element_size( heap->container_ );
     const size_t arr_size = mm_array_size( heap->container_ );
     int res = mm_array_extend( heap->container_, 1 );
 
     if( res ) {
-        heap->copy_( mm_array_at( heap->container_, arr_size - 1 ),
+        copy_call( mm_array_at( heap->container_, arr_size - 1 ),
                                                        element, element_size );
         sift_up( heap, arr_size );
     }
     return res;
+
+}
+
+
+int cnt_heap_push ( struct cnt_heap *heap, const void *element )
+{
+    return cnt_heap_push2( heap, element, heap->copy_ );
 }
 
 void *cnt_heap_front( struct cnt_heap *heap )

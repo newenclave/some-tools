@@ -23,7 +23,11 @@ void cnt_heap_set_copy ( struct cnt_heap *heap,
                                     cnt_heap_element_copy copy_call );
 
 int cnt_heap_push ( struct cnt_heap *heap, const void *element );
+int cnt_heap_push2 ( struct cnt_heap *heap, const void *element,
+                     cnt_heap_element_copy copy_call);
+
 void cnt_heap_pop  ( struct cnt_heap *heap );
+void cnt_heap_pop2 ( struct cnt_heap *heap, cnt_heap_element_free free_call );
 
 
 void *cnt_heap_front( struct cnt_heap *heap );
