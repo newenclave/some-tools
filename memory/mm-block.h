@@ -41,5 +41,6 @@ void  *mm_block_create_insertion( struct mm_block *mb,
 
 void *mm_block_delete( struct mm_block *mb, size_t position, size_t count );
 void  mm_block_reduce( struct mm_block *mb, size_t count );
+int   mm_block_extend( struct mm_block *mb, size_t count );
 
 #endif // MM_BLOCK_20131026_H

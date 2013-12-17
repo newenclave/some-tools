@@ -266,7 +266,7 @@ size_t mm_array_available ( const struct mm_array *mar)
     return (mm_block_available( mar->mmblock_ ) / mar->element_size_);
 }
 
-static void *mm_array_memcopy( void *dst, void *src, size_t size )
+static void *mm_array_memcopy( void *dst, const void *src, size_t size )
 {
     return memcpy( dst, src, size );
 }
@@ -465,3 +465,7 @@ void mm_array_reduce_from ( struct mm_array *mar, size_t position )
     mm_array_reduce_from2( mar, position, mar->free_ );
 }
 
+int mm_array_extend( struct mm_array *mar, size_t count )
+{
+    return mm_block_extend( mar->mmblock_, MM_ELEMENTS_SIZE( mar, count ) );
+}

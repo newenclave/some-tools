@@ -93,6 +93,8 @@ void   mm_array_reduce( struct mm_array *mar, size_t count );
 void   mm_array_reduce2( struct mm_array *mar, size_t count,
                          mm_array_element_free free_call);
 
+int    mm_array_extend( struct mm_array *mar, size_t count );
+
 void   mm_array_reduce_from ( struct mm_array *mar, size_t position );
 void   mm_array_reduce_from2( struct mm_array *mar, size_t position,
                               mm_array_element_free free_call);

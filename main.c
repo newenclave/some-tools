@@ -147,13 +147,11 @@ int main( )
     cnt_heap_set_copy( heap, int_copy );
 
     int i = 0;
-    for( i=0; i<20; ++i ) {
+    for( i=0; i<200; ++i ) {
         int next = rand( ) % 100;
         cnt_heap_push( heap, &next );
         //cnt_heap_dump( heap );
     }
-
-    cnt_heap_dump( heap );
 
     while( cnt_heap_size( heap ) > 0 ) {
         int *next = (int *)cnt_heap_front( heap );

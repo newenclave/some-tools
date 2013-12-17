@@ -340,3 +340,8 @@ void mm_block_reduce( struct mm_block *mb, size_t count )
 {
     mb->used_ -= count;
 }
+
+int mm_block_extend( struct mm_block *mb, size_t count )
+{
+    return mm_block_resize( mb, mb->used_ + count );
+}
