@@ -213,7 +213,6 @@ int cnt_heap_push2 ( struct cnt_heap *heap, const void *element,
 
 }
 
-
 int cnt_heap_push ( struct cnt_heap *heap, const void *element )
 {
     return cnt_heap_push2( heap, element, heap->copy_ );
