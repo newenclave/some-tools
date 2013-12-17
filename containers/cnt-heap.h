@@ -33,6 +33,9 @@ void cnt_heap_pop2 ( struct cnt_heap *heap, cnt_heap_element_free free_call );
 void *cnt_heap_front( struct cnt_heap *heap );
 const void *cnt_heap_const_front( const struct cnt_heap *heap );
 
+void *cnt_heap_at( struct cnt_heap *heap, size_t index );
+const void *cnt_heap_const_at( const struct cnt_heap *heap, size_t index );
+
 size_t cnt_heap_size ( const struct cnt_heap *heap );
 
 void cnt_heap_free  ( struct cnt_heap *heap );

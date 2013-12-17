@@ -228,6 +228,17 @@ const void *cnt_heap_const_front( const struct cnt_heap *heap )
     return mm_array_const_begin( heap->container_ );
 }
 
+void *cnt_heap_at( struct cnt_heap *heap, size_t index )
+{
+    return mm_array_at( heap->container_, index );
+}
+
+const void *cnt_heap_const_at( const struct cnt_heap *heap, size_t index )
+{
+    return mm_array_const_at( heap->container_, index );
+}
+
+
 // =============
 
 void cnt_heap_free2 ( struct cnt_heap *heap, cnt_heap_element_free free_call )
