@@ -19,7 +19,7 @@ static void *cnt_heap_alloc( size_t size )
 
 static void cnt_heap_memfree( void *ptr )
 {
-    return free( ptr );
+    free( ptr );
 }
 
 static void *cnt_heap_default_copy( void *dst, const void *src,
