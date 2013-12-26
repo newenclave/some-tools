@@ -104,7 +104,7 @@ size_t b128_pack_append( size_t number, struct mm_block *container )
     size_t added  = 0;
     if( number <= 0x7F ) {
         result = mm_block_push_back( container, (char)(number & 0x7F));
-        added = 1;
+        added = (result != 0);
     } else {
         unsigned char next;
         result = 1;
