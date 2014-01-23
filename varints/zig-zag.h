@@ -33,6 +33,9 @@
      ZIG_ZAG_TOP_BIT(type_name, inp))
 
 
+unsigned long long zig_zag_fixll(long long inp);
+long long          zig_zag_unfixll(unsigned long long inp);
+
 unsigned long zig_zag_fixl(long inp);
 long          zig_zag_unfixl(unsigned long inp);
 
