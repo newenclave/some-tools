@@ -193,7 +193,7 @@ int bp_add_bits(struct bit_pack_data *bpd, size_t value, unsigned bit_count)
 
     if( bpd->data_ != tmp_data ) { // this is new block
         int result = 0;
-        if( 0 != mm_block_concat2( bpd->data_, tmp_data )) {
+        if( 0 != mm_block_append2( bpd->data_, tmp_data )) {
             bpd->ti_.current_ = tmp_ti.current_;
             bpd->ti_.filling_ = tmp_ti.filling_;
             result = 1;

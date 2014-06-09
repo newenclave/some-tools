@@ -117,7 +117,7 @@ void pack_string( const char *str, struct mm_block *mem )
 {
     size_t len = strlen( str );
     b128_pack_append( len, mem );
-    mm_block_concat( mem, str, len );
+    mm_block_append( mem, str, len );
 }
 
 void save_to_file( struct mm_block *mem, const char *filename )
