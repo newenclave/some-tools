@@ -31,13 +31,15 @@ int main( )
 
     }
 
-//    array_foreach( tat, i ) {
-//        printf( "%d:%d = %lf\n",
-//                 array_at(tat, i).x,
-//                 array_at(tat, i).y,
-//                 array_at(tat, i).disposition );
-//    }
+    array_foreach( tat, i ) {
+        printf( "%d:%d = %lf\n",
+                 array_at(tat, i).x,
+                 array_at(tat, i).y,
+                 array_at(tat, i).disposition );
+    }
 
     array_free( da );
+    array_free( tat );
+
     return 0;
 }
