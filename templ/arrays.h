@@ -42,6 +42,7 @@
                  &array_at(arr, pos ),                                         \
                   array_elements_size(arr, array_lenght(arr) - (pos)) );       \
         array_lenght(arr) += (count);                                          \
+        result = 1;                                                            \
     } else {                                                                   \
         size_t def_resize = array_default_increase(arr);                       \
         array_extend_capacity( arr, (count) > def_resize                       \
