@@ -14,7 +14,7 @@
 #define array_default_increase(arr) \
                     ((arr).cap_ ? (((arr).cap_ >> 1) + ((arr).cap_)) : 4)
 
-#define array_elements_size( arr, count ) (sizeof(*(arr).dat_) * count)
+#define array_elements_size( arr, count ) (sizeof(*(arr).dat_) * (count))
 
 #define array_push_back( arr, value )                                          \
     if( array_lenght(arr) < array_capacity(arr) ) {                            \
@@ -41,6 +41,23 @@
                      array_elements_size(arr, array_lenght(arr)) );            \
             array_at(arr, 0) = (value);                                        \
             array_lenght(arr)++;                                               \
+        }                                                                      \
+    }
+
+#define array_insert_block( arr, pos, count )                                  \
+    if( array_lenght(arr) + count < array_capacity(arr) )  {                   \
+        memmove( &array_at(arr, pos + count),                                  \
+                 &array_at(arr, pos ),                                         \
+                  array_elements_size(arr, array_lenght(arr) - pos) );         \
+        array_lenght(arr) += count;                                            \
+    } else {                                                                   \
+        int res = 0;                                                           \
+        array_extend_capacity( arr, count, res );                              \
+        if( res != 0 ) {                                                       \
+            memmove( &array_at(arr, pos + count),                              \
+                     &array_at(arr, pos ),                                     \
+                      array_elements_size(arr, array_lenght(arr) - pos) );     \
+            array_lenght(arr) += count;                                        \
         }                                                                      \
     }
 
