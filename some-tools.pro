@@ -33,6 +33,7 @@ HEADERS += \
     trees/prefix-tree.h \
     varints/zig-zag.h \
     charset/cs-utf8.h \
-    containers/cnt-heap.h
+    containers/cnt-heap.h \
+    templ/arrays.h
 
 
