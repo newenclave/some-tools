@@ -28,35 +28,29 @@
     }
 
 #define array_push_front( arr, value )                                         \
-    if( array_lenght(arr) < array_capacity(arr) ) {                            \
-        memmove( &array_at(arr, 1), &array_at(arr, 0),                         \
-                 array_elements_size(arr, array_lenght(arr)) );                \
-        array_at(arr, 0) = (value);                                            \
-        array_lenght(arr)++;                                                   \
-    } else {                                                                   \
+    do {                                                                       \
         int res = 0;                                                           \
-        array_extend_capacity( arr, array_default_increase(arr), res );        \
-        if( res != 0 ) {                                                       \
-            memmove( &array_at(arr, 1), &array_at(arr, 0),                     \
-                     array_elements_size(arr, array_lenght(arr)) );            \
+        array_insert_block( arr, 0, 1, res );                                  \
+        if( res ) {                                                            \
             array_at(arr, 0) = (value);                                        \
-            array_lenght(arr)++;                                               \
         }                                                                      \
-    }
+    } while( 0 )
 
-#define array_insert_block( arr, pos, count )                                  \
-    if( array_lenght(arr) + count < array_capacity(arr) )  {                   \
-        memmove( &array_at(arr, pos + count),                                  \
+#define array_insert_block( arr, pos, count, result )                          \
+    if( array_lenght(arr) + (count) < array_capacity(arr) )  {                 \
+        memmove( &array_at(arr, (pos) + (count)),                              \
                  &array_at(arr, pos ),                                         \
-                  array_elements_size(arr, array_lenght(arr) - pos) );         \
-        array_lenght(arr) += count;                                            \
+                  array_elements_size(arr, array_lenght(arr) - (pos)) );       \
+        array_lenght(arr) += (count);                                          \
     } else {                                                                   \
-        int res = 0;                                                           \
-        array_extend_capacity( arr, count, res );                              \
-        if( res != 0 ) {                                                       \
-            memmove( &array_at(arr, pos + count),                              \
-                     &array_at(arr, pos ),                                     \
-                      array_elements_size(arr, array_lenght(arr) - pos) );     \
+        size_t def_resize = array_default_increase(arr);                       \
+        array_extend_capacity( arr, (count) > def_resize                       \
+                                            ? (count)                          \
+                                            : def_resize, result );            \
+        if( result != 0 ) {                                                    \
+            memmove( &array_at(arr, (pos) + (count)),                          \
+                     &array_at(arr, (pos) ),                                   \
+                      array_elements_size(arr, array_lenght(arr) - (pos)) );   \
             array_lenght(arr) += count;                                        \
         }                                                                      \
     }

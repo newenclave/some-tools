@@ -26,6 +26,11 @@ int main( )
         array_push_front( da, (double)(i) / 17 );
     }
 
+    array_foreach( da, i ) {
+        printf( "%lu:%lf\n", i, array_at(da, i));
+
+    }
+
     array_foreach( tat, i ) {
         printf( "%d:%d = %lf\n",
                  array_at(tat, i).x,
