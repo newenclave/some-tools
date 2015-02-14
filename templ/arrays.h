@@ -19,13 +19,14 @@
                     ((arr).cap_ ? (((arr).cap_ >> 1) + ((arr).cap_)) : 4)
 
 #define array_elements_size( arr, count ) (sizeof(*(arr).dat_) * (count))
+#define array_full_size( arr ) array_elements_size( arr, array_lenght(arr) )
 
 #define array_push_back( arr, value )                                          \
     if( array_lenght(arr) < array_capacity(arr) ) {                            \
         array_at(arr, (arr).len_++) = (value);                                 \
     } else {                                                                   \
         int res__ = 0;                                                         \
-        array_extend_capacity( arr, array_default_increase(arr), res__ );      \
+        array_extend_capacity_check( arr, array_default_increase(arr), res__ );\
         if( res__ != 0 ) {                                                     \
             array_at(arr, array_lenght(arr)++) = (value);                      \
         }                                                                      \
@@ -60,18 +61,37 @@
         }                                                                      \
     }
 
-#define array_resize( arr, new_size, result )                                  \
-    if( new_size <= array_capacity( arr ) ) {                                  \
-        (arr).len_ = new_size;                                                 \
-        result = 1;                                                            \
-    } else {                                                                   \
-        array_extend_capacity( arr, new_size, result );                        \
-        if( result ) {                                                         \
-            (arr).len_ = (arr).cap_ = new_size;                                \
+#define array_resize_check( arr, new_size, result )                            \
+    do {                                                                       \
+        if( new_size <= array_capacity( arr ) ) {                              \
+            (arr).len_ = new_size;                                             \
+            result = 1;                                                        \
+        } else {                                                               \
+            array_extend_capacity_check( arr, new_size, result );              \
+            if( result ) {                                                     \
+                (arr).len_ = (arr).cap_ = new_size;                            \
+            }                                                                  \
         }                                                                      \
-    }
+    } while(0)
 
-#define array_reduce( arr, count ) (arr).len_--
+#define array_resize( arr, new_size )                                          \
+    do {                                                                       \
+        if( (new_size) > array_capacity( arr ) ) {                             \
+            array_extend_capacity( arr, new_size - array_capacity( arr ) );    \
+        }                                                                      \
+        (arr).len_ = (new_size);                                               \
+    } while(0)
+
+
+#define array_reduce( arr, count ) (arr).len_ -= (count)
+
+#define array_remove( arr, pos, count )         \
+    memmove( &array_at(arr, pos),               \
+             &array_at(arr, (pos) + (count)),   \
+              array_elements_size( (arr),       \
+                     array_lenght(arr) -        \
+                     (count) - (pos) ) ),       \
+    (arr).len_ -= count
 
 #define array_reserve( arr, size, result )                                     \
     if( (size) > array_capacity( arr ) ) {                                     \
@@ -79,7 +99,7 @@
         array_extend_capacity( arr, diff__, result );                          \
     }
 
-#define array_extend_capacity( arr, size, result )                             \
+#define array_extend_capacity_check( arr, size, result )                       \
     do {                                                                       \
         void *tmp__;                                                           \
         if((arr).dat_) {                                                       \
@@ -94,6 +114,22 @@
             (arr).cap_ += (size);                                              \
         }                                                                      \
         result = (tmp__ != NULL);                                              \
+    } while(0)
+
+#define array_extend_capacity( arr, size )                                     \
+    do {                                                                       \
+        void *tmp__;                                                           \
+        if((arr).dat_) {                                                       \
+            tmp__ = realloc( (arr).dat_,                                       \
+                              array_elements_size(arr, (arr).cap_)             \
+                            + array_elements_size(arr, size) );                \
+        } else {                                                               \
+            tmp__ = malloc( array_elements_size(arr, size) );                  \
+        }                                                                      \
+        if( tmp__ != NULL ) {                                                  \
+            (arr).dat_  = tmp__;                                               \
+            (arr).cap_ += (size);                                              \
+        }                                                                      \
     } while(0)
 
 #define array_foreach( arr, i ) for( i=0; i<((arr).len_); i++ )
