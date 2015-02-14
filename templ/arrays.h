@@ -137,6 +137,15 @@
 #define array_foreach_value( arr, i, v )                                       \
     for( i=0, v=(arr).dat_[i]; i<((arr).len_); i++, v=(arr).dat_[i] )
 
+#define array_copy( dst, src ) \
+    array_copy_slice( dst, src, 0, array_lenght(src) )
+
+#define array_copy_slice( dst, src, pos, count )      \
+    array_resize( dst, count );                       \
+    memcpy( &array_at(dst, 0),                        \
+            &array_at(src, pos),                      \
+             array_elements_size( arr, count ) )
+
 #define array_lenght( arr )             (arr).len_
 #define array_capacity( arr )           (arr).cap_
 #define array_init                      { NULL, 0, 0 }
