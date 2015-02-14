@@ -4,12 +4,16 @@
 #include <stdlib.h>
 #include <memory.h>
 
+
+#define array_define_custom_type( type, type_name )             \
+  typedef struct type##_array_type {                            \
+      type    *dat_;                                            \
+      size_t   len_;                                            \
+      size_t   cap_;                                            \
+  } type_name
+
 #define array_define_type( type )            \
-  typedef struct type##_array_type {         \
-      type    *dat_;                         \
-      size_t   len_;                         \
-      size_t   cap_;                         \
-  } type##_array_type
+    array_define_custom_type( type, type##_array_type )
 
 #define array_default_increase(arr) \
                     ((arr).cap_ ? (((arr).cap_ >> 1) + ((arr).cap_)) : 4)
@@ -58,7 +62,8 @@
 
 #define array_resize( arr, new_size, result )                                  \
     if( new_size <= array_capacity( arr ) ) {                                  \
-        arr.len_ = new_size;                                                   \
+        (arr).len_ = new_size;                                                 \
+        result = 1;                                                            \
     } else {                                                                   \
         array_extend_capacity( arr, new_size, result );                        \
         if( result ) {                                                         \
@@ -91,14 +96,16 @@
         result = (tmp != NULL);                                                \
     } while(0)
 
-#define array_foreach( arr, i ) for( i=0; i<(arr.len_); ++i )
+#define array_foreach( arr, i ) for( i=0; i<((arr).len_); i++ )
 
 #define array_foreach_value( arr, i, v )                                       \
-    for( i=0, v=(arr).dat_[i]; i<(arr.len_); ++i, v=(arr).dat_[i] )
+    for( i=0, v=(arr).dat_[i]; i<((arr).len_); i++, v=(arr).dat_[i] )
 
 #define array_lenght( arr )             (arr).len_
 #define array_capacity( arr )           (arr).cap_
 #define array_init                      { NULL, 0, 0 }
+#define array_place_init(arr)           (arr).dat_ = NULL, \
+                                        (arr).len_ = (arr).cap_ = 0
 #define array_at( arr, index )          (arr).dat_[index]
 #define array_valid( arr )              ((arr).dat_ != NULL)
 #define array_valid_index( arr, index ) ((arr).len_ < (index))
