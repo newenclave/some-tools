@@ -2,6 +2,10 @@ TEMPLATE = app
 CONFIG += console
 CONFIG -= app_bundle
 CONFIG -= qt
+QMAKE_CXXFLAGS += -save-temps
+
+#QMAKE_CFLAGS_DEBUG += -E
+#QMAKE_CFLAGS_RELEASE += -E
 
 SOURCES += \
     main.c \
