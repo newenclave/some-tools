@@ -5,7 +5,7 @@
 array_define_type(size_t);
 array_define_type(char);
 
-#define at_index(x, y, m) ((x) * (m) + (y))
+#define at_index(x, y, YMAX) ((x) * (YMAX) + (y))
 
 void show_array( const size_t_array_type *arr, size_t n, size_t m )
 {
@@ -14,7 +14,7 @@ void show_array( const size_t_array_type *arr, size_t n, size_t m )
     size_t i, j;
     for( i=0; i<n; i++ ) {
         for( j=0; j<m; j++ ) {
-            printf( "%3lu ", ar[at_index(i, j, m)] );
+            printf( "%2lu ", ar[at_index(i, j, m)] );
         }
         printf( "\n" );
     }
@@ -76,7 +76,7 @@ int main( )
     size_t i;
 
     size_t_array_type arr = array_init;
-    char_array_type   res = array_init;
+    char_array_type    res = array_init;
 
     array_resize( arr, L1 * L2, err );
     array_reserve( res, L1, err );
@@ -90,6 +90,8 @@ int main( )
     show_array( &arr, L1, L2 );
 
     get_maximum_sub_DNA( &arr, &res, DNA1, DNA2, L1-1, L2-1, L2 );
+
+    array_push_back( res, 0 );
 
     printf( "Maximum subDNA is '%s'\n", &array_at(res, 0) );
 

@@ -24,18 +24,18 @@
     if( array_lenght(arr) < array_capacity(arr) ) {                            \
         array_at(arr, (arr).len_++) = (value);                                 \
     } else {                                                                   \
-        int res = 0;                                                           \
-        array_extend_capacity( arr, array_default_increase(arr), res );        \
-        if( res != 0 ) {                                                       \
+        int res__ = 0;                                                         \
+        array_extend_capacity( arr, array_default_increase(arr), res__ );      \
+        if( res__ != 0 ) {                                                     \
             array_at(arr, array_lenght(arr)++) = (value);                      \
         }                                                                      \
     }
 
 #define array_push_front( arr, value )                                         \
     do {                                                                       \
-        int res = 0;                                                           \
+        int res__ = 0;                                                         \
         array_insert_block( arr, 0, 1, res );                                  \
-        if( res ) {                                                            \
+        if( res__ ) {                                                          \
             array_at(arr, 0) = (value);                                        \
         }                                                                      \
     } while( 0 )
@@ -75,25 +75,25 @@
 
 #define array_reserve( arr, size, result )                                     \
     if( (size) > array_capacity( arr ) ) {                                     \
-        size_t diff = array_capacity( arr ) - (size);                          \
-        array_extend_capacity( arr, diff, result );                            \
+        size_t diff__ = (size) - array_capacity( arr );                        \
+        array_extend_capacity( arr, diff__, result );                          \
     }
 
 #define array_extend_capacity( arr, size, result )                             \
     do {                                                                       \
-        void *tmp;                                                             \
+        void *tmp__;                                                           \
         if((arr).dat_) {                                                       \
-            tmp = realloc( (arr).dat_,                                         \
+            tmp__ = realloc( (arr).dat_,                                       \
                               array_elements_size(arr, (arr).cap_)             \
                             + array_elements_size(arr, size) );                \
         } else {                                                               \
-            tmp = malloc( array_elements_size(arr, size) );                    \
+            tmp__ = malloc( array_elements_size(arr, size) );                  \
         }                                                                      \
-        if( tmp != NULL ) {                                                    \
-            (arr).dat_  = tmp;                                                 \
+        if( tmp__ != NULL ) {                                                  \
+            (arr).dat_  = tmp__;                                               \
             (arr).cap_ += (size);                                              \
         }                                                                      \
-        result = (tmp != NULL);                                                \
+        result = (tmp__ != NULL);                                              \
     } while(0)
 
 #define array_foreach( arr, i ) for( i=0; i<((arr).len_); i++ )
