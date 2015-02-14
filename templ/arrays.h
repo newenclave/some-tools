@@ -91,9 +91,6 @@
         result = (tmp != NULL);                                                \
     } while(0)
 
-#define array_resize_nocheck(arr, new_size)  \
-        array_resize(arr, (new_size), (int *)(NULL))
-
 #define array_foreach( arr, i ) for( i=0; i<(arr.len_); ++i )
 
 #define array_foreach_value( arr, i, v )                                       \
