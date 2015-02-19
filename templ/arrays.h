@@ -61,6 +61,15 @@
         }                                                                      \
     }
 
+#define array_insert( arr, pos, value, result )                                \
+            do {                                                               \
+                array_insert_block(arr, pos, 1, result );                      \
+                if( result ) {                                                 \
+                    array_at(arr, pos) = value;                                \
+                }                                                              \
+            } while(0)
+
+
 #define array_resize_check( arr, new_size, result )                            \
     do {                                                                       \
         if( new_size <= array_capacity( arr ) ) {                              \
