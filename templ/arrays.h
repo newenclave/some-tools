@@ -143,119 +143,121 @@
 
 
 /// Warning! side effects!
-#define array_bin_search( arr, value, result )                          \
-    do {                                                                \
-        size_t result__ = array_lenght( arr );                          \
-        size_t parent__ = result__;                                     \
-        size_t next__   = 0;                                            \
-        while( next__ < parent__ ) {                                    \
-            size_t middle__ = next__ + ( ( parent__ - next__ ) >> 1 );  \
-            if( array_at( arr, middle__ ) < (value) ) {                 \
-                next__ = middle__ + 1;                                  \
-            } else if( (value) < array_at( arr, middle__ ) ) {          \
-                parent__ = middle__;                                    \
-            } else {                                                    \
-                result__ = middle__;                                    \
-                break;                                                  \
-            }                                                           \
-        }                                                               \
-        result = result__;                                              \
+#define array_bin_search( arr, value, result )                                 \
+    do {                                                                       \
+        size_t result__ = array_lenght( arr );                                 \
+        size_t parent__ = result__;                                            \
+        size_t next__   = 0;                                                   \
+        while( next__ < parent__ ) {                                           \
+            size_t middle__ = next__ + ( ( parent__ - next__ ) >> 1 );         \
+            if( array_at( arr, middle__ ) < (value) ) {                        \
+                next__ = middle__ + 1;                                         \
+            } else if( (value) < array_at( arr, middle__ ) ) {                 \
+                parent__ = middle__;                                           \
+            } else {                                                           \
+                result__ = middle__;                                           \
+                break;                                                         \
+            }                                                                  \
+        }                                                                      \
+        result = result__;                                                     \
     } while(0)
 
 /// Warning! side effects!
 /// With comparator!
 ///  -1; 0; 1;
-#define array_bin_search_compare( arr, value, compare, result )         \
-    do {                                                                \
-        size_t result__ = array_lenght( arr );                          \
-        size_t parent__ = result__;                                     \
-        size_t next__   = 0;                                            \
-        while( next__ < parent__ ) {                                    \
-            size_t middle__ = next__ + ( ( parent__ - next__ ) >> 1 );  \
-            int cmp__ = (compare)( array_at( arr, middle__ ), (value) );\
-            if( cmp__ < 0 ) {                                           \
-                next__ = middle__ + 1;                                  \
-            } else if( 0 < cmp__ ) {                                    \
-                parent__ = middle__;                                    \
-            } else {                                                    \
-                result__ = middle__;                                    \
-                break;                                                  \
-            }                                                           \
-        }                                                               \
-        result = result__;                                              \
+#define array_bin_search_compare( arr, value, compare, result )                \
+    do {                                                                       \
+        size_t result__ = array_lenght( arr );                                 \
+        size_t parent__ = result__;                                            \
+        size_t next__   = 0;                                                   \
+        while( next__ < parent__ ) {                                           \
+            size_t middle__ = next__ + ( ( parent__ - next__ ) >> 1 );         \
+            int cmp__ = (compare)( array_at( arr, middle__ ), (value) );       \
+            if( cmp__ < 0 ) {                                                  \
+                next__ = middle__ + 1;                                         \
+            } else if( 0 < cmp__ ) {                                           \
+                parent__ = middle__;                                           \
+            } else {                                                           \
+                result__ = middle__;                                           \
+                break;                                                         \
+            }                                                                  \
+        }                                                                      \
+        result = result__;                                                     \
     } while(0)
 
 /// Warning! side effects!
-#define array_bin_lower_bound( arr, value, result )                     \
-    do {                                                                \
-        size_t parent__ = array_lenght( arr );                          \
-        size_t next__   = 0;                                            \
-        while( next__ < parent__ ) {                                    \
-            size_t middle__ = next__ + ( ( parent__ - next__ ) >> 1 );  \
-            if( array_at( arr, middle__ ) < (value) ) {                 \
-                next__ = middle__ + 1;                                  \
-            } else {                                                    \
-                parent__ = middle__;                                    \
-            }                                                           \
-        }                                                               \
-        result = next__;                                                \
+#define array_bin_lower_bound( arr, value, result )                            \
+    do {                                                                       \
+        size_t parent__ = array_lenght( arr );                                 \
+        size_t next__   = 0;                                                   \
+        while( next__ < parent__ ) {                                           \
+            size_t middle__ = next__ + ( ( parent__ - next__ ) >> 1 );         \
+            if( array_at( arr, middle__ ) < (value) ) {                        \
+                next__ = middle__ + 1;                                         \
+            } else {                                                           \
+                parent__ = middle__;                                           \
+            }                                                                  \
+        }                                                                      \
+        result = next__;                                                       \
     } while(0)
 
 /// Warning! side effects!
-#define array_bin_upper_bound( arr, value, result )                     \
-    do {                                                                \
-        size_t parent__ = array_lenght( arr );                          \
-        size_t next__   = 0;                                            \
-        while( next__ < parent__ ) {                                    \
-            size_t middle__ = next__ + ( ( parent__ - next__ ) >> 1 );  \
-            if( (value) < array_at( arr, middle__ ) ) {                 \
-                parent__ = middle__;                                    \
-            } else {                                                    \
-                next__ = middle__ + 1;                                  \
-            }                                                           \
-        }                                                               \
-        result = next__;                                                \
+#define array_bin_upper_bound( arr, value, result )                            \
+    do {                                                                       \
+        size_t parent__ = array_lenght( arr );                                 \
+        size_t next__   = 0;                                                   \
+        while( next__ < parent__ ) {                                           \
+            size_t middle__ = next__ + ( ( parent__ - next__ ) >> 1 );         \
+            if( (value) < array_at( arr, middle__ ) ) {                        \
+                parent__ = middle__;                                           \
+            } else {                                                           \
+                next__ = middle__ + 1;                                         \
+            }                                                                  \
+        }                                                                      \
+        result = next__;                                                       \
     } while(0)
 
 /// Warning! side effects!
-#define array_bin_lower_bound_compare( arr, value, compare, result )    \
-    do {                                                                \
-        size_t parent__ = array_lenght( arr );                          \
-        size_t next__   = 0;                                            \
-        while( next__ < parent__ ) {                                    \
-            size_t middle__ = next__ + ( ( parent__ - next__ ) >> 1 );  \
-            int cmp__ = (compare)( array_at( arr, middle__ ), (value) );\
-            if( cmp__ < 0 ) {                                           \
-                next__ = middle__ + 1;                                  \
-            } else {                                                    \
-                parent__ = middle__;                                    \
-            }                                                           \
-        }                                                               \
-        result = next__;                                                \
+#define array_bin_lower_bound_compare( arr, value, compare, result )           \
+    do {                                                                       \
+        size_t parent__ = array_lenght( arr );                                 \
+        size_t next__   = 0;                                                   \
+        while( next__ < parent__ ) {                                           \
+            size_t middle__ = next__ + ( ( parent__ - next__ ) >> 1 );         \
+            int cmp__ = (compare)( array_at( arr, middle__ ), (value) );       \
+            if( cmp__ < 0 ) {                                                  \
+                next__ = middle__ + 1;                                         \
+            } else {                                                           \
+                parent__ = middle__;                                           \
+            }                                                                  \
+        }                                                                      \
+        result = next__;                                                       \
     } while(0)
 
 /// Warning! side effects!
-#define array_bin_upper_bound_compare( arr, value, compare, result )    \
-    do {                                                                \
-        size_t parent__ = array_lenght( arr );                          \
-        size_t next__   = 0;                                            \
-        while( next__ < parent__ ) {                                    \
-            size_t middle__ = next__ + ( ( parent__ - next__ ) >> 1 );  \
-            int cmp__ = (compare)( array_at( arr, middle__ ), (value) );\
-            if( 0 < cmp__ ) {                                           \
-                parent__ = middle__;                                    \
-            } else {                                                    \
-                next__ = middle__ + 1;                                  \
-            }                                                           \
-        }                                                               \
-        result = next__;                                                \
+#define array_bin_upper_bound_compare( arr, value, compare, result )           \
+    do {                                                                       \
+        size_t parent__ = array_lenght( arr );                                 \
+        size_t next__   = 0;                                                   \
+        while( next__ < parent__ ) {                                           \
+            size_t middle__ = next__ + ( ( parent__ - next__ ) >> 1 );         \
+            int cmp__ = (compare)( array_at( arr, middle__ ), (value) );       \
+            if( 0 < cmp__ ) {                                                  \
+                parent__ = middle__;                                           \
+            } else {                                                           \
+                next__ = middle__ + 1;                                         \
+            }                                                                  \
+        }                                                                      \
+        result = next__;                                                       \
     } while(0)
 
 
 #define array_foreach( arr, i ) for( i=0; i<((arr).len_); i++ )
 
+/*
 #define array_foreach_value( arr, i, v )                                       \
     for( i=0, v=(arr).dat_[i]; i<((arr).len_); i++, v=(arr).dat_[i] )
+*/
 
 #define array_copy( dst, src ) \
     array_copy_slice( dst, src, 0, array_lenght(src) )
