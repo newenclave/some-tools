@@ -117,6 +117,13 @@ static inline \
 int type_name##_push_front( type_name *arr, type value )                       \
 {                                                                              \
     return type_name##_insert( arr, 0, value );                                \
+}                                                                              \
+\
+static inline \
+void type_name##_free( type_name *arr )                                        \
+{                                                                              \
+    (deallo_f)( arr->dat_ );                                                   \
+    arr->len_ = arr->cap_ = 0;                                                 \
 }
 
 #define array_define_custom_type( type, type_name ) \
