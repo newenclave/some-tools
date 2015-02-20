@@ -6,7 +6,7 @@
 
 
 #define array_define_custom_type( type, type_name )             \
-  typedef struct type##_array_type {                            \
+  typedef struct type_name {                                    \
       type    *dat_;                                            \
       size_t   len_;                                            \
       size_t   cap_;                                            \
@@ -140,6 +140,51 @@
             (arr).cap_ += (size);                                              \
         }                                                                      \
     } while(0)
+
+
+/// Warning! side effects!
+#define array_bin_search( arr, value, result )                          \
+    do {                                                                \
+        size_t result__ = array_lenght( arr );                          \
+        size_t parent__ = result__;                                     \
+        size_t next__   = 0;                                            \
+        while( next__ < parent__ ) {                                    \
+            size_t middle__ = next__ + ( ( parent__ - next__ ) >> 1 );  \
+            if( array_at( arr, middle__ ) < (value) ) {                 \
+                next__ = middle__ + 1;                                  \
+            } else if( (value) < array_at( arr, middle__ ) ) {          \
+                parent__ = middle__;                                    \
+            } else {                                                    \
+                result__ = middle__;                                    \
+                break;                                                  \
+            }                                                           \
+        }                                                               \
+        result = result__;                                              \
+    } while(0)
+
+/// Warning! side effects!
+/// With comparator!
+///  -1; 0; 1;
+#define array_bin_search_compare( arr, value, compare, result )         \
+    do {                                                                \
+        size_t result__ = array_lenght( arr );                          \
+        size_t parent__ = result__;                                     \
+        size_t next__   = 0;                                            \
+        while( next__ < parent__ ) {                                    \
+            size_t middle__ = next__ + ( ( parent__ - next__ ) >> 1 );  \
+            int cmp__ = (compare)( array_at( arr, middle__ ), (value) );\
+            if( cmp__ < 0 ) {                                           \
+                next__ = middle__ + 1;                                  \
+            } else if( 0 < cmp__ ) {                                    \
+                parent__ = middle__;                                    \
+            } else {                                                    \
+                result__ = middle__;                                    \
+                break;                                                  \
+            }                                                           \
+        }                                                               \
+        result = result__;                                              \
+    } while(0)
+
 
 #define array_foreach( arr, i ) for( i=0; i<((arr).len_); i++ )
 
