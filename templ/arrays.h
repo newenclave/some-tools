@@ -4,15 +4,126 @@
 #include <stdlib.h>
 #include <memory.h>
 
+#define array_define_custom( type, type_name, allo_f, reallo_f, deallo_f )     \
+    typedef struct type_name {                                                 \
+        type    *dat_;                                                         \
+        size_t   len_;                                                         \
+        size_t   cap_;                                                         \
+    } type_name;                                                               \
+\
+\
+typedef void *(* type_name##_allocator  )( size_t );                           \
+typedef void *(* type_name##_reallocator)( void *, size_t );                   \
+typedef void  (* type_name##_deallocator)( void * );                           \
+typedef int   (* type_name##_compare    )( const type *, const type * );       \
+\
+\
+static inline \
+int type_name##_extend_capacity( type_name *arr, size_t size )                 \
+{                                                                              \
+    void *tmp;                                                                 \
+    if( arr->dat_ ) {                                                          \
+        tmp = (reallo_f)( arr->dat_,                                           \
+                          array_elements_size( *arr, arr->cap_ + size ) );     \
+    } else {                                                                   \
+        tmp = (allo_f)( array_elements_size( *arr, size ) );                   \
+    }                                                                          \
+    if( tmp != NULL ) {                                                        \
+        arr->dat_  = tmp;                                                      \
+        arr->cap_ += size;                                                     \
+    }                                                                          \
+    return tmp != NULL;                                                        \
+}                                                                              \
+\
+static inline \
+int type_name##_resize( type_name *arr, size_t size )                          \
+{                                                                              \
+    int res = 1;                                                               \
+    if( size > arr->cap_ ) {                                                   \
+        res = type_name##_extend_capacity( arr, size - arr->cap_ );            \
+    }                                                                          \
+    if( res ) {                                                                \
+        arr->len_ = size;                                                      \
+    }                                                                          \
+    return res;                                                                \
+}                                                                              \
+\
+static inline \
+int type_name##_reserve( type_name *arr, size_t size )                         \
+{                                                                              \
+    int res = 1;                                                               \
+    if( size > arr->cap_ ) {                                                   \
+        res = type_name##_extend_capacity( arr, size - arr->cap_ );            \
+    }                                                                          \
+    return res;                                                                \
+}                                                                              \
+\
+static inline \
+int type_name##_extend( type_name *arr, size_t size )                          \
+{                                                                              \
+    return type_name##_resize( arr, arr->len_ + size );                        \
+}                                                                              \
+\
+static inline \
+int type_name##_reduce( type_name *arr, size_t size )                          \
+{                                                                              \
+    arr->len_ -= size;                                                         \
+    return 1;                                                                  \
+}                                                                              \
+\
+static inline \
+int type_name##_push_back( type_name *arr, type value )                        \
+{                                                                              \
+    int res = 1;                                                               \
+    if( arr->len_ == arr->cap_ ) {                                             \
+        res = type_name##_extend_capacity( arr, array_default_increase(*arr) );\
+    }                                                                          \
+    if( res ) {                                                                \
+        arr->dat_[arr->len_++] = value;                                        \
+    }                                                                          \
+    return res;                                                                \
+}                                                                              \
+\
+static inline \
+int type_name##_insert_block( type_name *arr, size_t pos, size_t count )       \
+{                                                                              \
+    int res = 1;                                                               \
+    if( (arr->len_ + count) > arr->cap_ )  {                                   \
+        const size_t def_resize = array_default_increase(*arr);                \
+        res = type_name##_extend_capacity( arr, count > def_resize             \
+                                                        ? count                \
+                                                        : def_resize );        \
+    }                                                                          \
+    if(res ) {                                                                 \
+        memmove( &arr->dat_[pos + count],                                      \
+                 &arr->dat_[pos],                                              \
+                  array_elements_size( *arr, arr->len_-pos) );                 \
+        arr->len_ += count;                                                    \
+    }                                                                          \
+    return res;                                                                \
+}                                                                              \
+\
+static inline \
+int type_name##_insert( type_name *arr, size_t pos, type value )               \
+{                                                                              \
+    if( type_name##_insert_block( arr, pos, 1 ) ) {                            \
+        arr->dat_[pos] = value;                                                \
+        return 1;                                                              \
+    }                                                                          \
+    return 0;                                                                  \
+}                                                                              \
+\
+static inline \
+int type_name##_push_front( type_name *arr, type value )                       \
+{                                                                              \
+    return type_name##_insert( arr, 0, value );                                \
+}
 
-#define array_define_custom_type( type, type_name )             \
-  typedef struct type_name {                                    \
-      type    *dat_;                                            \
-      size_t   len_;                                            \
-      size_t   cap_;                                            \
-  } type_name
+#define array_define_custom_type( type, type_name ) \
+    array_define_custom( type, type_name, malloc, realloc, free )
 
-#define array_define_type( type )            \
+
+#define array_define_type( type )                   \
     array_define_custom_type( type, type##_array_type )
 
 #define array_default_increase(arr) \
@@ -62,12 +173,12 @@
     }
 
 #define array_insert( arr, pos, value, result )                                \
-            do {                                                               \
-                array_insert_block(arr, pos, 1, result );                      \
-                if( result ) {                                                 \
-                    array_at(arr, pos) = value;                                \
-                }                                                              \
-            } while(0)
+    do {                                                                       \
+        array_insert_block(arr, pos, 1, result );                              \
+        if( result ) {                                                         \
+            array_at(arr, pos) = value;                                        \
+        }                                                                      \
+    } while(0)
 
 
 #define array_resize_check( arr, new_size, result )                            \
