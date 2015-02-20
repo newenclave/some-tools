@@ -29,39 +29,32 @@ void show_array2( const string_array *arr )
 int main( )
 {
 
-    const size_t array_size = 20;
-
-    int_array_type ai = array_init;
     string_array   sa = array_init;
 
-    array_push_back( sa, "1" );
-    array_push_back( sa, "2" );
-    array_push_back( sa, "3" );
-    array_push_back( sa, "4" );
-    array_push_back( sa, "4" );
-    array_push_back( sa, "4" );
-    array_push_back( sa, "4" );
-    array_push_back( sa, "4" );
-    array_push_back( sa, "5" );
-    array_push_back( sa, "6" );
+    array_push_back( sa, "01" );
+    array_push_back( sa, "02" );
+    array_push_back( sa, "03" );
+    array_push_back( sa, "04" );
+    array_push_back( sa, "04" );
+    array_push_back( sa, "04" );
+    array_push_back( sa, "04" );
+    array_push_back( sa, "04" );
+    array_push_back( sa, "05" );
+    array_push_back( sa, "06" );
 
     int i;
 
-    size_t data = 17;
+    size_t position;
 
-    for( i=0; i<array_size; i++ ) {
-        array_push_back(ai, i);
-    }
+    array_bin_upper_bound_compare( sa, "04", strcmp, position );
+    array_insert( sa, position, "!!", i );
 
-    array_bin_upper_bound_compare( sa, "4", strcmp, data );
-    array_insert( sa, data, "!", i );
-
-    printf( "Index is %lu is end: %d\n", data, (data == array_lenght(sa)) );
+    printf( "Index is %lu is end: %d\n",
+            position, (position == array_lenght(sa)) );
 
     show_array2( &sa );
 
     array_free(sa);
-    array_free(ai);
 
     return 0;
 }
