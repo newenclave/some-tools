@@ -5,6 +5,12 @@ struct linked_list_head {
     struct linked_list_head *link_;
 };
 
+#define field_offset( type, field ) \
+    ((unsigned long)( &((const type *)0)->field ))
+
+#define field_entry( ptr, type, field ) \
+    ((type *)((const char *)(ptr) - field_offset(type, field)))
+
 #define linked_list_insert( element, new_ptr )      \
     (new_ptr)->link_ =  (element)->link_,           \
     (element)->link_ =   new_ptr
