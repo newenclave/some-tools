@@ -1,44 +1,23 @@
 #ifndef TEMPL_LISTS_H
 #define TEMPL_LISTS_H
 
-#define list_define_custom_type( type, type_name )      \
-  typedef struct type##_list_type {                     \
-      struct type##_list_type  *nxt_;                   \
-      type                      dat_;                   \
-  } type_name
+struct linked_list_head {
+    struct linked_list_head *link_;
+};
 
-#define list_define_type( type )                        \
-    list_define_custom_type( type, type##_list_type )
+#define linked_list_insert( element, new_ptr )      \
+    (new_ptr)->link_ =  (element)->link_,           \
+    (element)->link_ =   new_ptr
 
-#define list_insert_value( lst, value, result )         \
-    do {                                                \
-        void *next__ = malloc(sizeof(lst));             \
-        if( next__ ) {                                  \
-            void *tmp__ = (lst).nxt_;                   \
-            (lst).nxt_       = next__;                  \
-            (lst).nxt_->dat_ = value;                   \
-            (lst).nxt_->nxt_ = tmp__;                   \
-        }                                               \
-        result = next__;                                \
-    } while(0)
+#define linked_list_insert_list( src, oth  )        \
+    linked_list_last(oth)->flink = &(src)->link_,   \
+    &(src)->link_ =                 &(oth)
 
-#define list_delete_next( lst )             \
-    do {                                    \
-        void *next__ = (lst).nxt_;          \
-        (lst).nxt_ = (lst).nxt_->nxt_;      \
-        free(next__);                       \
-    } while(0)
+#define linked_list_insert_by_field( element, new_ptr, field )     \
+    linked_list_insert( &(element)->field, &(new_ptr)->field )
 
-#define list_free(lst)                      \
-    do {                                    \
-        while( (lst).nxt_ ) {               \
-            list_delete_next(lst);          \
-        }                                   \
-    } while( 0 )
-
-#define list_foreach( lst, node ) for( node = &(lst); node; node = node->nxt_ )
-
-#define list_init( default_value )    { NULL, default_value }
+#define linked_list_insert_list_by_field( src, oth, field )        \
+    linked_list_insert_list( &(src)->field, &(oth)->field )
 
 //////////////// Doubly linked ////////////////
 
