@@ -1,10 +1,11 @@
-#ifndef ARRAYS_H
-#define ARRAYS_H
+#ifndef TEMPL_ARRAYS_H
+#define TEMPL_ARRAYS_H
 
 #include <stdlib.h>
 #include <memory.h>
 
-#define array_define_custom( type, type_name, allo_f, reallo_f, deallo_f )     \
+#define array_define_custom( type, type_name,                                  \
+                             allo_f, reallo_f, deallo_f, move_f )              \
     typedef struct type_name {                                                 \
         type    *dat_;                                                         \
         size_t   len_;                                                         \
@@ -95,9 +96,9 @@ int type_name##_insert_block( type_name *arr, size_t pos, size_t count )       \
                                                         : def_resize );        \
     }                                                                          \
     if(res ) {                                                                 \
-        memmove( &arr->dat_[pos + count],                                      \
-                 &arr->dat_[pos],                                              \
-                  array_elements_size( *arr, arr->len_-pos) );                 \
+        move_f( &arr->dat_[pos + count],                                      \
+                &arr->dat_[pos],                                              \
+                 array_elements_size( *arr, arr->len_-pos) );                 \
         arr->len_ += count;                                                    \
     }                                                                          \
     return res;                                                                \
@@ -126,8 +127,9 @@ void type_name##_free( type_name *arr )                                        \
     arr->len_ = arr->cap_ = 0;                                                 \
 }
 
-#define array_define_custom_type( type, type_name ) \
-    array_define_custom( type, type_name, malloc, realloc, free )
+#define array_define_custom_type( type, type_name )     \
+    array_define_custom( type, type_name,               \
+                         malloc, realloc, free, memmove )
 
 
 #define array_define_type( type )                   \

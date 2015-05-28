@@ -6,7 +6,14 @@
 #include "templ/lists.h"
 
 array_define_type(int)
-array_define_custom_type(const char *, string_array)
+array_define_custom_type(char *, string_array)
+
+struct test {
+    int  i_;
+    char put_;
+};
+
+array_define_custom_type(struct test, test_array)
 
 void show_array( const int_array_type *arr )
 {
@@ -29,6 +36,18 @@ void show_array2( const string_array *arr )
 int main( )
 {
     string_array   sa = array_init;
+
+    test_array     ta = array_init;
+
+    test_array_push_back( &ta, (struct test){ i_:1, put_: '1' } );
+    test_array_push_back( &ta, (struct test){ i_:2, put_: '2' } );
+    test_array_push_back( &ta, (struct test){ i_:3, put_: '3' } );
+    test_array_push_back( &ta, (struct test){ i_:4, put_: '4' } );
+
+    unsigned int j;
+    array_foreach( ta, j ) {
+        printf( "%d -> %c\n", array_at(ta, j).i_, array_at(ta, j).put_ );
+    }
 
     string_array_push_back( &sa, "01" );
     string_array_push_back( &sa, "02" );
@@ -66,6 +85,7 @@ int main( )
     show_array2( &sa );
 
     array_free(sa);
+    array_free(ta);
 
     return 0;
 }

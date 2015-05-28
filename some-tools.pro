@@ -39,6 +39,7 @@ HEADERS += \
     charset/cs-utf8.h \
     containers/cnt-heap.h \
     templ/arrays.h \
-    templ/lists.h
+    templ/lists.h \
+    templ/deque.h
 
 
