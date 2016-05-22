@@ -19,7 +19,7 @@ typedef void  (* type_name##_deallocator)( void * );                           \
 typedef int   (* type_name##_compare    )( const type *, const type * );       \
 \
 \
-static inline \
+inline \
 int type_name##_extend_capacity( type_name *arr, size_t size )                 \
 {                                                                              \
     void *tmp;                                                                 \
@@ -36,7 +36,7 @@ int type_name##_extend_capacity( type_name *arr, size_t size )                 \
     return tmp != NULL;                                                        \
 }                                                                              \
 \
-static inline \
+inline \
 int type_name##_resize( type_name *arr, size_t size )                          \
 {                                                                              \
     int res = 1;                                                               \
@@ -49,7 +49,7 @@ int type_name##_resize( type_name *arr, size_t size )                          \
     return res;                                                                \
 }                                                                              \
 \
-static inline \
+inline \
 int type_name##_reserve( type_name *arr, size_t size )                         \
 {                                                                              \
     int res = 1;                                                               \
@@ -59,20 +59,20 @@ int type_name##_reserve( type_name *arr, size_t size )                         \
     return res;                                                                \
 }                                                                              \
 \
-static inline \
+inline \
 int type_name##_extend( type_name *arr, size_t size )                          \
 {                                                                              \
     return type_name##_resize( arr, arr->len_ + size );                        \
 }                                                                              \
 \
-static inline \
+inline \
 int type_name##_reduce( type_name *arr, size_t size )                          \
 {                                                                              \
     arr->len_ -= size;                                                         \
     return 1;                                                                  \
 }                                                                              \
 \
-static inline \
+inline \
 int type_name##_push_back( type_name *arr, type value )                        \
 {                                                                              \
     int res = 1;                                                               \
@@ -85,7 +85,7 @@ int type_name##_push_back( type_name *arr, type value )                        \
     return res;                                                                \
 }                                                                              \
 \
-static inline \
+inline \
 int type_name##_insert_block( type_name *arr, size_t pos, size_t count )       \
 {                                                                              \
     int res = 1;                                                               \
@@ -104,7 +104,7 @@ int type_name##_insert_block( type_name *arr, size_t pos, size_t count )       \
     return res;                                                                \
 }                                                                              \
 \
-static inline \
+inline \
 int type_name##_insert( type_name *arr, size_t pos, type value )               \
 {                                                                              \
     if( type_name##_insert_block( arr, pos, 1 ) ) {                            \
@@ -114,13 +114,13 @@ int type_name##_insert( type_name *arr, size_t pos, type value )               \
     return 0;                                                                  \
 }                                                                              \
 \
-static inline \
+inline \
 int type_name##_push_front( type_name *arr, type value )                       \
 {                                                                              \
     return type_name##_insert( arr, 0, value );                                \
 }                                                                              \
 \
-static inline \
+inline \
 void type_name##_free( type_name *arr )                                        \
 {                                                                              \
     (deallo_f)( arr->dat_ );                                                   \
