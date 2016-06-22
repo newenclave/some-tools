@@ -4,6 +4,8 @@
 
 #include "templ/arrays.h"
 #include "templ/lists.h"
+#include "lists/bilinked-list.h"
+#include "inc/struct-fields.h"
 
 array_define_type(int)
 array_define_custom_type( const char *, string_array )
@@ -33,9 +35,129 @@ void show_array2( const string_array *arr )
     printf( "\n" );
 }
 
+typedef int deq_data;
+#define MAX_DATA 64
+
+typedef struct deq_node {
+    struct bilinked_list_head head_;
+    deq_data data_[MAX_DATA];
+} deq_node;
+
+typedef struct deque {
+    deq_node *front_;
+    deq_node *back_;
+    deq_data *begin_;
+    deq_data *end_;
+    size_t    length_;
+} deque;
+
+void deq_init( deque *d )
+{
+    memset( d, 0, sizeof(*d) );
+    d->front_ = d->back_ = malloc(sizeof(*d->back_));
+    d->front_->head_.links_[0] = d->front_->head_.links_[1] = NULL;
+    d->begin_ = d->end_ = &d->front_->data_[4];
+    d->length_ = 0;
+}
+
+void deq_free( deque *d )
+{
+    while( d->front_ ) {
+        deq_node *old = d->front_;
+        d->front_ = FIELD_ENTRY( d->front_->head_.links_[1], deq_node, head_ );
+        BILINKED_LIST_REMOVE( &old->head_ );
+        free(old);
+    }
+    //free( d->front_ );
+}
+
+void deq_add_back( deque *d )
+{
+    deq_node *node =  calloc(sizeof(*d->back_), 1);
+    BILINKED_LIST_INSERT( &d->back_->head_, &node->head_, 1 );
+    d->end_ = &node->data_[0];
+    d->back_ = node;
+}
+
+void deq_add_front( deque *d )
+{
+    deq_node *node = calloc(1, sizeof(*d->back_));
+    BILINKED_LIST_INSERT( &d->front_->head_, &node->head_, 0 );
+    d->begin_ = &node->data_[MAX_DATA];
+    d->front_ = node;
+}
+
+void deq_push_front( deque *d, deq_data data )
+{
+    if( d->begin_ == &d->front_->data_[0] ) {
+        deq_add_front( d );
+    }
+    *(--d->begin_) = data;
+}
+
+void deq_push_back( deque *d, deq_data data )
+{
+    *d->end_++ = data;
+    if( d->end_ == &d->back_->data_[MAX_DATA] ) {
+        deq_add_back( d );
+    }
+    ++d->length_;
+}
+
+void deq_pop_back( deque *d )
+{
+    if( d->end_ != d->begin_ ) {
+        if( d->end_ == &d->back_->data_[0] ) {
+            deq_node *old = d->back_;
+            d->back_ = FIELD_ENTRY( old->head_.links_[0]->links_,
+                                    deq_node, head_ );
+            BILINKED_LIST_REMOVE( &old->head_ );
+            free( old );
+            d->end_ = &d->back_->data_[MAX_DATA-1];
+        } else {
+            --d->end_;
+        }
+        --d->length_;
+    }
+}
+
+deq_data *deq_back( deque *d )
+{
+    if( d->end_ == &d->back_->data_[0] ) {
+        deq_node *prev = FIELD_ENTRY( d->back_->head_.links_[0]->links_,
+                                      deq_node, head_);
+        return &prev->data_[MAX_DATA-1];
+    } else {
+        return (d->end_ - 1);
+    }
+}
+
+deq_data *deq_front( deque *d )
+{
+    return (d->begin_);
+}
+
+static const size_t def_size = 10000;
+
 int main( )
 {
 
+    deque d;
+    deq_init( &d );
+
+    for( int i = 0; i<10000; i++ ) {
+        deq_push_back( &d, i );
+    }
+
+    for( int i = 0; i<500; i++ ) {
+        deq_push_front( &d, i );
+    }
+
+    printf( "%d\n", *deq_back( &d ) );
+
+    deq_free( &d );
+
+    return 0;
     string_array   sa = array_init;
 
     test_array     ta = array_init;
