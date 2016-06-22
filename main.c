@@ -6,7 +6,7 @@
 #include "templ/lists.h"
 
 array_define_type(int)
-array_define_custom_type(char *, string_array)
+array_define_custom_type( const char *, string_array )
 
 struct test {
     int  i_;
@@ -35,6 +35,7 @@ void show_array2( const string_array *arr )
 
 int main( )
 {
+
     string_array   sa = array_init;
 
     test_array     ta = array_init;
@@ -61,16 +62,16 @@ int main( )
     string_array_push_back( &sa, "05" );
     string_array_push_back( &sa, "06" );
 
-//    array_push_back( sa, "01" );
-//    array_push_back( sa, "02" );
-//    array_push_back( sa, "03" );
-//    array_push_back( sa, "04" );
-//    array_push_back( sa, "04" );
-//    array_push_back( sa, "04" );
-//    array_push_back( sa, "04" );
-//    array_push_back( sa, "04" );
-//    array_push_back( sa, "05" );
-//    array_push_back( sa, "06" );
+    array_push_back( sa, "01" );
+    array_push_back( sa, "02" );
+    array_push_back( sa, "03" );
+    array_push_back( sa, "04" );
+    array_push_back( sa, "04" );
+    array_push_back( sa, "04" );
+    array_push_back( sa, "04" );
+    array_push_back( sa, "04" );
+    array_push_back( sa, "05" );
+    array_push_back( sa, "06" );
 
     int i;
 
