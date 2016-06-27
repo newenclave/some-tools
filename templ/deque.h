@@ -148,7 +148,7 @@ type *type_name##_back( type_name *d ) \
 static inline \
 type *type_name##_front( type_name *d )\
 {\
-    return (d->begin_);\
+    return d->begin_;\
 }\
 static const size_t type_name##_backet_size = backet_size
 

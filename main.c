@@ -14,7 +14,7 @@ array_define_custom_type( const char *, string_array );
 
 deque_define_custom( int, deq, 64, malloc, free );
 
-deque_define_type( float );
+deque_define_custom( float, float_deque_type, 64, malloc, free );
 
 struct test {
     int  i_;
@@ -41,6 +41,7 @@ void show_array2( const string_array *arr )
     printf( "\n" );
 }
 
+#define MAXCOUNT 100000
 
 int main( )
 {
@@ -48,8 +49,17 @@ int main( )
     float_deque_type_init( &fd );
     float_deque_type_push_back( &fd, 10 );
 
-    for( int i=0; i<10; i++ ) {
+    for( int i=0; i<MAXCOUNT; i++ ) {
         float_deque_type_push_back( &fd, (float)(i/10.0) );
+    }
+
+    for( int i=0; i<MAXCOUNT; i++ ) {
+        float_deque_type_push_front( &fd, (float)(i/10.0) );
+    }
+
+    for( int i=0; i<MAXCOUNT; i++ ) {
+        float_deque_type_push_front( &fd, (float)(i/10.0) );
+        float_deque_type_pop_back( &fd );
     }
 
     while( deque_lenght( fd ) ) {
