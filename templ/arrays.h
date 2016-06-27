@@ -6,18 +6,11 @@
 
 #define array_define_custom( type, type_name,                                  \
                              allo_f, reallo_f, deallo_f, move_f )              \
-    typedef struct type_name {                                                 \
+    typedef struct _##type_name {                                                \
         type    *dat_;                                                         \
         size_t   len_;                                                         \
         size_t   cap_;                                                         \
     } type_name;                                                               \
-\
-\
-typedef void *(* type_name##_allocator  )( size_t );                           \
-typedef void *(* type_name##_reallocator)( void *, size_t );                   \
-typedef void  (* type_name##_deallocator)( void * );                           \
-typedef int   (* type_name##_compare    )( const type *, const type * );       \
-\
 \
 static inline \
 int type_name##_extend_capacity( type_name *arr, size_t size )                 \
@@ -124,7 +117,11 @@ void type_name##_free( type_name *arr )                                        \
 {                                                                              \
     (deallo_f)( arr->dat_ );                                                   \
     arr->len_ = arr->cap_ = 0;                                                 \
-}
+}\
+typedef void *(* type_name##_allocator  )( size_t );                           \
+typedef void *(* type_name##_reallocator)( void *, size_t );                   \
+typedef void  (* type_name##_deallocator)( void * );                           \
+typedef int   (* type_name##_compare    )( const type *, const type * )
 
 #define array_define_custom_type( type, type_name )     \
     array_define_custom( type, type_name,               \
@@ -221,12 +218,6 @@ void type_name##_free( type_name *arr )                                        \
                      (count) - (pos) ) ),       \
     (arr).len_ -= count
 
-#define array_reserve( arr, size, result )                                     \
-    if( (size) > array_capacity( arr ) ) {                                     \
-        size_t diff__ = (size) - array_capacity( arr );                        \
-        array_extend_capacity( arr, diff__, result );                          \
-    }
-
 #define array_extend_capacity_check( arr, size, result )                       \
     do {                                                                       \
         void *tmp__;                                                           \
@@ -259,6 +250,12 @@ void type_name##_free( type_name *arr )                                        \
             (arr).cap_ += (size);                                              \
         }                                                                      \
     } while(0)
+
+#define array_reserve( arr, size, result )                                     \
+    if( (size) > array_capacity( arr ) ) {                                     \
+        size_t diff__ = (size) - array_capacity( arr );                        \
+        array_extend_capacity( arr, diff__ );                                  \
+    }
 
 
 /// Warning! side effects!

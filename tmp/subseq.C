@@ -79,7 +79,7 @@ int main( )
     size_t_array_type arr = array_init;
     char_array_type    res = array_init;
 
-    array_resize( arr, L1 * L2, err );
+    array_resize( arr, L1 * L2 );
     array_reserve( res, L1, err );
 
     array_foreach( arr, i ) {
