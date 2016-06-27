@@ -9,17 +9,17 @@
 
 #define deque_define_custom( type, type_name, backet_size, allo_f, deallo_f ) \
 \
-typedef struct _##type_name##_deq_node {   \
-    struct bilinked_list_head head_;    \
-    type dat_[backet_size];             \
+typedef struct _##type_name##_deq_node { \
+    struct bilinked_list_head head_;     \
+    type dat_[backet_size];              \
 } type_name##_deq_node;\
 \
-typedef struct _##type_name { \
-    type_name##_deq_node *front_;\
-    type_name##_deq_node *back_;\
-    type                 *begin_;\
-    type                 *end_;\
-    size_t                len_;\
+typedef struct _##type_name {       \
+    type_name##_deq_node *front_;   \
+    type_name##_deq_node *back_;    \
+    type                 *begin_;   \
+    type                 *end_;     \
+    size_t                len_;     \
 } type_name;\
 \
 static inline \
@@ -64,6 +64,7 @@ type *type_name##_emplace_front( type_name *d ) \
     ++d->len_;\
     return --d->begin_;\
 }\
+\
 static inline \
 int type_name##_push_front( type_name *d, type data )\
 {\
@@ -150,6 +151,7 @@ type *type_name##_front( type_name *d )\
 {\
     return d->begin_;\
 }\
+\
 static const size_t type_name##_backet_size = backet_size
 
 

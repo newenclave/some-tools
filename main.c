@@ -54,7 +54,7 @@ int main( )
     }
 
     for( int i=0; i<MAXCOUNT; i++ ) {
-        float_deque_type_push_front( &fd, (float)(i/10.0) );
+        float_deque_type_emplace_front( &fd );
     }
 
     for( int i=0; i<MAXCOUNT; i++ ) {
