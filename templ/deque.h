@@ -26,7 +26,7 @@ static inline \
 int type_name##_init( type_name *d ) \
 {\
     memset( d, 0, sizeof(*d) ); \
-    d->front_ = d->back_ = (allo_f)(sizeof(*d->back_));\
+    d->front_ = d->back_ = (type_name##_deq_node *)(allo_f)(sizeof(*d->back_));\
     if( !d->front_ ) { \
         return 0; \
     }\
@@ -52,7 +52,8 @@ static inline \
 type *type_name##_emplace_front( type_name *d ) \
 {\
     if( d->begin_ == &d->front_->dat_[0] ) {\
-        type_name##_deq_node *node = (allo_f)(sizeof(*d->back_));\
+        type_name##_deq_node *node = \
+                (type_name##_deq_node *)(allo_f)(sizeof(*d->back_));\
         if(!node) {\
             return NULL;\
         }\
@@ -81,7 +82,8 @@ static inline \
 type *type_name##_emplace_back( type_name *d ) \
 {\
     if( d->end_ == &d->back_->dat_[backet_size] ) { \
-        type_name##_deq_node *node =  (allo_f)(sizeof(*d->back_));\
+        type_name##_deq_node *node = \
+                    (type_name##_deq_node *)(allo_f)(sizeof(*d->back_));\
         if( !node ) {\
             return NULL;\
         }\
