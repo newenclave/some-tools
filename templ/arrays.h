@@ -79,6 +79,19 @@ int type_name##_push_back( type_name *arr, type value )                        \
 }                                                                              \
 \
 static inline \
+type *type_name##_emplace_back( type_name *arr )                        \
+{                                                                              \
+    int res = 1;                                                               \
+    if( arr->len_ == arr->cap_ ) {                                             \
+        res = type_name##_extend_capacity( arr, array_default_increase(*arr) );\
+    }                                                                          \
+    if( res ) {                                                                \
+        return &arr->dat_[arr->len_++];                                        \
+    }                                                                          \
+    return NULL;                                                               \
+}                                                                              \
+\
+static inline \
 int type_name##_insert_block( type_name *arr, size_t pos, size_t count )       \
 {                                                                              \
     int res = 1;                                                               \
@@ -104,6 +117,15 @@ int type_name##_insert( type_name *arr, size_t pos, type value )               \
         return 1;                                                              \
     }                                                                          \
     return 0;                                                                  \
+}                                                                              \
+\
+static inline \
+type *type_name##_emplace_at( type_name *arr, size_t pos )                     \
+{                                                                              \
+    if( type_name##_insert_block( arr, pos, 1 ) ) {                            \
+        return &arr->dat_[pos];                                                \
+    }                                                                          \
+    return NULL;                                                               \
 }                                                                              \
 \
 static inline \
@@ -288,7 +310,7 @@ typedef int   (* type_name##_compare    )( const type *, const type * )
         size_t next__   = 0;                                                   \
         while( next__ < parent__ ) {                                           \
             size_t middle__ = next__ + ( ( parent__ - next__ ) >> 1 );         \
-            int cmp__ = (compare)( array_at( arr, middle__ ), (value) );       \
+            int cmp__ = (compare)( &array_at( arr, middle__ ), (value) );      \
             if( cmp__ < 0 ) {                                                  \
                 next__ = middle__ + 1;                                         \
             } else if( 0 < cmp__ ) {                                           \
@@ -340,7 +362,7 @@ typedef int   (* type_name##_compare    )( const type *, const type * )
         size_t next__   = 0;                                                   \
         while( next__ < parent__ ) {                                           \
             size_t middle__ = next__ + ( ( parent__ - next__ ) >> 1 );         \
-            int cmp__ = (compare)( array_at( arr, middle__ ), (value) );       \
+            int cmp__ = (compare)( &array_at( arr, middle__ ), (value) );      \
             if( cmp__ < 0 ) {                                                  \
                 next__ = middle__ + 1;                                         \
             } else {                                                           \
@@ -357,7 +379,7 @@ typedef int   (* type_name##_compare    )( const type *, const type * )
         size_t next__   = 0;                                                   \
         while( next__ < parent__ ) {                                           \
             size_t middle__ = next__ + ( ( parent__ - next__ ) >> 1 );         \
-            int cmp__ = (compare)( array_at( arr, middle__ ), (value) );       \
+            int cmp__ = (compare)( &array_at( arr, middle__ ), (value) );      \
             if( 0 < cmp__ ) {                                                  \
                 parent__ = middle__;                                           \
             } else {                                                           \
