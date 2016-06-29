@@ -7,6 +7,13 @@
 #include "lists/bilinked-list.h"
 #include "inc/struct-fields.h"
 
+#if defined( _MSC_VER )
+  #define INLINE_KEYWORD
+#else
+  #define INLINE_KEYWORD inline
+#endif
+
+
 #define deque_define_custom( type, type_name, backet_size, allo_f, deallo_f ) \
 \
 typedef struct _##type_name##_deq_node { \
@@ -22,7 +29,7 @@ typedef struct _##type_name {       \
     size_t                len_;     \
 } type_name;\
 \
-static inline \
+static INLINE_KEYWORD \
 int type_name##_init( type_name *d ) \
 {\
     memset( d, 0, sizeof(*d) ); \
@@ -36,7 +43,7 @@ int type_name##_init( type_name *d ) \
     return 1;\
 }\
 \
-static inline \
+static INLINE_KEYWORD \
 void type_name##_free( type_name *d ) \
 {\
     while( d->front_ ) {\
@@ -48,7 +55,7 @@ void type_name##_free( type_name *d ) \
     }\
 }\
 \
-static inline \
+static INLINE_KEYWORD \
 type *type_name##_emplace_front( type_name *d ) \
 {\
     if( d->begin_ == &d->front_->dat_[0] ) {\
@@ -66,7 +73,7 @@ type *type_name##_emplace_front( type_name *d ) \
     return --d->begin_;\
 }\
 \
-static inline \
+static INLINE_KEYWORD \
 int type_name##_push_front( type_name *d, type data )\
 {\
     type *f = type_name##_emplace_front( d );\
@@ -78,7 +85,7 @@ int type_name##_push_front( type_name *d, type data )\
     }\
 }\
 \
-static inline \
+static INLINE_KEYWORD \
 type *type_name##_emplace_back( type_name *d ) \
 {\
     if( d->end_ == &d->back_->dat_[backet_size] ) { \
@@ -96,7 +103,7 @@ type *type_name##_emplace_back( type_name *d ) \
     return d->end_++;\
 }\
 \
-static inline \
+static INLINE_KEYWORD \
 int type_name##_push_back( type_name *d, type data )\
 {\
     type *b = type_name##_emplace_back( d );\
@@ -108,7 +115,7 @@ int type_name##_push_back( type_name *d, type data )\
     }\
 }\
 \
-static inline \
+static INLINE_KEYWORD \
 void type_name##_pop_front( type_name *d ) \
 {\
     if( d->end_ != d->begin_ ) {\
@@ -125,7 +132,7 @@ void type_name##_pop_front( type_name *d ) \
     }\
 }\
 \
-static inline \
+static INLINE_KEYWORD \
 void type_name##_pop_back( type_name *d )\
 {\
     if( d->end_ != d->begin_ ) {\
@@ -142,13 +149,13 @@ void type_name##_pop_back( type_name *d )\
     }\
 }\
 \
-static inline \
+static INLINE_KEYWORD \
 type *type_name##_back( type_name *d ) \
 {\
     return (d->end_ - 1);\
 }\
 \
-static inline \
+static INLINE_KEYWORD \
 type *type_name##_front( type_name *d )\
 {\
     return d->begin_;\

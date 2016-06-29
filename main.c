@@ -111,7 +111,7 @@ int main( )
 
     size_t position;
 
-    array_bin_upper_bound_compare( sa, "04", strcmp, position );
+//    array_bin_upper_bound_compare( sa, "04", strcmp, position );
     array_insert( sa, position, "!!", i );
 
     printf( "Index is %lu is end: %d\n",
