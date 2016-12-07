@@ -17,17 +17,17 @@
 #define deque_define_custom( type, type_name, backet_size, allo_f, deallo_f ) \
 \
 typedef struct _##type_name##_deq_node { \
-    struct bilinked_list_head head_;     \
-    type dat_[backet_size];              \
-} type_name##_deq_node;\
+    struct bilinked_list_head head_; \
+    type dat_[backet_size]; \
+} type_name##_deq_node; \
 \
-typedef struct _##type_name {       \
-    type_name##_deq_node *front_;   \
-    type_name##_deq_node *back_;    \
-    type                 *begin_;   \
-    type                 *end_;     \
-    size_t                len_;     \
-} type_name;\
+typedef struct _##type_name { \
+    type_name##_deq_node *front_; \
+    type_name##_deq_node *back_; \
+    type                 *begin_; \
+    type                 *end_; \
+    size_t                len_; \
+} type_name; \
 \
 static INLINE_KEYWORD \
 int type_name##_init( type_name *d ) \
@@ -164,11 +164,11 @@ type *type_name##_front( type_name *d )\
 static const size_t type_name##_backet_size = backet_size
 
 
-#define deque_define_custom_type( type, type_name )     \
+#define deque_define_custom_type( type, type_name ) \
     deque_define_custom( type, type_name, 64, malloc, free )
 
 
-#define deque_define_type( type )                   \
+#define deque_define_type( type ) \
     deque_define_custom_type( type, type##_deque_type )
 
 #define deque_lenght( deq ) (deq).len_

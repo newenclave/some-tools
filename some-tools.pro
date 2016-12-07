@@ -38,8 +38,8 @@ HEADERS += \
     varints/zig-zag.h \
     charset/cs-utf8.h \
     containers/cnt-heap.h \
-    templ/arrays.h \
     templ/lists.h \
-    templ/deque.h
+    templ/deque.h \
+    templ/vector.h
 
 
